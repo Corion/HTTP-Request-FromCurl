@@ -14,7 +14,7 @@ our $VERSION = '0.01';
 
 =head1 NAME
 
-HTTP::Request::FromCurl - create a HTTP::Request from a curl command_line
+HTTP::Request::FromCurl - create a HTTP::Request from a curl command line
 
 =head1 SYNOPSIS
 

@@ -10,7 +10,7 @@ See lib/WWW/Mechanize/Chrome/Contributing.pod
 
 # NAME
 
-HTTP::Request::FromCurl - create a HTTP::Request from a curl command\_line
+HTTP::Request::FromCurl - create a HTTP::Request from a curl command line
 
 # SYNOPSIS
 
