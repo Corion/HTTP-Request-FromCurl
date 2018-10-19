@@ -15,21 +15,21 @@ my $server = Test::HTTP::LocalServer->spawn();
 my $curl = 'curl';
 
 my @tests = (
-    { cmd => [ '--verbose', '-s', '"$url"' ] },
-    { cmd => [ '--verbose', '-s', '-X', 'PATCH', '"$url"' ] },
-    { cmd => [ '--verbose', '-s', '--head', '"$url"' ] },
-    { cmd => [ '--verbose', '-s', '-H', 'Host: example.com', '"$url"' ] },
+    { cmd => [ '--verbose', '-s', '$url' ] },
+    { cmd => [ '--verbose', '-s', '-X', 'PATCH', '$url' ] },
+    { cmd => [ '--verbose', '-s', '--head', '$url' ] },
+    { cmd => [ '--verbose', '-s', '-H', 'Host: example.com', '$url' ] },
     { name => 'Multiple headers',
-      cmd => [ '--verbose', '-s', '-H', 'Host: example.com', '-H','X-Example: foo', '"$url"' ] },
+      cmd => [ '--verbose', '-s', '-H', 'Host: example.com', '-H','X-Example: foo', '$url' ] },
     { name => 'Form parameters',
       ignore => [ 'Content-Length', 'Content-Type' ],
-      cmd => [ '--verbose', '-s', '"$url"', '--get', '-F', 'name=Foo', '-F','version=1' ] },
+      cmd => [ '--verbose', '-s', '$url', '--get', '-F', 'name=Foo', '-F','version=1' ] },
     { name => 'Append GET data',
-      cmd => [ '--verbose', '-s', '"$url"', '--get', '-d', '{name:cool_event}' ] },
+      cmd => [ '--verbose', '-s', '$url', '--get', '-d', '{name:cool_event}' ] },
     { name => 'Append GET data to existing query',
-      cmd => [ '--verbose', '-s', '"$url?foo=bar"', '--get', '-d', '{name:cool_event}' ] },
-    { cmd => [ '--verbose', '-s', '"$url"', '-d', '{name:cool_event}' ] },
-    { cmd => [ '--verbose', '-s', '--oauth2-bearer','someWeirdStuff', '"$url"' ] },
+      cmd => [ '--verbose', '-s', '$url?foo=bar', '--get', '-d', '{name:cool_event}' ] },
+    { cmd => [ '--verbose', '-s', '$url', '-d', '{name:cool_event}' ] },
+    { cmd => [ '--verbose', '-s', '--oauth2-bearer','someWeirdStuff', '$url' ] },
 );
 
 sub curl( @args ) {
