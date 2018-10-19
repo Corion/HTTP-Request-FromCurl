@@ -19,6 +19,8 @@ my @tests = (
     { cmd => [ '--verbose', '-s', '-X', 'PATCH', '"$url"' ] },
     { cmd => [ '--verbose', '-s', '--head', '"$url"' ] },
     { cmd => [ '--verbose', '-s', '-H', 'Host: example.com', '"$url"' ] },
+    { name => 'Multiple headers',
+      cmd => [ '--verbose', '-s', '-H', 'Host: example.com', '-H','X-Example: foo', '"$url"' ] },
     { name => 'Form parameters',
       cmd => [ '--verbose', '-s', '"$url"', '--get', '-F', 'name=Foo', '-F','version=1' ] },
     { name => 'Append GET data',
