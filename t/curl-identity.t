@@ -82,10 +82,10 @@ sub request_identical_ok {
     # Replace the dynamic parameters
     s!\$(url|port)!$server->$1!ge for @$cmd;
 
-    diag join " ", @$cmd;
     my $res = curl_request( @$cmd );
     if( $res->{error} ) {
         fail $test->{name};
+        diag join " ", @$cmd;
         diag $res->{error};
         return;
     };
@@ -98,11 +98,13 @@ sub request_identical_ok {
     my $status;
     if( $r->method ne $res->{method} ) {
         is $r->method, $res->{method}, $name;
+        diag join " ", @$cmd;
         return;
     };
 
     if( url_decode($r->uri->path_query) ne $res->{path} ) {
         is url_decode($r->uri->path_query), $res->{path}, $name;
+        diag join " ", @$cmd;
         return;
     };
     is_deeply +{ $r->headers->flatten }, $res->{headers}, $name;
