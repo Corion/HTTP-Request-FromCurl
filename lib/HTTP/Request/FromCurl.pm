@@ -41,7 +41,7 @@ sub new( $class, %options ) {
         'v|verbose'       => \my $verbose,
         's'               => \my $silent,
         'c|cookie-jar=s'  => \my $cookie_jar, # ignored
-        'd|data=s'        => \my @post_data,    # ignored
+        'd|data=s'        => \my @post_data,
         'e|referrer=s'    => \my $referrer,
         'F|form=s'        => \my @form_args,    # ignored
         'G|get'           => \my $get,
@@ -64,7 +64,7 @@ sub new( $class, %options ) {
             Content => [ map { /^([^=]+)=(.*)$/ ? ($1 => $2) : () } @form_args ],
         );
         $body = $req->content;
-        push @headers, 'Content-Type: ' . join "; ", $req->headers->content_type;
+        unshift @headers, 'Content-Type: ' . join "; ", $req->headers->content_type;
         #warn "[[$body]]";
 
     } elsif( $get ) {
@@ -88,14 +88,14 @@ sub new( $class, %options ) {
     } elsif( @post_data ) {
         $method = 'POST';
         $body = join "", @post_data;
-        # multipart
+        unshift @headers, 'Content-Type: application/x-www-form-urlencoded';
 
     } else {
         $method ||= 'GET';
     };
 
     if( defined $body ) {
-        push @headers, sprintf 'Content-Length: %d', length $body;
+        unshift @headers, sprintf 'Content-Length: %d', length $body;
     };
 
     if( defined $oauth2_bearer ) {
