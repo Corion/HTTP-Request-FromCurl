@@ -16,7 +16,7 @@ END { undef $server } # for orderly cleanup
 my $curl = 'curl';
 
 my @tests = (
-    { cmd => [ '--verbose', '-s', ' --no-keepalive', '$url', '$url', ]}, #'$url?foo=bar', ] },
+    { cmd => [ '--verbose', '-s', '$url', '$url?foo=bar', ] },
 );
 
 sub curl( @args ) {
@@ -38,7 +38,7 @@ sub curl_request( @args ) {
     my @res;
     
     if( ! $exit ) {
-        my @requests = grep { /./ } split /^(?=\Q*   Trying \E)/m, $stderr;
+        my @requests = grep { /^\{ \[\d+ \w+ data\]/m } split /^(?=\Q*   Trying \E)/m, $stderr;
         for my $stderr (@requests) {
             my %res;
 
