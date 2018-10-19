@@ -69,7 +69,15 @@ sub curl_request( @args ) {
 
     \%res
 }
-diag "Curl version ", curl_version( $curl );
+
+my $version = curl_version( $curl );
+
+if( ! $version) {
+    plan skip_all => "Couldn't find curl executable";
+    exit;
+};
+
+diag "Curl version $version",
 $HTTP::Request::FromCurl::default_headers{ 'User-Agent' } = "curl/".curl_version( $curl );
 
 sub request_identical_ok {
