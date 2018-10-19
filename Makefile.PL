@@ -53,8 +53,9 @@ my %module = (
         'URL::Encode'           => 0,
     },
     TEST_REQUIRES => {
-        'Test::More'   => 0,
-        'Data::Dumper' => 0,
+        'Test::More'    => 0,
+        'Data::Dumper'  => 0,
+        'Capture::Tiny' => 0,
         'Test::HTTP::LocalServer' => 0.61, # we want the improved IPC
     },
 
