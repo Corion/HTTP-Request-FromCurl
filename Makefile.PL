@@ -44,7 +44,7 @@ my %module = (
     },
 
     PREREQ_PM => {
-        'Exporter'           => 5, # for 'import'
+        'Getopt::Long'          => '2.38', # for GetOptionsFromArray
 
         'Filter::signatures' => '0.09',
         'HTTP::Request'         => 0,
