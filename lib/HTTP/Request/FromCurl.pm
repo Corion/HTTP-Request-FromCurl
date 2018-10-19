@@ -64,8 +64,8 @@ sub new( $class, %options ) {
             Content => [ map { /^([^=]+)=(.*)$/ ? ($1 => $2) : () } @form_args ],
         );
         $body = $req->content;
-        push @headers, 'Content-Type', $req->headers->content_type;
-        warn "[[$body]]";
+        push @headers, 'Content-Type: ' . join "; ", $req->headers->content_type;
+        #warn "[[$body]]";
 
     } elsif( $get ) {
         $method = 'GET';
