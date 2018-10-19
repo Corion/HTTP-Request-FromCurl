@@ -67,6 +67,7 @@ our @option_spec = (
     'silent|s',
     #'c|cookie-jar=s',   # ignored
     'data|d=s@',
+    'data-binary=s@',
     'referrer|e=s',
     'form|F=s@',
     'get|G',
@@ -109,8 +110,20 @@ sub _build_request( $self, $uri, $options ) {
 
     my @headers = @{ $options->{header} || []};
     my $method = $options->{request};
-    my @post_data = @{ $options->{data} || []};
+    my @post_data = @{ $options->{data} || $options->{'data-binary'} || []};
     my @form_args = @{ $options->{form} || []};
+
+    # Sluuuurp
+    @post_data = map {
+        /^\@(.*)/ ? do {
+                         open my $fh, '<', $1
+                             or die "$1: $!";
+                         local $/;
+                         binmode $fh;
+                         <$fh>
+                       }
+                  : $_
+    } @post_data;
 
     if( @form_args) {
         $method = 'POST';

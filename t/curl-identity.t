@@ -6,6 +6,7 @@ use Data::Dumper;
 use Capture::Tiny 'capture';
 use Test::HTTP::LocalServer;
 use URL::Encode 'url_decode';
+use File::Temp;
 
 use Filter::signatures;
 use feature 'signatures';
@@ -13,6 +14,12 @@ no warnings 'experimental::signatures';
 
 my $server = Test::HTTP::LocalServer->spawn();
 my $curl = 'curl';
+
+my $tempfile = File::Temp->new( UNLINK => 1 );
+binmode $tempfile;
+print $tempfile "This is a test\nMore test";
+close $tempfile;
+my $tempname = $tempfile->filename;
 
 my @tests = (
     { cmd => [ '--verbose', '-s', '$url' ] },
@@ -37,6 +44,7 @@ my @tests = (
     { cmd => [ '--verbose', '-s', '-A', 'www::mechanize/1.0', '$url' ],
       version => '007061000',
     },
+    { cmd => [ '--verbose', '-s', '--data-binary', '@$tempfile', '$url' ] },
 );
 
 sub curl( @args ) {
@@ -101,6 +109,7 @@ sub request_identical_ok {
 
     # Replace the dynamic parameters
     s!\$(url|port)!$server->$1!ge for @$cmd;
+    s!\$(tempfile)!$tempfile!g for @$cmd;
 
     my $res = curl_request( @$cmd );
     if( $res->{error} ) {
