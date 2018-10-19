@@ -2,6 +2,7 @@ package HTTP::Request::FromCurl;
 use strict;
 use warnings;
 use HTTP::Request;
+use HTTP::Request::Common;
 use URI;
 use Getopt::Long 'GetOptionsFromArray';
 
@@ -55,11 +56,14 @@ sub new( $class, %options ) {
     if( @form_args ) {
         $method = 'POST';
 
-        # This is slightly wrong - curl uses MIME boundaries instead
-        push @headers, 'Content-Type: application/x-www-encoded';
-        my $uri = URI->new('https://example.com');
-        $uri->query_form( map { /^([^=])+=(.*)$/ ? ($1 => $2) : () } @form_args );
-        $body = $uri->query;
+        my $req = HTTP::Request::Common::POST(
+            $uri,
+            Content_Type => 'form-data',
+            Content => \@form_args
+        );
+        $body = $req->content;
+        push @headers, 'Content-Type', $req->headers->content_type;
+        warn "[[$body]]";
 
     } elsif( $get ) {
         $method = 'GET';
