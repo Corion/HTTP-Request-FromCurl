@@ -131,4 +131,22 @@ The delimiter is built by L<HTTP::Message>, and C<curl> uses a different
 mechanism to come up with a unique data delimiter. This results in differences
 in the raw body content and the C<Content-Length> header.
 
+=head1 MISSING FUNCTIONALITY
+
+=over 4
+
+=item *
+
+Cookie files
+
+Curl cookie files are neither read nor written
+
+=item *
+
+File uploads / content from files
+
+Neither file uploads nor reading POST data from files is supported
+
+=back
+
 =cut
