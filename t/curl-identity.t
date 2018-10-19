@@ -5,6 +5,7 @@ use Test::More;
 use Data::Dumper;
 use Capture::Tiny 'capture';
 use Test::HTTP::LocalServer;
+use URL::Encode 'url_decode';
 
 use Filter::signatures;
 use feature 'signatures';
@@ -20,9 +21,9 @@ my @tests = (
     { cmd => [ '--verbose', '-s', '-H', 'Host: example.com', '"$url"' ] },
     { name => 'Form parameters',
       cmd => [ '--verbose', '-s', '"$url"', '--get', '-F', 'name=Foo', '-F','version=1' ] },
-    { cmd => [ '--verbose', '-s', '"$url"', '--get', '-d', '{"name":"cool event"}' ] },
-    { cmd => [ '--verbose', '-s', '"$url?foo=bar"', '--get', '-d', '{"name":"cool event"}' ] },
-    { cmd => [ '--verbose', '-s', '"$url"', '-d', '{"name":"cool event"}' ] },
+    { cmd => [ '--verbose', '-s', '"$url"', '--get', '-d', '{name:cool_event}' ] },
+    { cmd => [ '--verbose', '-s', '"$url?foo=bar"', '--get', '-d', '{name:cool_event}' ] },
+    { cmd => [ '--verbose', '-s', '"$url"', '-d', '{name:cool_event}' ] },
     { cmd => [ '--verbose', '-s', '--oauth2-bearer','someWeirdStuff', '"$url"' ] },
 );
 
@@ -96,8 +97,8 @@ sub request_identical_ok {
         return;
     };
 
-    if( $r->uri->path_query ne $res->{path} ) {
-        is $r->uri->path_query, $res->{path}, $name;
+    if( url_decode($r->uri->path_query) ne $res->{path} ) {
+        is url_decode($r->uri->path_query), $res->{path}, $name;
         return;
     };
     is_deeply +{ $r->headers->flatten }, $res->{headers}, $name;

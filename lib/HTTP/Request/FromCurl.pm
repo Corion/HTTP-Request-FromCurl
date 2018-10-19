@@ -28,7 +28,7 @@ HTTP::Request::FromCurl - create a HTTP::Request from a curl command_line
 
 sub new( $class, %options ) {
     my $cmd = $options{ argv };
-    
+
     GetOptionsFromArray( $cmd,
         'v|verbose'       => \my $verbose,
         's'               => \my $silent,
@@ -42,18 +42,20 @@ sub new( $class, %options ) {
         'X|request=s'     => \my $method,
         'oauth2-bearer=s' => \my $oauth2_bearer,
     ) or return;
-    
+
     my ($uri) = @$cmd;
     my $body;
     $uri = URI->new( $uri );
- 
+
     if( @form_args ) {
         $method = 'POST';
+
+        # This is slightly wrong - curl uses MIME boundaries instead
         push @headers, 'Content-Type: application/x-www-encoded';
         my $uri = URI->new('https://example.com');
         $uri->query_form( map { /^([^=])+=(.*)$/ ? ($1 => $2) : () } @form_args );
         $body = $uri->query;
-        
+
     } elsif( $get ) {
         $method = 'GET';
         # Also, append the POST data to the URL
@@ -62,32 +64,40 @@ sub new( $class, %options ) {
             if( defined $q and length $q ) {
                 $q .= "&";
             } else {
-                $q = join "", @post_data;
+                $q = "";
             };
+            $q .= join "", @post_data;
             $uri->query( $q );
+            @post_data = ();
         };
-        
+
     } elsif( $head ) {
         $method = 'HEAD';
+
+    } elsif( @post_data ) {
+        $method = 'POST';
+        $body = join "", @post_data;
+        # multipart
+
     } else {
         $method ||= 'GET';
     };
 
-    if( defined $body ) {    
+    if( defined $body ) {
         push @headers, sprintf 'Content-Length: %d', length $body;
     };
-        
+
     my %headers = (
         'Accept' => '*/*',
         'Host' => $uri->host_port,
         'User-Agent' => 'curl/7.55.1',
         (map { /^\s*([^:\s]+)\s*:\s*(.*)$/ ? ($1 => $2) : () } @headers),
     );
-    
+
     if( $referrer ) {
         $headers{ Referer } = $referrer;
     };
-    
+
     HTTP::Request->new(
         $method => $uri,
         HTTP::Headers->new( %headers ),
