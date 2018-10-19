@@ -1,5 +1,5 @@
 {
-   "abstract" : "create a HTTP::Request from a curl command_line",
+   "abstract" : "create a HTTP::Request from a curl command line",
    "author" : [
       "Max Maischein <corion@cpan.org>"
    ],
@@ -32,8 +32,8 @@
       },
       "runtime" : {
          "requires" : {
-            "Exporter" : "5",
             "Filter::signatures" : "0.09",
+            "Getopt::Long" : "2.38",
             "HTTP::Request" : "0",
             "HTTP::Request::Common" : "0",
             "URI" : "0",
@@ -43,6 +43,7 @@
       },
       "test" : {
          "requires" : {
+            "Capture::Tiny" : "0",
             "Data::Dumper" : "0",
             "Test::HTTP::LocalServer" : "0.61",
             "Test::More" : "0"
