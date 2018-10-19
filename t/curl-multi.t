@@ -38,7 +38,8 @@ sub curl_request( @args ) {
     my @res;
     
     if( ! $exit ) {
-        my @requests = grep { /^\{ \[\d+ \w+ data\]/m } split /^(?=\Q*   Trying \E)/m, $stderr;
+        my @requests = grep { /^> /m } split /^\* .*$/m, $stderr;
+        diag Dumper \@requests;
         for my $stderr (@requests) {
             my %res;
 
