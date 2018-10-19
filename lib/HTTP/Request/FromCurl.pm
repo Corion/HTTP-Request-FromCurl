@@ -61,7 +61,7 @@ sub new( $class, %options ) {
         my $req = HTTP::Request::Common::POST(
             $uri,
             Content_Type => 'form-data',
-            Content => \@form_args
+            Content => [ map { /^([^=]+)=(.*)$/ ? ($1 => $2) : () } @form_args ],
         );
         $body = $req->content;
         push @headers, 'Content-Type', $req->headers->content_type;
@@ -116,3 +116,15 @@ sub new( $class, %options ) {
 }
 
 1;
+
+=head1 KNOWN DIFFERENCES
+
+=head2 Different Content-Length for POST requests
+
+=head2 Different delimiter for form data
+
+The delimiter is built by L<HTTP::Message>, and C<curl> uses a different
+mechanism to come up with a unique data delimiter. This results in differences
+in the raw body content and the C<Content-Length> header.
+
+=cut

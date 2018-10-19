@@ -16,3 +16,13 @@ HTTP::Request::FromCurl - create a HTTP::Request from a curl command line
     my $req = HTTP::Request::FromCurl->new(
         command => 'curl https://example.com',
     );
+
+# KNOWN DIFFERENCES
+
+## Different Content-Length for POST requests
+
+## Different delimiter for form data
+
+The delimiter is built by [HTTP::Message](https://metacpan.org/pod/HTTP::Message), and `curl` uses a different
+mechanism to come up with a unique data delimiter. This results in differences
+in the raw body content and the `Content-Length` header.
