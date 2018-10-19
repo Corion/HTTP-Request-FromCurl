@@ -29,7 +29,8 @@ my @tests = (
     { name => 'Append GET data to existing query',
       cmd => [ '--verbose', '-s', '$url?foo=bar', '--get', '-d', '{name:cool_event}' ] },
     { cmd => [ '--verbose', '-s', '$url', '-d', '{name:cool_event}' ] },
-    { cmd => [ '--verbose', '-s', '--oauth2-bearer','someWeirdStuff', '$url' ] },
+    { cmd => [ '--verbose', '-s', '--oauth2-bearer','someWeirdStuff', '$url' ],
+      version => '007061000',
 );
 
 sub curl( @args ) {
@@ -81,11 +82,14 @@ if( ! $version) {
 diag "Curl version $version",
 $HTTP::Request::FromCurl::default_headers{ 'User-Agent' } = "curl/".curl_version( $curl );
 
+my $cmp_version = sprintf "%03d%03d%03d", split /\./, $version;
+
 sub request_identical_ok {
     my( $test ) = @_;
     local $TODO = $test->{todo};
-    # curl -Ivs http://example.com > /dev/null
-    # --trace-ascii
+
+    local $TODO = "curl $test->{version} required, we have $cmp_version"
+        if $test->{version} and $cmp_version < $test->{version};
 
     my $cmd = [ @{ $test->{cmd} }];
 
