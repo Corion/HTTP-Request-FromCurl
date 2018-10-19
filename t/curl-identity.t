@@ -15,6 +15,7 @@ my $curl = 'curl';
 
 my @tests = (
     { cmd => [ '--verbose', '-s', '"$url"' ] },
+    { cmd => [ '--verbose', '-s', '-X', 'PATCH', '"$url"' ] },
     { cmd => [ '--verbose', '-s', '--head', '"$url"' ] },
     { cmd => [ '--verbose', '-s', '-H', 'Host: example.com', '"$url"' ] },
 );

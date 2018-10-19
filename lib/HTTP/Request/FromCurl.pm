@@ -41,15 +41,16 @@ sub new( $class, %options ) {
         'G|get'        => \my $get,
         'H|header=s'   => \my @headers,
         'I|head'       => \my $head,
+        'X|request=s'     => \my $method,
     ) or return;
-    
-    my $method = 'GET';
     
     if( $get ) {
         $method = 'GET';
         # Also, append the POST data to the URL
     } elsif( $head ) {
         $method = 'HEAD';
+    } else {
+        $method ||= 'GET';
     };
     
     my ($uri) = @$cmd;
