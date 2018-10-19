@@ -54,6 +54,20 @@ our %default_headers = (
 
 =cut
 
+our @option_spec = (
+    'verbose|v',
+    'silent|s',
+    #'c|cookie-jar=s',   # ignored
+    'data|d=s@',
+    'referrer|e=s',
+    'form|F=s@',
+    'get|G',
+    'header|H=s@',
+    'head|I',
+    'request|X=s',
+    'oauth2-bearer=s',
+);
+
 sub new( $class, %options ) {
     my $cmd = $options{ argv };
 
@@ -70,36 +84,38 @@ sub new( $class, %options ) {
     };
 
     GetOptionsFromArray( $cmd,
-        'v|verbose'       => \my $verbose,
-        's'               => \my $silent,
-        'c|cookie-jar=s'  => \my $cookie_jar, # ignored
-        'd|data=s'        => \my @post_data,
-        'e|referrer=s'    => \my $referrer,
-        'F|form=s'        => \my @form_args,    # ignored
-        'G|get'           => \my $get,
-        'H|header=s'      => \my @headers,
-        'I|head'          => \my $head,
-        'X|request=s'     => \my $method,
-        'oauth2-bearer=s' => \my $oauth2_bearer,
+        \my %curl_options,
+        @option_spec,
     ) or return;
 
+    return
+        wantarray ? map { $class->_build_request( $_, \%curl_options ) } @$cmd
+                  :       $class->_build_request( $cmd->[0], \%curl_options )
+                  ;
     my ($uri) = @$cmd;
+}
+
+sub _build_request( $self, $uri, $options ) {
     my $body;
     $uri = URI->new( $uri );
 
-    if( @form_args ) {
+    my @headers = @{ $options->{header} || []};
+    my $method = $options->{request};
+    my @post_data = @{ $options->{data} || []};
+    my @form_args = @{ $options->{form} || []};
+
+    if( @form_args) {
         $method = 'POST';
 
         my $req = HTTP::Request::Common::POST(
-            $uri,
+            'https://example.com',
             Content_Type => 'form-data',
             Content => [ map { /^([^=]+)=(.*)$/ ? ($1 => $2) : () } @form_args ],
         );
         $body = $req->content;
         unshift @headers, 'Content-Type: ' . join "; ", $req->headers->content_type;
-        #warn "[[$body]]";
 
-    } elsif( $get ) {
+    } elsif( $options->{ get }) {
         $method = 'GET';
         # Also, append the POST data to the URL
         if( @post_data ) {
@@ -111,10 +127,9 @@ sub new( $class, %options ) {
             };
             $q .= join "", @post_data;
             $uri->query( $q );
-            @post_data = ();
         };
 
-    } elsif( $head ) {
+    } elsif( $options->{ head }) {
         $method = 'HEAD';
 
     } elsif( @post_data ) {
@@ -130,8 +145,8 @@ sub new( $class, %options ) {
         unshift @headers, sprintf 'Content-Length: %d', length $body;
     };
 
-    if( defined $oauth2_bearer ) {
-        push @headers, sprintf 'Authorization: Bearer %s', $oauth2_bearer;
+    if( $options->{ 'oauth2-bearer' } ) {
+        push @headers, sprintf 'Authorization: Bearer %s', $options->{'oauth2-bearer'};
     };
 
     my %headers = (
@@ -140,8 +155,8 @@ sub new( $class, %options ) {
         (map { /^\s*([^:\s]+)\s*:\s*(.*)$/ ? ($1 => $2) : () } @headers),
     );
 
-    if( $referrer ) {
-        $headers{ Referer } = $referrer;
+    if( defined $options->{ referrer }) {
+        $headers{ Referer } = $options->{ 'referrer' };
     };
 
     HTTP::Request->new(
@@ -149,7 +164,7 @@ sub new( $class, %options ) {
         HTTP::Headers->new( %headers ),
         $body
     )
-}
+};
 
 1;
 
