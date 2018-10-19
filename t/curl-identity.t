@@ -85,8 +85,8 @@ if( ! $version) {
     exit;
 };
 
-diag "Curl version $version",
-$HTTP::Request::FromCurl::default_headers{ 'User-Agent' } = "curl/".curl_version( $curl );
+diag "Curl version $version";
+$HTTP::Request::FromCurl::default_headers{ 'User-Agent' } = "curl/$version";
 
 my $cmp_version = sprintf "%03d%03d%03d", split /\./, $version;
 
