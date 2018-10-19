@@ -22,6 +22,7 @@ my @tests = (
     { name => 'Multiple headers',
       cmd => [ '--verbose', '-s', '-H', 'Host: example.com', '-H','X-Example: foo', '"$url"' ] },
     { name => 'Form parameters',
+      ignore => [ 'Content-Length', 'Content-Type' ],
       cmd => [ '--verbose', '-s', '"$url"', '--get', '-F', 'name=Foo', '-F','version=1' ] },
     { name => 'Append GET data',
       cmd => [ '--verbose', '-s', '"$url"', '--get', '-d', '{name:cool_event}' ] },
@@ -124,7 +125,13 @@ sub request_identical_ok {
     #    return;
     #};
 
-    is_deeply +{ $r->headers->flatten }, $res->{headers}, $name;
+    my %got = $r->headers->flatten;
+    if( $test->{ignore} ) {
+        delete @got{ @{ $test->{ignore}}};
+        delete @{$res->{headers}}{ @{ $test->{ignore}}};
+    };
+
+    is_deeply \%got, $res->{headers}, $name;
 
     # Now create a program from the request, run it and check that it still
     # sends the same request as curl does
