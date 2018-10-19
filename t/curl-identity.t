@@ -40,7 +40,7 @@ sub curl( @args ) {
 sub curl_version( $curl ) {
     my( $stdout, undef, $exit ) = curl( '--version' );
     return undef if $exit;
-    $stdout =~ /^curl\s+([\d.]+)/
+    ($stdout =~ /^curl\s+([\d.]+)/)[0]
 };
 
 sub curl_request( @args ) {
@@ -70,6 +70,7 @@ sub curl_request( @args ) {
     \%res
 }
 diag "Curl version ", curl_version( $curl );
+$HTTP::Request::FromCurl::default_headers{ 'User-Agent' } = "curl/".curl_version( $curl );
 
 sub request_identical_ok {
     my( $test ) = @_;
