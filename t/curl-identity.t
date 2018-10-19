@@ -164,3 +164,4 @@ for my $test ( @tests ) {
 };
 
 done_testing();
+undef $tempfile;
