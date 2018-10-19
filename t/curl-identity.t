@@ -6,20 +6,21 @@ use Data::Dumper;
 use Capture::Tiny 'capture';
 use Test::HTTP::LocalServer;
 use URL::Encode 'url_decode';
-use File::Temp;
+use File::Temp 'tempfile';
 
 use Filter::signatures;
 use feature 'signatures';
 no warnings 'experimental::signatures';
 
 my $server = Test::HTTP::LocalServer->spawn();
+END { undef $server }
 my $curl = 'curl';
 
-my $tempfile = File::Temp->new( UNLINK => 1 );
-binmode $tempfile;
-print $tempfile "This is a test\nMore test";
-close $tempfile;
-my $tempname = $tempfile->filename;
+my ($fh,$tempfile) = tempfile;
+binmode $fh;
+print $fh "This is a test\nMore test";
+close $fh;
+END { unlink $tempfile; }
 
 my @tests = (
     { cmd => [ '--verbose', '-s', '$url' ] },
@@ -50,7 +51,7 @@ my @tests = (
 
 sub curl( @args ) {
     my ($stdout, $stderr, $exit) = capture {
-        system( $curl, @args );
+        system( $curl, @args )
     };
 }
 
@@ -164,4 +165,3 @@ for my $test ( @tests ) {
 };
 
 done_testing();
-undef $tempfile;
