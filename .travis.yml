@@ -33,6 +33,12 @@ before_install:
   - cpan-install ExtUtils::MakeMaker~6.68
   - cpan-install --deps
 
+addons:
+  apt:
+    update: true
+    packages:
+      - curl
+
 script:
   - cd $BUILD_DIR
   - perl Makefile.PL && make
