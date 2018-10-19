@@ -24,3 +24,6 @@ Makefile$
 ^HTTP-Request-FromCurl.*
 ^frame-\d+.png
 ^demo/
+^curl.exe
+^curl-ca-bundle.crt
+^libcurl-x64.dll

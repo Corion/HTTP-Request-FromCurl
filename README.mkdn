@@ -14,8 +14,33 @@ HTTP::Request::FromCurl - create a HTTP::Request from a curl command line
     );
 
     my $req = HTTP::Request::FromCurl->new(
-        command => 'curl https://example.com',
+        command => 'https://example.com',
     );
+
+    my $req = HTTP::Request::FromCurl->new(
+        command_curl => 'curl -A mycurl/1.0 https://example.com',
+    );
+
+    my @requests = HTTP::Request::FromCurl->new(
+        command_curl => 'curl -A mycurl/1.0 https://example.com https://www.example.com',
+    );
+
+# METHODS
+
+## `->new`
+
+    my $req = HTTP::Request::FromCurl->new(
+        # Note - curl itself may not appear
+        argv => ['--agent', 'myscript/1.0', 'https://example.com'],
+    );
+
+    my $req = HTTP::Request::FromCurl->new(
+        # Note - curl itself may not appear
+        command => '--agent myscript/1.0 https://example.com',
+    );
+
+If the command generates multiple requests, they will be returned in list
+context. In scalar context, the first request will be returned.
 
 # KNOWN DIFFERENCES
 
@@ -26,3 +51,13 @@ HTTP::Request::FromCurl - create a HTTP::Request from a curl command line
 The delimiter is built by [HTTP::Message](https://metacpan.org/pod/HTTP::Message), and `curl` uses a different
 mechanism to come up with a unique data delimiter. This results in differences
 in the raw body content and the `Content-Length` header.
+
+# MISSING FUNCTIONALITY
+
+- Cookie files
+
+    Curl cookie files are neither read nor written
+
+- File uploads / content from files
+
+    Neither file uploads nor reading POST data from files is supported

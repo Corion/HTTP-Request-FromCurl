@@ -31,6 +31,10 @@ HTTP::Request::FromCurl - create a HTTP::Request from a curl command line
         command_curl => 'curl -A mycurl/1.0 https://example.com',
     );
 
+    my @requests = HTTP::Request::FromCurl->new(
+        command_curl => 'curl -A mycurl/1.0 https://example.com https://www.example.com',
+    );
+
 =cut
 
 our %default_headers = (
@@ -51,6 +55,9 @@ our %default_headers = (
         # Note - curl itself may not appear
         command => '--agent myscript/1.0 https://example.com',
     );
+
+If the command generates multiple requests, they will be returned in list
+context. In scalar context, the first request will be returned.
 
 =cut
 
