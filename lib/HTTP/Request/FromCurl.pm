@@ -10,6 +10,8 @@ use Filter::signatures;
 use feature 'signatures';
 no warnings 'experimental::signatures';
 
+our $VERSION = '0.01';
+
 =head1 NAME
 
 HTTP::Request::FromCurl - create a HTTP::Request from a curl command_line
