@@ -21,6 +21,8 @@ my @tests = (
     { cmd => [ '--verbose', '-s', '-H', 'Host: example.com', '$url' ] },
     { name => 'Multiple headers',
       cmd => [ '--verbose', '-s', '-H', 'Host: example.com', '-H','X-Example: foo', '$url' ] },
+    { name => 'Duplicated header',
+      cmd => [ '--verbose', '-s', '-H', 'X-Host: example.com', '-H','X-Host: www.example.com', '$url' ] },
     { name => 'Form parameters',
       ignore => [ 'Content-Length', 'Content-Type' ],
       cmd => [ '--verbose', '-s', '$url', '--get', '-F', 'name=Foo', '-F','version=1' ] },
@@ -31,6 +33,7 @@ my @tests = (
     { cmd => [ '--verbose', '-s', '$url', '-d', '{name:cool_event}' ] },
     { cmd => [ '--verbose', '-s', '--oauth2-bearer','someWeirdStuff', '$url' ],
       version => '007061000',
+    },
 );
 
 sub curl( @args ) {
