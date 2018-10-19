@@ -2,14 +2,13 @@
 use strict;
 use warnings;
 
-use HTTP::Request::FromUrl;
-use Data::Dumper;
+use HTTP::Request::FromCurl;
 
 my $request = HTTP::Request::FromUrl->new(
     command_line => [ @ARGV ],
 );
 
-print Dumper $request;
+# print Dumper $request;
 
 my $template = do { local $/; <DATA> };
 
