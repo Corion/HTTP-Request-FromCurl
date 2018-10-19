@@ -24,7 +24,11 @@ HTTP::Request::FromCurl - create a HTTP::Request from a curl command line
     );
 
     my $req = HTTP::Request::FromCurl->new(
-        command => 'curl https://example.com',
+        command => 'https://example.com',
+    );
+
+    my $req = HTTP::Request::FromCurl->new(
+        command_curl => 'curl -A mycurl/1.0 https://example.com',
     );
 
 =cut
@@ -34,8 +38,36 @@ our %default_headers = (
     'User-Agent' => 'curl/7.55.1',
 );
 
+=head1 METHODS
+
+=head2 C<< ->new >>
+
+    my $req = HTTP::Request::FromCurl->new(
+        # Note - curl itself may not appear
+        argv => ['--agent', 'myscript/1.0', 'https://example.com'],
+    );
+
+    my $req = HTTP::Request::FromCurl->new(
+        # Note - curl itself may not appear
+        command => '--agent myscript/1.0 https://example.com',
+    );
+
+=cut
+
 sub new( $class, %options ) {
     my $cmd = $options{ argv };
+
+    if( $options{ command }) {
+        require Text::ParseWords;
+        $cmd = [ Text::ParseWords::shellwords($options{ command }) ];
+
+    } elsif( $options{ command_curl }) {
+        require Text::ParseWords;
+        $cmd = [ Text::ParseWords::shellwords($options{ command_curl }) ];
+
+        # remove the implicit curl command:
+        shift @$cmd;
+    };
 
     GetOptionsFromArray( $cmd,
         'v|verbose'       => \my $verbose,
