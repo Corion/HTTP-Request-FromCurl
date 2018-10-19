@@ -27,37 +27,56 @@ HTTP::Request::FromCurl - create a HTTP::Request from a curl command_line
 =cut
 
 sub new( $class, %options ) {
-    #my $cmd = $options{ command_line };
-    
     my $cmd = $options{ argv };
     
     GetOptionsFromArray( $cmd,
-        'v|verbose'    => \my $verbose,
-        's'            => \my $silent,
-        'c|cookie-jar=s' => \my $cookie_jar, # ignored
-        'd|data=s'     => \my @post_data,    # ignored
-        'e|referrer=s' => \my $referrer,
-        'F|form=s'     => \my @form_args,    # ignored
-        'G|get'        => \my $get,
-        'H|header=s'   => \my @headers,
-        'I|head'       => \my $head,
+        'v|verbose'       => \my $verbose,
+        's'               => \my $silent,
+        'c|cookie-jar=s'  => \my $cookie_jar, # ignored
+        'd|data=s'        => \my @post_data,    # ignored
+        'e|referrer=s'    => \my $referrer,
+        'F|form=s'        => \my @form_args,    # ignored
+        'G|get'           => \my $get,
+        'H|header=s'      => \my @headers,
+        'I|head'          => \my $head,
         'X|request=s'     => \my $method,
+        'oauth2-bearer=s' => \my $oauth2_bearer,
     ) or return;
     
-    if( $get ) {
+    my ($uri) = @$cmd;
+    my $body;
+    $uri = URI->new( $uri );
+ 
+    if( @form_args ) {
+        $method = 'POST';
+        push @headers, 'Content-Type: application/x-www-encoded';
+        my $uri = URI->new('https://example.com');
+        $uri->query_form( map { /^([^=])+=(.*)$/ ? ($1 => $2) : () } @form_args );
+        $body = $uri->query;
+        
+    } elsif( $get ) {
         $method = 'GET';
         # Also, append the POST data to the URL
+        if( @post_data ) {
+            my $q = $uri->query;
+            if( defined $q and length $q ) {
+                $q .= "&";
+            } else {
+                $q = join "", @post_data;
+            };
+            $uri->query( $q );
+        };
+        
     } elsif( $head ) {
         $method = 'HEAD';
     } else {
         $method ||= 'GET';
     };
-    
-    my ($uri) = @$cmd;
-    my $body = undef;
-    
-    $uri = URI->new( $uri );
- 
+
+    if( defined $body ) {    
+        push @headers, sprintf 'Content-Length: %d', length $body;
+    };
+        
     my %headers = (
         'Accept' => '*/*',
         'Host' => $uri->host_port,

@@ -18,6 +18,12 @@ my @tests = (
     { cmd => [ '--verbose', '-s', '-X', 'PATCH', '"$url"' ] },
     { cmd => [ '--verbose', '-s', '--head', '"$url"' ] },
     { cmd => [ '--verbose', '-s', '-H', 'Host: example.com', '"$url"' ] },
+    { name => 'Form parameters',
+      cmd => [ '--verbose', '-s', '"$url"', '--get', '-F', 'name=Foo', '-F','version=1' ] },
+    { cmd => [ '--verbose', '-s', '"$url"', '--get', '-d', '{"name":"cool event"}' ] },
+    { cmd => [ '--verbose', '-s', '"$url?foo=bar"', '--get', '-d', '{"name":"cool event"}' ] },
+    { cmd => [ '--verbose', '-s', '"$url"', '-d', '{"name":"cool event"}' ] },
+    { cmd => [ '--verbose', '-s', '--oauth2-bearer','someWeirdStuff', '"$url"' ] },
 );
 
 sub curl( @args ) {
@@ -41,12 +47,13 @@ sub curl_request( @args ) {
     
         # Let's ignore duplicate headers and the order:
         my @sent = grep {/^> /} split /\r?\n/, $stderr;
-        if( !($sent[0] =~ /^> ([A-Z]+) (.*?)$/)) {
+        if( !($sent[0] =~ /^> ([A-Z]+) (.*?) ([A-Z].*?)$/)) {
             $res{ error } = "Couldn't find a method in curl output '$sent[0]'";
         };
         shift @sent;
         $res{ method } = $1;
         $res{ path } = $2;
+        $res{ protocol } = $3;
         
         $res{ headers } = { map { /^> ([^:]+)\s*:\s*([^\r\n]*)$/ ? ($1 => $2) : () } @sent };
         $res{ response_body } = $stdout;
@@ -82,12 +89,18 @@ sub request_identical_ok {
         argv => $cmd
     );
     
+    my $name = $test->{name} || (join " ", @{ $test->{cmd}});
     my $status;
     if( $r->method ne $res->{method} ) {
-        is $r->method, $res->{method}, $test->{name};
+        is $r->method, $res->{method}, $name;
         return;
     };
-    is_deeply +{ $r->headers->flatten }, $res->{headers}, $test->{name};
+
+    if( $r->uri->path_query ne $res->{path} ) {
+        is $r->uri->path_query, $res->{path}, $name;
+        return;
+    };
+    is_deeply +{ $r->headers->flatten }, $res->{headers}, $name;
 };
 
 plan tests => 0+@tests;
