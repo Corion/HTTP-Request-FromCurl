@@ -2,12 +2,6 @@
 [![Travis Build Status](https://travis-ci.org/Corion/HTTP-Request-FromCurl.svg?branch=master)](https://travis-ci.org/Corion/HTTP-Request-FromCurl)
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/Corion/HTTP-Request-FromCurl?branch=master&svg=true)](https://ci.appveyor.com/project/Corion/HTTP-Request-FromCurl)
 
-CONTRIBUTING
-
-See lib/WWW/Mechanize/Chrome/Contributing.pod
-
-[Google Keep Extraction](https://github.com/Corion/WWW-Mechanize-Chrome/raw/master/demo/keep-export-demo.mp4)
-
 # NAME
 
 HTTP::Request::FromCurl - create a HTTP::Request from a curl command line
