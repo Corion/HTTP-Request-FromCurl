@@ -12,6 +12,7 @@ use feature 'signatures';
 no warnings 'experimental::signatures';
 
 my $server = Test::HTTP::LocalServer->spawn();
+END { undef $server } # for orderly cleanup
 my $curl = 'curl';
 
 my @tests = (
