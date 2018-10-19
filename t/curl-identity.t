@@ -107,15 +107,23 @@ sub request_identical_ok {
     my $status;
     if( $r->method ne $res->{method} ) {
         is $r->method, $res->{method}, $name;
-        diag join " ", @$cmd;
+        diag join " ", @{ $test->{cmd} };
         return;
     };
 
     if( url_decode($r->uri->path_query) ne $res->{path} ) {
         is url_decode($r->uri->path_query), $res->{path}, $name;
-        diag join " ", @$cmd;
+        diag join " ", @{ $test->{cmd} };
         return;
     };
+
+    # There is no convenient way to get at the form data from curl
+    #if( $r->content ne $res->{body} ) {
+    #    is $r->content, $res->{body}, $name;
+    #    diag join " ", @{ $test->{cmd} };
+    #    return;
+    #};
+
     is_deeply +{ $r->headers->flatten }, $res->{headers}, $name;
 
     # Now create a program from the request, run it and check that it still
