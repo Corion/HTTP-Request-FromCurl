@@ -20,6 +20,7 @@ my @tests = (
 );
 
 sub curl( @args ) {
+    diag join " ", $curl, @args;
     my ($stdout, $stderr, $exit) = capture {
         system( $curl, @args );
     };
