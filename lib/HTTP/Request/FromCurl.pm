@@ -98,6 +98,10 @@ sub new( $class, %options ) {
         push @headers, sprintf 'Content-Length: %d', length $body;
     };
 
+    if( defined $oauth2_bearer ) {
+        push @headers, sprintf 'Authorization: Bearer %s', $oauth2_bearer;
+    };
+
     my %headers = (
         %default_headers,
         'Host' => $uri->host_port,
