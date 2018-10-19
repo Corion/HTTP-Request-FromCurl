@@ -25,7 +25,9 @@ my @tests = (
       cmd => [ '--verbose', '-s', '-H', 'X-Host: example.com', '-H','X-Host: www.example.com', '$url' ] },
     { name => 'Form parameters',
       ignore => [ 'Content-Length', 'Content-Type' ],
-      cmd => [ '--verbose', '-s', '$url', '--get', '-F', 'name=Foo', '-F','version=1' ] },
+      cmd => [ '--verbose', '-s', '$url', '--get', '-F', 'name=Foo', '-F','version=1' ],
+      version => '007061000', # earlier versions send an Expect: 100-continue header
+      },
     { name => 'Append GET data',
       cmd => [ '--verbose', '-s', '$url', '--get', '-d', '{name:cool_event}' ] },
     { name => 'Append GET data to existing query',
