@@ -16,7 +16,7 @@ END { undef $server } # for orderly cleanup
 my $curl = 'curl';
 
 my @tests = (
-    { cmd => [ '--verbose', '-s', '$url', '$url?foo=bar', ] },
+    { cmd => [ '--verbose', '-s', '$url', '$url', ]}, #'$url?foo=bar', ] },
 );
 
 sub curl( @args ) {
