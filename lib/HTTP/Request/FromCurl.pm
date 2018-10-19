@@ -26,6 +26,11 @@ HTTP::Request::FromCurl - create a HTTP::Request from a curl command_line
 
 =cut
 
+our %default_headers = (
+    'Accept' => '*/*',
+    'User-Agent' => 'curl/7.55.1',
+);
+
 sub new( $class, %options ) {
     my $cmd = $options{ argv };
 
@@ -88,9 +93,8 @@ sub new( $class, %options ) {
     };
 
     my %headers = (
-        'Accept' => '*/*',
+        %default_headers,
         'Host' => $uri->host_port,
-        'User-Agent' => 'curl/7.55.1',
         (map { /^\s*([^:\s]+)\s*:\s*(.*)$/ ? ($1 => $2) : () } @headers),
     );
 
