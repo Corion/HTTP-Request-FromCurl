@@ -55,6 +55,7 @@ our %default_headers = (
 =cut
 
 our @option_spec = (
+    'agent|A=s',
     'verbose|v',
     'silent|s',
     #'c|cookie-jar=s',   # ignored
@@ -157,6 +158,10 @@ sub _build_request( $self, $uri, $options ) {
 
     if( defined $options->{ referrer }) {
         $headers{ Referer } = $options->{ 'referrer' };
+    };
+
+    if( defined $options->{ agent }) {
+        $headers{ 'User-Agent' } = $options->{ 'agent' };
     };
 
     HTTP::Request->new(

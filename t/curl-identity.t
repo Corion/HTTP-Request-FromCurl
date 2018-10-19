@@ -33,7 +33,8 @@ my @tests = (
     { name => 'Append GET data to existing query',
       cmd => [ '--verbose', '-s', '$url?foo=bar', '--get', '-d', '{name:cool_event}' ] },
     { cmd => [ '--verbose', '-s', '$url', '-d', '{name:cool_event}' ] },
-    { cmd => [ '--verbose', '-s', '--oauth2-bearer','someWeirdStuff', '$url' ],
+    { cmd => [ '--verbose', '-s', '--oauth2-bearer','someWeirdStuff', '$url' ] },
+    { cmd => [ '--verbose', '-s', '-A', 'www::mechanize/1.0', '$url' ],
       version => '007061000',
     },
 );
