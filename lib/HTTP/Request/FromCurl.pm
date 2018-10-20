@@ -118,11 +118,13 @@ sub new( $class, %options ) {
 
 sub squash_uri( $class, $uri ) {
     my $u = $uri->clone;
-    my @s = grep { $_ ne '.' } $u->path_segments;
+    my @s = $u->path_segments;
 
-    if( $s[-1] and $s[-1] eq '..' ) {
+    if( $s[-1] and ($s[-1] eq '..' or $s[-1] eq '.' ) ) {
         push @s, '';
     };
+
+    @s = grep { $_ ne '.' } @s;
 
     # While we find a pair ( "foo", ".." ) remove that pair
     while( grep { $_ eq '..' } @s ) {
