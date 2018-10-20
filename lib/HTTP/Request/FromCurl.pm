@@ -5,6 +5,7 @@ use HTTP::Request;
 use HTTP::Request::Common;
 use URI;
 use Getopt::Long 'GetOptionsFromArray';
+use File::Spec::Unix;
 
 use Filter::signatures;
 use feature 'signatures';
@@ -84,6 +85,7 @@ our @option_spec = (
     'get|G',
     'header|H=s@',
     'head|I',
+    'no-keepalive',
     'request|X=s',
     'oauth2-bearer=s',
 );
@@ -112,7 +114,34 @@ sub new( $class, %options ) {
         wantarray ? map { $class->_build_request( $_, \%curl_options ) } @$cmd
                   :       $class->_build_request( $cmd->[0], \%curl_options )
                   ;
-    my ($uri) = @$cmd;
+}
+
+sub squash_uri( $class, $uri ) {
+    my $u = $uri->clone;
+    my @s = grep { $_ ne '.' } $u->path_segments;
+
+    if( $s[-1] and $s[-1] eq '..' ) {
+        push @s, '';
+    };
+
+    # While we find a pair ( "foo", ".." ) remove that pair
+    while( grep { $_ eq '..' } @s ) {
+        my $i = 0;
+        while( $i < $#s ) {
+            if( $s[$i] ne '..' and $s[$i+1] eq '..') {
+                splice @s, $i, 2;
+            } else {
+                $i++
+            };
+        };
+    };
+
+    if( @s < 2 ) {
+        @s = ('','');
+    };
+
+    $u->path_segments( @s );
+    return $u
 }
 
 sub _build_request( $self, $uri, $options ) {
@@ -123,6 +152,8 @@ sub _build_request( $self, $uri, $options ) {
     my $method = $options->{request};
     my @post_data = @{ $options->{data} || $options->{'data-binary'} || []};
     my @form_args = @{ $options->{form} || []};
+
+    $uri = $self->squash_uri( $uri );
 
     # Sluuuurp
     @post_data = map {
@@ -228,7 +259,39 @@ Curl cookie files are neither read nor written
 
 File uploads / content from files
 
-Neither file uploads nor reading POST data from files is supported
+While file uploads and reading POST data from files are supported, the content
+is slurped into memory completely. This can be problematic for large files
+and little available memory.
+
+=item *
+
+Sequence expansion
+
+Curl supports speficying sequences of URLs such as
+C< https://example.com/[1-100] > , which expands to
+C< https://example.com/1 >, C< https://example.com/2 > ...
+C< https://example.com/100 >
+
+This is not (yet) supported.
+
+=item *
+
+List expansion
+
+Curl supports speficying sequences of URLs such as
+C< https://{www,ftp}.example.com/ > , which expands to
+C< https://www.example.com/ >, C< https://ftp.example.com/ >.
+
+This is not (yet) supported.
+
+=item *
+
+Multiple sets of parameters from the command line
+
+Curl supports the C<< --next >> command line switch which resets
+parameters for the next URL.
+
+This is not (yet) supported.
 
 =back
 

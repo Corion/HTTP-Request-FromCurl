@@ -47,6 +47,10 @@ my @tests = (
     { cmd => [ '--verbose', '-s', '-A', 'www::mechanize/1.0', '$url' ],
     },
     { cmd => [ '--verbose', '-s', '--data-binary', '@$tempfile', '$url' ] },
+    { cmd => [ '--verbose', '-s', '$url' ] },
+
+    # Curl canonicalizes (HTTP) URLs by resolving "." and ".."
+    { cmd => [ '--verbose', '-s', '$url/foo/..' ] },
 );
 
 sub curl( @args ) {
