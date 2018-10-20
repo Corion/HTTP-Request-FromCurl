@@ -35,13 +35,6 @@ HTTP::Request::FromCurl - create a HTTP::Request from a curl command line
         command_curl => 'curl -A mycurl/1.0 https://example.com https://www.example.com',
     );
 
-=cut
-
-our %default_headers = (
-    'Accept' => '*/*',
-    'User-Agent' => 'curl/7.55.1',
-);
-
 =head1 METHODS
 
 =head2 C<< ->new >>
@@ -58,6 +51,24 @@ our %default_headers = (
 
 If the command generates multiple requests, they will be returned in list
 context. In scalar context, the first request will be returned.
+
+=head1 GLOBAL VARIABLES
+
+=head2 C<< %default_headers >>
+
+Contains the default headers added to every request
+
+=cut
+
+our %default_headers = (
+    'Accept' => '*/*',
+    'User-Agent' => 'curl/7.55.1',
+);
+
+=head2 C<< @option_spec >>
+
+Contains the L<Getopt::Long> specification of the recognized command line
+parameters
 
 =cut
 
