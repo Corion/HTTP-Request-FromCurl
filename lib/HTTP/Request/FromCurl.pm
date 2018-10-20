@@ -51,7 +51,7 @@ HTTP::Request::FromCurl - create a HTTP::Request from a curl command line
     );
 
 If the command generates multiple requests, they will be returned in list
-context. In scalar context, the first request will be returned.
+context. In scalar context, only the first request will be returned.
 
 =head2 C<< ->squash_uri( $uri ) >>
 
