@@ -53,6 +53,16 @@ HTTP::Request::FromCurl - create a HTTP::Request from a curl command line
 If the command generates multiple requests, they will be returned in list
 context. In scalar context, the first request will be returned.
 
+=head2 C<< ->squash_uri( $uri ) >>
+
+    my $uri = HTTP::Request::FromCurl->squash_uri(
+        URI->new( 'https://example.com/foo/bar/..' )
+    );
+    # https://example.com/foo/
+
+Helper method to clean up relative path elements from the URI the same way
+that curl does.
+    
 =head1 GLOBAL VARIABLES
 
 =head2 C<< %default_headers >>
@@ -118,31 +128,31 @@ sub new( $class, %options ) {
 
 sub squash_uri( $class, $uri ) {
     my $u = $uri->clone;
-    my @s = $u->path_segments;
+    my @segments = $u->path_segments;
 
-    if( $s[-1] and ($s[-1] eq '..' or $s[-1] eq '.' ) ) {
-        push @s, '';
+    if( $segments[-1] and ($segments[-1] eq '..' or $segments[-1] eq '.' ) ) {
+        push @segments, '';
     };
 
-    @s = grep { $_ ne '.' } @s;
+    @segments = grep { $_ ne '.' } @segments;
 
     # While we find a pair ( "foo", ".." ) remove that pair
-    while( grep { $_ eq '..' } @s ) {
+    while( grep { $_ eq '..' } @segments ) {
         my $i = 0;
-        while( $i < $#s ) {
-            if( $s[$i] ne '..' and $s[$i+1] eq '..') {
-                splice @s, $i, 2;
+        while( $i < $#segments ) {
+            if( $segments[$i] ne '..' and $segments[$i+1] eq '..') {
+                splice @segments, $i, 2;
             } else {
                 $i++
             };
         };
     };
 
-    if( @s < 2 ) {
-        @s = ('','');
+    if( @segments < 2 ) {
+        @segments = ('','');
     };
 
-    $u->path_segments( @s );
+    $u->path_segments( @segments );
     return $u
 }
 
