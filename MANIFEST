@@ -10,6 +10,7 @@ META.yml
 README
 README.mkdn
 scripts/curl2lwp.pl
+scripts/pcurl.pl
 t/00-load.t
 t/curl-identity.t
 t/curl-multi.t
