@@ -20,7 +20,6 @@ my @tests = (
 );
 
 sub curl( @args ) {
-    diag join " ", $curl, @args;
     my ($stdout, $stderr, $exit) = capture {
         system( $curl, @args );
     };
@@ -39,7 +38,6 @@ sub curl_request( @args ) {
     
     if( ! $exit ) {
         my @requests = grep { /^> /m } split /^\* .*$/m, $stderr;
-        diag Dumper \@requests;
         for my $stderr (@requests) {
             my %res;
 
