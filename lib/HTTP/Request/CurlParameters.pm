@@ -1,0 +1,215 @@
+package HTTP::Request::CurlParameters;
+use strict;
+use warnings;
+use HTTP::Request;
+use HTTP::Request::Common;
+use URI;
+use File::Spec::Unix;
+
+use Moo 2<
+use Filter::signatures;
+use feature 'signatures';
+no warnings 'experimental::signatures';
+
+our $VERSION = '0.01';
+
+=head1 NAME
+
+HTTP::Request::CurlParameters - container for a Curl-like HTTP request
+
+=head1 SYNOPSIS
+
+=head1 METHODS
+
+=head2 C<< ->new >>
+
+    my $req = HTTP::Request::FromCurl->new(
+        # Note - curl itself may not appear
+        argv => ['--agent', 'myscript/1.0', 'https://example.com'],
+    );
+
+    my $req = HTTP::Request::FromCurl->new(
+        # Note - curl itself may not appear
+        command => '--agent myscript/1.0 https://example.com',
+    );
+
+If the command generates multiple requests, they will be returned in list
+context. In scalar context, only the first request will be returned.
+
+Options:
+
+=cut
+
+has method => (
+    is => 'ro',
+    default => 'GET',
+);
+
+has uri => (
+    is => 'ro',
+    default => sub { [] },
+);
+
+has headers => (
+    is => 'ro',
+    default => sub { {} },
+);
+
+has post_data => (
+    is => 'ro',
+    default => sub { [] },
+);
+
+has form_args => (
+    is => 'ro',
+    default => sub { [] },
+);
+
+sub _build_body {
+    # Sluuuurp
+    @post_data = map {
+        /^\@(.*)/ ? do {
+                         open my $fh, '<', $1
+                             or die "$1: $!";
+                         local $/;
+                         binmode $fh;
+                         <$fh>
+                       }
+                  : $_
+    } @{ $self->post_data };
+};
+
+#    if( @form_args) {
+#        $method = 'POST';
+#
+#        my $req = HTTP::Request::Common::POST(
+#            'https://example.com',
+#            Content_Type => 'form-data',
+#            Content => [ map { /^([^=]+)=(.*)$/ ? ($1 => $2) : () } @form_args ],
+#        );
+#        $body = $req->content;
+#        unshift @headers, 'Content-Type: ' . join "; ", $req->headers->content_type;
+#
+#    } elsif( $options->{ get }) {
+#        $method = 'GET';
+#        # Also, append the POST data to the URL
+#        if( @post_data ) {
+#            my $q = $uri->query;
+#            if( defined $q and length $q ) {
+#                $q .= "&";
+#            } else {
+#                $q = "";
+#            };
+#            $q .= join "", @post_data;
+#            $uri->query( $q );
+#        };
+#
+#    } elsif( $options->{ head }) {
+#        $method = 'HEAD';
+#
+#    } elsif( @post_data ) {
+#        $method = 'POST';
+#        $body = join "", @post_data;
+#        unshift @headers, 'Content-Type: application/x-www-form-urlencoded';
+#
+#    } else {
+#        $method ||= 'GET';
+#    };
+
+#    if( defined $body ) {
+#        unshift @headers, sprintf 'Content-Length: %d', length $body;
+#    };
+
+#    my %headers = (
+#        %default_headers,
+#        'Host' => $uri->host_port,
+#        (map { /^\s*([^:\s]+)\s*:\s*(.*)$/ ? ($1 => $2) : () } @headers),
+#    );
+
+sub as_request( $self ) {
+    HTTP::Request->new(
+        $self->method => $self->uri,
+        $self->_build_headers,
+        $self->_build_body(),
+    )
+};
+
+sub _fill_snippet( $self, $snippet ) {
+    # Doesn't parse parameters, yet
+    $snippet =~ s!\$self->(\w+)!$self->$1!ge;
+    $snippet
+}
+
+sub as_snippet( $self ) {
+    return $self->_fill_snippet(<<'SNIPPET');
+    HTTP::Request->new(
+        $self->method => $self->uri,
+        $self->_build_headers,
+        $self->_build_body(),
+    )
+SNIPPET
+};
+
+1;
+
+=head1 KNOWN DIFFERENCES
+
+=head2 Different Content-Length for POST requests
+
+=head2 Different delimiter for form data
+
+The delimiter is built by L<HTTP::Message>, and C<curl> uses a different
+mechanism to come up with a unique data delimiter. This results in differences
+in the raw body content and the C<Content-Length> header.
+
+=head1 MISSING FUNCTIONALITY
+
+=over 4
+
+=item *
+
+Cookie files
+
+Curl cookie files are neither read nor written
+
+=item *
+
+File uploads / content from files
+
+While file uploads and reading POST data from files are supported, the content
+is slurped into memory completely. This can be problematic for large files
+and little available memory.
+
+=item *
+
+Sequence expansion
+
+Curl supports speficying sequences of URLs such as
+C< https://example.com/[1-100] > , which expands to
+C< https://example.com/1 >, C< https://example.com/2 > ...
+C< https://example.com/100 >
+
+This is not (yet) supported.
+
+=item *
+
+List expansion
+
+Curl supports speficying sequences of URLs such as
+C< https://{www,ftp}.example.com/ > , which expands to
+C< https://www.example.com/ >, C< https://ftp.example.com/ >.
+
+This is not (yet) supported.
+
+=item *
+
+Multiple sets of parameters from the command line
+
+Curl supports the C<< --next >> command line switch which resets
+parameters for the next URL.
+
+This is not (yet) supported.
+
+=back
+
+=cut
