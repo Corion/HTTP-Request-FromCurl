@@ -21,7 +21,9 @@ use HTTP::Request;
 use LWP::UserAgent;
 
 my $request = HTTP::Request->new(
-    __ARGS__
+    __METHOD__ => '__URL__',
+    {
+    },
 );
 
 $ua->request($request);
