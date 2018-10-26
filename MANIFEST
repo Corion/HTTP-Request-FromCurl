@@ -1,5 +1,6 @@
 .gitignore
 Changes
+lib/HTTP/Request/CurlParameters.pm
 lib/HTTP/Request/FromCurl.pm
 LICENSE
 Makefile.PL
