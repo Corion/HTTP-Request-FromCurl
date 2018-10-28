@@ -21,22 +21,13 @@ HTTP::Request::CurlParameters - container for a Curl-like HTTP request
 
 =head1 SYNOPSIS
 
+=head1 DESCRIPTION
+
+Objects of this class are mostly created from L<HTTP::Request::FromCurl>.
+
 =head1 METHODS
 
 =head2 C<< ->new >>
-
-    my $req = HTTP::Request::FromCurl->new(
-        # Note - curl itself may not appear
-        argv => ['--agent', 'myscript/1.0', 'https://example.com'],
-    );
-
-    my $req = HTTP::Request::FromCurl->new(
-        # Note - curl itself may not appear
-        command => '--agent myscript/1.0 https://example.com',
-    );
-
-If the command generates multiple requests, they will be returned in list
-context. In scalar context, only the first request will be returned.
 
 Options:
 
