@@ -52,6 +52,8 @@ my %module = (
         'HTTP::Request::Common' => 0,
         'URI'                   => 0,
         'URL::Encode'           => 0,
+        'List::Util'            => 0,
+        'PerlX::Maybe'          => 0,
     },
     TEST_REQUIRES => {
         'Test::More'    => 0,
