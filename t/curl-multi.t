@@ -132,7 +132,7 @@ sub request_identical_ok {
         #    return;
         #};
     
-        my %got = $r->headers->flatten;
+        my %got = %{ $r->headers };
         if( $test->{ignore} ) {
             delete @got{ @{ $test->{ignore}}};
             delete @{$res->{headers}}{ @{ $test->{ignore}}};

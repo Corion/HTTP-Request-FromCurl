@@ -92,6 +92,29 @@ sub curl_request( @args ) {
     \%res
 }
 
+sub compiles_ok( $code, $name ) {
+    my( $fh, $tempname ) = tempfile( UNLINK => 1 );
+    binmode $fh, ':raw';
+    print $fh $code;
+    close $fh;
+
+    my ($stdout, $stderr, $exit) = capture(sub {
+        system( $^X, '-Mblib', '-wc', $tempname );
+    });
+
+    if( $exit ) {
+        diag $stderr;
+        diag "Exit code: ", $exit;
+        fail($name);
+    } elsif( $stderr !~ /^\Q$tempname\E syntax OK\s*$/) {
+        diag $stderr;
+        diag $code;
+        fail($name);
+    } else {
+        pass($name);
+    };
+};
+
 my $version = curl_version( $curl );
 
 if( ! $version) {
@@ -150,7 +173,7 @@ sub request_identical_ok {
     #    return;
     #};
 
-    my %got = $r->headers->flatten;
+    my %got = %{ $r->headers };
     if( $test->{ignore} ) {
         delete @got{ @{ $test->{ignore}}};
         delete @{$res->{headers}}{ @{ $test->{ignore}}};
@@ -160,9 +183,12 @@ sub request_identical_ok {
 
     # Now create a program from the request, run it and check that it still
     # sends the same request as curl does
+
+    my $code = $r->as_snippet;
+    compiles_ok( $code, "$name snippet compiles OK");
 };
 
-plan tests => 0+@tests;
+plan tests => 0+@tests*2;
 
 for my $test ( @tests ) {
     request_identical_ok( $test );

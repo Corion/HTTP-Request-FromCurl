@@ -40,7 +40,28 @@ HTTP::Request::FromCurl - create a HTTP::Request from a curl command line
     );
 
 If the command generates multiple requests, they will be returned in list
-context. In scalar context, the first request will be returned.
+context. In scalar context, only the first request will be returned.
+
+## `->squash_uri( $uri )`
+
+    my $uri = HTTP::Request::FromCurl->squash_uri(
+        URI->new( 'https://example.com/foo/bar/..' )
+    );
+    # https://example.com/foo/
+
+Helper method to clean up relative path elements from the URI the same way
+that curl does.
+
+# GLOBAL VARIABLES
+
+## `%default_headers`
+
+Contains the default headers added to every request
+
+## `@option_spec`
+
+Contains the [Getopt::Long](https://metacpan.org/pod/Getopt::Long) specification of the recognized command line
+parameters
 
 # KNOWN DIFFERENCES
 
@@ -60,4 +81,30 @@ in the raw body content and the `Content-Length` header.
 
 - File uploads / content from files
 
-    Neither file uploads nor reading POST data from files is supported
+    While file uploads and reading POST data from files are supported, the content
+    is slurped into memory completely. This can be problematic for large files
+    and little available memory.
+
+- Sequence expansion
+
+    Curl supports speficying sequences of URLs such as
+    ` https://example.com/[1-100] ` , which expands to
+    ` https://example.com/1 `, ` https://example.com/2 ` ...
+    ` https://example.com/100 `
+
+    This is not (yet) supported.
+
+- List expansion
+
+    Curl supports speficying sequences of URLs such as
+    ` https://{www,ftp}.example.com/ ` , which expands to
+    ` https://www.example.com/ `, ` https://ftp.example.com/ `.
+
+    This is not (yet) supported.
+
+- Multiple sets of parameters from the command line
+
+    Curl supports the `--next` command line switch which resets
+    parameters for the next URL.
+
+    This is not (yet) supported.

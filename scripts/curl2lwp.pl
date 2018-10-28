@@ -4,26 +4,8 @@ use warnings;
 
 use HTTP::Request::FromCurl;
 
-my $request = HTTP::Request::FromUrl->new(
-    command_line => [ @ARGV ],
+my $request = HTTP::Request::FromCurl->new(
+    argv => [ @ARGV ],
 );
 
-# print Dumper $request;
-
-my $template = do { local $/; <DATA> };
-
-__DATA__
-#!perl
-use strict;
-use warnings;
-
-use HTTP::Request;
-use LWP::UserAgent;
-
-my $request = HTTP::Request->new(
-    __METHOD__ => '__URL__',
-    {
-    },
-);
-
-$ua->request($request);
+print $request->as_snippet( type => 'LWP' );

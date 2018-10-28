@@ -6,6 +6,8 @@ use HTTP::Request::Common;
 use URI;
 use Getopt::Long 'GetOptionsFromArray';
 use File::Spec::Unix;
+use HTTP::Request::CurlParameters;
+use PerlX::Maybe;
 
 use Filter::signatures;
 use feature 'signatures';
@@ -98,6 +100,7 @@ our @option_spec = (
     'no-keepalive',
     'request|X=s',
     'oauth2-bearer=s',
+    'output|o=s',
 );
 
 sub new( $class, %options ) {
@@ -238,11 +241,13 @@ sub _build_request( $self, $uri, $options ) {
         $headers{ 'User-Agent' } = $options->{ 'agent' };
     };
 
-    HTTP::Request->new(
-        $method => $uri,
-        HTTP::Headers->new( %headers ),
-        $body
-    )
+    HTTP::Request::CurlParameters->new({
+        method => $method,
+        uri    => $uri,
+        headers => \%headers,
+        body   => $body,
+        maybe output => $options->{ output },
+    });
 };
 
 1;

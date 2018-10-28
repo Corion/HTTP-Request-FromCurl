@@ -5,8 +5,10 @@ use HTTP::Request;
 use HTTP::Request::Common;
 use URI;
 use File::Spec::Unix;
+use List::Util 'pairmap';
+use PerlX::Maybe;
 
-use Moo 2<
+use Moo 2;
 use Filter::signatures;
 use feature 'signatures';
 no warnings 'experimental::signatures';
@@ -47,7 +49,7 @@ has method => (
 
 has uri => (
     is => 'ro',
-    default => sub { [] },
+    default => 'https://example.com',
 );
 
 has headers => (
@@ -65,9 +67,13 @@ has form_args => (
     default => sub { [] },
 );
 
-sub _build_body {
+has output => (
+    is => 'ro',
+);
+
+sub _build_body( $self ) {
     # Sluuuurp
-    @post_data = map {
+    my @post_data = map {
         /^\@(.*)/ ? do {
                          open my $fh, '<', $1
                              or die "$1: $!";
@@ -77,6 +83,7 @@ sub _build_body {
                        }
                   : $_
     } @{ $self->post_data };
+    join "", @post_data;
 };
 
 #    if( @form_args) {
@@ -129,7 +136,7 @@ sub _build_body {
 sub as_request( $self ) {
     HTTP::Request->new(
         $self->method => $self->uri,
-        $self->_build_headers,
+        [ %{ $self->headers } ],
         $self->_build_body(),
     )
 };
@@ -140,13 +147,34 @@ sub _fill_snippet( $self, $snippet ) {
     $snippet
 }
 
-sub as_snippet( $self ) {
-    return $self->_fill_snippet(<<'SNIPPET');
-    HTTP::Request->new(
-        $self->method => $self->uri,
-        $self->_build_headers,
-        $self->_build_body(),
-    )
+sub _pairlist( $self, $l, $prefix = "    " ) {
+    return join ",\n",
+        pairmap { qq{$prefix'$a' => '$b'} } @$l
+}
+
+sub _build_headers( $self, $prefix = "    " ) {
+    # This is so we create the standard header order in our output
+    my $h = HTTP::Headers->new( %{ $self->headers });
+    $self->_pairlist([ $h->flatten ], $prefix);
+}
+
+sub as_snippet( $self, %options ) {
+    my $request_args = join ", ",
+                                 '$r',
+                           $self->_pairlist([
+                               maybe ':content_file', $self->output
+                           ], '')
+                       ;
+    return <<SNIPPET;
+    my \$ua = WWW::Mechanize->new();
+    my \$r = HTTP::Request->new(
+        '@{[$self->method]}' => '@{[$self->uri]}',
+        [
+@{[$self->_build_headers('            ')]},
+        ],
+        @{[$self->_build_body()]}
+    );
+    my \$res = \$ua->request( $request_args );
 SNIPPET
 };
 
