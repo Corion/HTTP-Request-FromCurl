@@ -4,7 +4,7 @@ use warnings;
 use HTTP::Request;
 use HTTP::Request::Common;
 use URI;
-use Getopt::Long 'GetOptionsFromArray';
+use Getopt::Long;
 use File::Spec::Unix;
 use HTTP::Request::CurlParameters;
 use PerlX::Maybe;
@@ -129,7 +129,10 @@ sub new( $class, %options ) {
         shift @$cmd;
     };
 
-    GetOptionsFromArray( $cmd,
+    my $p = Getopt::Long::Parser->new(
+        config => [ 'no_ignore_case' ],
+    );
+    $p->getoptionsfromarray( $cmd,
         \my %curl_options,
         @option_spec,
     ) or return;
@@ -261,9 +264,10 @@ sub _build_request( $self, $uri, $options, %build_options ) {
         }
     };
 
+    my $host = $uri->can( 'host_port' ) ? $uri->host_port : "$uri";
     my %headers = (
         %default_headers,
-        'Host' => $uri->host_port,
+        'Host' => $host,
         (map { /^\s*([^:\s]+)\s*:\s*(.*)$/ ? ($1 => $2) : () } @headers),
     );
 
