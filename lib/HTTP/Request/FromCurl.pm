@@ -60,6 +60,11 @@ HTTP::Request::FromCurl - create a HTTP::Request from a curl command line
 If the command generates multiple requests, they will be returned in list
 context. In scalar context, only the first request will be returned.
 
+    my $req = HTTP::Request::FromCurl->new(
+        command => '--data-binary @/etc/passwd https://example.com',
+        read_files => 1,
+    );
+
 =head2 C<< ->squash_uri( $uri ) >>
 
     my $uri = HTTP::Request::FromCurl->squash_uri(
@@ -79,7 +84,7 @@ Contains the default headers added to every request
 =cut
 
 our %default_headers = (
-    'Accept' => '*/*',
+    'Accept'     => '*/*',
     'User-Agent' => 'curl/7.55.1',
 );
 
@@ -130,8 +135,8 @@ sub new( $class, %options ) {
     ) or return;
 
     return
-        wantarray ? map { $class->_build_request( $_, \%curl_options ) } @$cmd
-                  :       $class->_build_request( $cmd->[0], \%curl_options )
+        wantarray ? map { $class->_build_request( $_, \%curl_options, %options ) } @$cmd
+                  :       $class->_build_request( $cmd->[0], \%curl_options, %options )
                   ;
 }
 
@@ -165,7 +170,7 @@ sub squash_uri( $class, $uri ) {
     return $u
 }
 
-sub _build_request( $self, $uri, $options ) {
+sub _build_request( $self, $uri, $options, %build_options ) {
     my $body;
     $uri = URI->new( $uri );
 
@@ -177,16 +182,23 @@ sub _build_request( $self, $uri, $options ) {
     $uri = $self->squash_uri( $uri );
 
     # Sluuuurp
-    @post_data = map {
-        /^\@(.*)/ ? do {
-                         open my $fh, '<', $1
-                             or die "$1: $!";
-                         local $/;
-                         binmode $fh;
-                         <$fh>
-                       }
-                  : $_
-    } @post_data;
+    if( $build_options{ read_files }) {
+        @post_data = map {
+            /^\@(.*)/ ? do {
+                             open my $fh, '<', $1
+                                 or die "$1: $!";
+                             local $/;
+                             binmode $fh;
+                             <$fh>
+                           }
+                      : $_
+        } @post_data;
+    } else {
+        @post_data = map {
+            /^\@(.*)/ ? "... contents of $1 ..."
+                      : $_
+        } @post_data;
+    };
 
     if( @form_args) {
         $method = 'POST';

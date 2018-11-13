@@ -19,6 +19,7 @@ if( $outfilename ) {
 # now execute all requests
 my @requests = HTTP::Request::FromCurl->new(
     argv => \@ARGV,
+    read_files => 1,
 );
 
 my $ua = LWP::UserAgent->new();

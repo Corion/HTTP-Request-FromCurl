@@ -156,7 +156,8 @@ sub request_identical_ok {
     };
 
     my $r = HTTP::Request::FromCurl->new(
-        argv => $cmd
+        argv => $cmd,
+        read_files => 1,
     );
 
     my $name = $test->{name} || (join " ", @{ $test->{cmd}});
