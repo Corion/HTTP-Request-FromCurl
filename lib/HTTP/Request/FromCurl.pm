@@ -38,6 +38,10 @@ HTTP::Request::FromCurl - create a HTTP::Request from a curl command line
     my @requests = HTTP::Request::FromCurl->new(
         command_curl => 'curl -A mycurl/1.0 https://example.com https://www.example.com',
     );
+    # Send the requests
+    for my $r (@requests) {
+        $ua->request( $r )
+    }
 
 =head1 METHODS
 

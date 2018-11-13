@@ -25,5 +25,5 @@ my $ua = LWP::UserAgent->new();
 
 for my $request (@requests) {
 print 
-    $ua->request( $request, @output_options )->code;
+    $ua->request( $request->as_request, @output_options )->code;
 };

@@ -142,6 +142,14 @@ sub _build_body( $self ) {
 #        (map { /^\s*([^:\s]+)\s*:\s*(.*)$/ ? ($1 => $2) : () } @headers),
 #    );
 
+=head2 C<< ->as_request >>
+
+    $ua->request( $r->as_request );
+
+Returns an equivalent L<HTTP::Request> object
+
+=cut
+
 sub as_request( $self ) {
     HTTP::Request->new(
         $self->method => $self->uri,
@@ -166,6 +174,18 @@ sub _build_headers( $self, $prefix = "    " ) {
     my $h = HTTP::Headers->new( %{ $self->headers });
     $self->_pairlist([ $h->flatten ], $prefix);
 }
+
+=head2 C<< $r->as_snippet >>
+
+    print $r->as_snippet;
+
+Returns a code snippet that returns code to create an equivalent
+L<HTTP::Request> object and to perform the request using L<WWW::Mechanize>.
+
+This is mostly intended as a convenience function for creating Perl demo
+snippets from C<curl> examples.
+
+=cut
 
 sub as_snippet( $self, %options ) {
     my $request_args = join ", ",
