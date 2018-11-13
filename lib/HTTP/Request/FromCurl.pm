@@ -291,6 +291,10 @@ sub _build_request( $self, $uri, $options, %build_options ) {
 
 1;
 
+=head1 LIVE DEMO
+
+L<https://corion.net/curl2lwp.psgi>
+
 =head1 KNOWN DIFFERENCES
 
 =head2 Different Content-Length for POST requests

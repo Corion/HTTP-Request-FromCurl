@@ -46,6 +46,11 @@ HTTP::Request::FromCurl - create a HTTP::Request from a curl command line
 If the command generates multiple requests, they will be returned in list
 context. In scalar context, only the first request will be returned.
 
+    my $req = HTTP::Request::FromCurl->new(
+        command => '--data-binary @/etc/passwd https://example.com',
+        read_files => 1,
+    );
+
 ## `->squash_uri( $uri )`
 
     my $uri = HTTP::Request::FromCurl->squash_uri(
@@ -66,6 +71,10 @@ Contains the default headers added to every request
 
 Contains the [Getopt::Long](https://metacpan.org/pod/Getopt::Long) specification of the recognized command line
 parameters
+
+# LIVE DEMO
+
+[https://corion.net/curl2lwp.psgi](https://corion.net/curl2lwp.psgi)
 
 # KNOWN DIFFERENCES
 
