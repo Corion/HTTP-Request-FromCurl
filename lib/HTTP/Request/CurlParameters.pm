@@ -48,6 +48,10 @@ has headers => (
     default => sub { {} },
 );
 
+has credentials => (
+    is => 'ro',
+);
+
 has post_data => (
     is => 'ro',
     default => sub { [] },
@@ -156,8 +160,15 @@ sub as_snippet( $self, %options ) {
                                maybe ':content_file', $self->output
                            ], '')
                        ;
+    my $setup_credentials = '';
+    if( defined( my $credentials = $self->credentials )) {
+        my( $user, $pass ) = split /:/, $credentials, 2;
+        $setup_credentials = sprintf q{\n    $ua->credentials("%s","%s");\n},
+            quotemeta $user,
+            quotemeta $pass;
+    };
     return <<SNIPPET;
-    my \$ua = WWW::Mechanize->new();
+    my \$ua = WWW::Mechanize->new();$setup_credentials
     my \$r = HTTP::Request->new(
         '@{[$self->method]}' => '@{[$self->uri]}',
         [

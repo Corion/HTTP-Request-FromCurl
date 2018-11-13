@@ -54,6 +54,7 @@ my %module = (
         'URL::Encode'           => 0,
         'List::Util'            => 0,
         'PerlX::Maybe'          => 0,
+        'MIME::Base64'          => 0,
     },
     TEST_REQUIRES => {
         'Test::More'    => 0,

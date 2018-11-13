@@ -51,6 +51,13 @@ my @tests = (
 
     # Curl canonicalizes (HTTP) URLs by resolving "." and ".."
     { cmd => [ '--verbose', '-s', '$url/foo/..' ] },
+
+    # perlmonks post xxx
+    { cmd => [ '--verbose', '-s',
+               '-X', 'POST',
+               '-u', "apikey:xxx",
+               '--header', "Content-Type: audio/flac",
+               '--data-binary', '@$tempfile', '$url' ], },
 );
 
 sub curl( @args ) {
@@ -75,7 +82,7 @@ sub curl_request( @args ) {
         # Let's ignore duplicate headers and the order:
         my @sent = grep {/^> /} split /\r?\n/, $stderr;
         if( !($sent[0] =~ /^> ([A-Z]+) (.*?) ([A-Z].*?)$/)) {
-            $res{ error } = "Couldn't find a method in curl output '$sent[0]'";
+            $res{ error } = "Couldn't find a method in curl output '$sent[0]'. STDERR is $stderr";
         };
         shift @sent;
         $res{ method } = $1;
@@ -185,7 +192,8 @@ sub request_identical_ok {
     # sends the same request as curl does
 
     my $code = $r->as_snippet;
-    compiles_ok( $code, "$name snippet compiles OK");
+    compiles_ok( $code, "$name snippet compiles OK")
+        or diag $code;
 };
 
 plan tests => 0+@tests*2;

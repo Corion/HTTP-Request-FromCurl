@@ -8,6 +8,7 @@ use Getopt::Long 'GetOptionsFromArray';
 use File::Spec::Unix;
 use HTTP::Request::CurlParameters;
 use PerlX::Maybe;
+use MIME::Base64 'encode_base64';
 
 use Filter::signatures;
 use feature 'signatures';
@@ -101,6 +102,7 @@ our @option_spec = (
     'request|X=s',
     'oauth2-bearer=s',
     'output|o=s',
+    'user|u=s',
 );
 
 sub new( $class, %options ) {
@@ -227,6 +229,22 @@ sub _build_request( $self, $uri, $options ) {
         push @headers, sprintf 'Authorization: Bearer %s', $options->{'oauth2-bearer'};
     };
 
+    if( $options->{ 'user' } ) {
+        if(    $options->{anyauth}
+            || $options->{ntlm}
+            || $options->{negotiate}
+            ) {
+            # Nothing to do here, just let LWP::UserAgent do its thing
+            # This means one additional request to fetch the appropriate
+            # 401 response asking for credentials, but ...
+        } else {
+            # $options->{basic} or none at all
+            my $info = delete $options->{'user'};
+            # We need to bake this into the header here?!
+            push @headers, sprintf 'Authorization: Basic %s', encode_base64( $info );
+        }
+    };
+
     my %headers = (
         %default_headers,
         'Host' => $uri->host_port,
@@ -246,6 +264,7 @@ sub _build_request( $self, $uri, $options ) {
         uri    => $uri,
         headers => \%headers,
         body   => $body,
+        maybe credentials => $options->{ user },
         maybe output => $options->{ output },
     });
 };
