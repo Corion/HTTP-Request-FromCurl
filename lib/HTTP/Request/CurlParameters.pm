@@ -57,6 +57,10 @@ has post_data => (
     default => sub { [] },
 );
 
+has body => (
+    is => 'ro',
+);
+
 has form_args => (
     is => 'ro',
     default => sub { [] },
@@ -67,18 +71,28 @@ has output => (
 );
 
 sub _build_body( $self ) {
-    # Sluuuurp
-    my @post_data = map {
-        /^\@(.*)/ ? do {
-                         open my $fh, '<', $1
-                             or die "$1: $!";
-                         local $/;
-                         binmode $fh;
-                         <$fh>
-                       }
-                  : $_
-    } @{ $self->post_data };
-    join "", @post_data;
+    if( my $body = $self->body ) {
+        $body = quotemeta $body;
+        # Convert some escapes to something nicer:
+        $body =~ s!\\\n!\\n!g;
+        $body =~ s!\\\r!\\r!g;
+        $body =~ s!\\\t!\\t!g;
+        return sprintf "'%s'", $body
+
+    } else {
+        # Sluuuurp
+        my @post_data = map {
+            /^\@(.*)/ ? do {
+                             open my $fh, '<', $1
+                                 or die "$1: $!";
+                             local $/;
+                             binmode $fh;
+                             <$fh>
+                           }
+                      : $_
+        } @{ $self->post_data };
+        return join "", @post_data;
+    }
 };
 
 #    if( @form_args) {
