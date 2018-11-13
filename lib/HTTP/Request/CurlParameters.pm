@@ -72,11 +72,7 @@ has output => (
 
 sub _build_body( $self ) {
     if( my $body = $self->body ) {
-        $body = quotemeta $body;
-        # Convert some escapes to something nicer:
-        $body =~ s!\\\n!\\n!g;
-        $body =~ s!\\\r!\\r!g;
-        $body =~ s!\\\t!\\t!g;
+        $body =~ s!([\x00-\x1f"'\\])!sprintf '\\x%02x', ord $1!ge;
         return sprintf "'%s'", $body
 
     } else {
