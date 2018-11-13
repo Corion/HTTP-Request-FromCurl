@@ -8,4 +8,9 @@ my $request = HTTP::Request::FromCurl->new(
     argv => [ @ARGV ],
 );
 
-print $request->as_snippet( type => 'LWP' );
+if( $request ) {
+    print $request->as_snippet( type => 'LWP' );
+} else {
+    # Getopt::Long has already printed the error message
+    exit 1;
+};
