@@ -85,7 +85,7 @@ sub _build_body( $self ) {
             /^\@(.*)/ ? do {
                              open my $fh, '<', $1
                                  or die "$1: $!";
-                             local $/;
+                             local $/; # / for Filter::Simple
                              binmode $fh;
                              <$fh>
                            }
