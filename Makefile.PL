@@ -52,7 +52,7 @@ my %module = (
         'HTTP::Request::Common' => 0,
         'URI'                   => 0,
         'URL::Encode'           => 0,
-        'List::Util'            => 0,
+        'List::Util'            => 1.29, # for pairmap
         'PerlX::Maybe'          => 0,
         'MIME::Base64'          => 0,
     },

@@ -36,6 +36,10 @@
             "Getopt::Long" : "2.38",
             "HTTP::Request" : "0",
             "HTTP::Request::Common" : "0",
+            "List::Util" : "1.29",
+            "MIME::Base64" : "0",
+            "Moo" : "2",
+            "PerlX::Maybe" : "0",
             "URI" : "0",
             "URL::Encode" : "0",
             "perl" : "5.008"
