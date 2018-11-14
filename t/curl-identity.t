@@ -48,6 +48,8 @@ my @tests = (
     },
     { cmd => [ '--verbose', '-s', '--data-binary', '@$tempfile', '$url' ] },
     { cmd => [ '--verbose', '-s', '$url' ] },
+    { cmd => [ '--verbose', '-s', '-i', '$url' ],
+      name => 'ignore --include option' },
 
     # Curl canonicalizes (HTTP) URLs by resolving "." and ".."
     { cmd => [ '--verbose', '-s', '$url/foo/..' ] },

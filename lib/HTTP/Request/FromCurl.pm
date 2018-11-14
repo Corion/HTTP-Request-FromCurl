@@ -106,6 +106,7 @@ our @option_spec = (
     'form|F=s@',
     'get|G',
     'header|H=s@',
+    'include|i',         # ignored
     'head|I',
     'no-keepalive',
     'request|X=s',
