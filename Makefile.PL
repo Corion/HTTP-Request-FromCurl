@@ -45,7 +45,6 @@ my %module = (
 
     PREREQ_PM => {
         'Getopt::Long'          => '2.38', # for GetOptionsFromArray
-
         'Filter::signatures'    => '0.09',
         'Moo'                   => '2',
         'HTTP::Request'         => 0,
@@ -60,6 +59,8 @@ my %module = (
         'Test::More'    => 0,
         'Data::Dumper'  => 0,
         'Capture::Tiny' => 0,
+        'WWW::Mechanize' => 0,
+        'LWP::UserAgent' => 0,
         'Test::HTTP::LocalServer' => 0.61, # we want the improved IPC
     },
 
