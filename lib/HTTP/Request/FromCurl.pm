@@ -100,6 +100,7 @@ our @option_spec = (
     'verbose|v',
     'silent|s',
     #'c|cookie-jar=s',   # ignored
+    'compressed',
     'data|d=s@',
     'data-binary=s@',
     'referrer|e=s',
@@ -278,6 +279,11 @@ sub _build_request( $self, $uri, $options, %build_options ) {
 
     if( defined $options->{ agent }) {
         $headers{ 'User-Agent' } = $options->{ 'agent' };
+    };
+
+    if( $options->{ compressed }) {
+        my $compressions = HTTP::Message::decodable();
+        $headers{ 'Accept-Encoding' } = $compressions;
     };
 
     HTTP::Request::CurlParameters->new({

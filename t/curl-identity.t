@@ -60,6 +60,11 @@ my @tests = (
                '-u', "apikey:xxx",
                '--header', "Content-Type: audio/flac",
                '--data-binary', '@$tempfile', '$url' ], },
+    { cmd => [ '--verbose', '-s', '--compressed', '$url' ],
+      ignore => ['Accept-Encoding'], # this somewhat defeats this test but at least
+      # we check we don't crash. Available compressions might differ between
+      # Curl and Compress::Zlib, so ...
+    },
 );
 
 sub curl( @args ) {
