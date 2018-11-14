@@ -57,8 +57,10 @@ HTTP::Request::FromCurl - create a HTTP::Request from a curl command line
         command => '--agent myscript/1.0 https://example.com',
     );
 
-If the command generates multiple requests, they will be returned in list
-context. In scalar context, only the first request will be returned.
+The constructor returns one or more L<HTTP::Request::CurlParameters> objects
+that encapsulate the parameters. If the command generates multiple requests,
+they will be returned in list context. In scalar context, only the first request
+will be returned.
 
     my $req = HTTP::Request::FromCurl->new(
         command => '--data-binary @/etc/passwd https://example.com',
