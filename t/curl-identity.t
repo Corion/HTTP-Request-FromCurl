@@ -65,6 +65,8 @@ my @tests = (
       # we check we don't crash. Available compressions might differ between
       # Curl and Compress::Zlib, so ...
     },
+    { cmd => [ '--verbose', '-s', '-d', q!{'content': '\u6d4b\u8bd5'}!, '$url' ],
+    },
 );
 
 sub curl( @args ) {
