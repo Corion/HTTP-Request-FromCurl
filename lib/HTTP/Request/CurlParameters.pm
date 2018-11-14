@@ -212,64 +212,32 @@ SNIPPET
 
 1;
 
-=head1 KNOWN DIFFERENCES
+=head1 REPOSITORY
 
-=head2 Different Content-Length for POST requests
+The public repository of this module is
+L<http://github.com/Corion/HTTP-Request-FromCurl>.
 
-=head2 Different delimiter for form data
+=head1 SUPPORT
 
-The delimiter is built by L<HTTP::Message>, and C<curl> uses a different
-mechanism to come up with a unique data delimiter. This results in differences
-in the raw body content and the C<Content-Length> header.
+The public support forum of this module is
+L<https://perlmonks.org/>.
 
-=head1 MISSING FUNCTIONALITY
+=head1 BUG TRACKER
 
-=over 4
+Please report bugs in this module via the RT CPAN bug queue at
+L<https://rt.cpan.org/Public/Dist/Display.html?Name=HTTP-Request-FromCurl>
+or via mail to L<filter-signatures-Bugs@rt.cpan.org>.
 
-=item *
+=head1 AUTHOR
 
-Cookie files
+Max Maischein C<corion@cpan.org>
 
-Curl cookie files are neither read nor written
+=head1 COPYRIGHT (c)
 
-=item *
+Copyright 2018 by Max Maischein C<corion@cpan.org>.
 
-File uploads / content from files
+=head1 LICENSE
 
-While file uploads and reading POST data from files are supported, the content
-is slurped into memory completely. This can be problematic for large files
-and little available memory.
-
-=item *
-
-Sequence expansion
-
-Curl supports speficying sequences of URLs such as
-C< https://example.com/[1-100] > , which expands to
-C< https://example.com/1 >, C< https://example.com/2 > ...
-C< https://example.com/100 >
-
-This is not (yet) supported.
-
-=item *
-
-List expansion
-
-Curl supports speficying sequences of URLs such as
-C< https://{www,ftp}.example.com/ > , which expands to
-C< https://www.example.com/ >, C< https://ftp.example.com/ >.
-
-This is not (yet) supported.
-
-=item *
-
-Multiple sets of parameters from the command line
-
-Curl supports the C<< --next >> command line switch which resets
-parameters for the next URL.
-
-This is not (yet) supported.
-
-=back
+This module is released under the same terms as Perl itself.
 
 =cut
