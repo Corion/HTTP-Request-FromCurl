@@ -31,6 +31,7 @@ before_install:
   - build-dist
   - cd $BUILD_DIR
   - cpan-install ExtUtils::MakeMaker~6.68
+  - cpan-install Perl::PrereqScanner::Lite
   - cpan-install --deps
 
 addons:
