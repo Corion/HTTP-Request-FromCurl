@@ -52,7 +52,9 @@ my @tests = (
       name => 'ignore --include option' },
 
     # Curl canonicalizes (HTTP) URLs by resolving "." and ".."
-    { cmd => [ '--verbose', '-s', '$url/foo/..' ] },
+    { cmd => [ '--verbose', '-s', '$url/foo/..' ]
+      version => '007061000', # At least 7.26 on Debian/wheezy and 7.29 on CentOS 7 fail to clean up the path
+    },
 
     # perlmonks post xxx
     { cmd => [ '--verbose', '-s',
