@@ -47,11 +47,11 @@ my %module = (
         'Getopt::Long'          => '2.38', # for GetOptionsFromArray
         'Filter::signatures'    => '0.09',
         'Moo'                   => '2',
-        'HTTP::Request'         => 0,
-        'HTTP::Request::Common' => 0,
+        'HTTP::Request'         => '6.07',
+        'HTTP::Request::Common' => '6.07',
         'URI'                   => 0,
         'URL::Encode'           => 0,
-        'List::Util'            => 1.29, # for pairmap
+        'List::Util'            => '1.29', # for pairmap
         'PerlX::Maybe'          => 0,
         'MIME::Base64'          => 0,
     },
