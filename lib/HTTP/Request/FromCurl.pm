@@ -40,7 +40,7 @@ HTTP::Request::FromCurl - create a HTTP::Request from a curl command line
     );
     # Send the requests
     for my $r (@requests) {
-        $ua->request( $r )
+        $ua->request( $r->as_request )
     }
 
 =head1 METHODS
