@@ -6,6 +6,8 @@ use Pod::Usage;
 
 use HTTP::Request::FromCurl;
 
+our $VERSION = '0.02';
+
 Getopt::Long::Configure('pass_through');
 GetOptions(
     'no-tidy' => \my $no_tidy,
