@@ -117,6 +117,7 @@ our @option_spec = (
     'request|X=s',
     'oauth2-bearer=s',
     'output|o=s',
+    'progress-bar|#',    # ignored
     'user|u=s',
 );
 
