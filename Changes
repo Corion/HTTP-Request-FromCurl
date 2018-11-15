@@ -1,5 +1,10 @@
-0.02 to be released
+0.02 2018-11-15
     * Support --compressed option
+    * Run output through HTML::Tidy if it is installed
+      Suggested by H Merijn Brand
+    * Test stability RT #127642, thanks to SREZIC
+    * Correct prerequisite versions RT 127644, thanks to SREZIC
+
 
 0.01 2018-11-14
     * Released on an unsuspecting world
