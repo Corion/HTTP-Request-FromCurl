@@ -39,6 +39,7 @@ my %module = (
     'LICENSE'=> 'perl',
 
     PL_FILES            => {},
+    EXE_FILES           => [glob 'script/*'],
     BUILD_REQUIRES => {
         'ExtUtils::MakeMaker' => 0,
     },
