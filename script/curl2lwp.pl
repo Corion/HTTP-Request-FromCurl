@@ -86,6 +86,10 @@ Include response in output (ignored)
 
 Issue a C<HEAD> request
 
+=item B<max-time>
+
+Set a timeout for the request
+
 =item B<no-keepalive>
 
 Don't send a keep-alive header (ignored)

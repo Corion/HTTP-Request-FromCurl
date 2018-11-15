@@ -111,6 +111,7 @@ our @option_spec = (
     'header|H=s@',
     'include|i',         # ignored
     'head|I',
+    'max-time|m=s',
     'no-keepalive',
     'request|X=s',
     'oauth2-bearer=s',
@@ -295,6 +296,7 @@ sub _build_request( $self, $uri, $options, %build_options ) {
         body   => $body,
         maybe credentials => $options->{ user },
         maybe output => $options->{ output },
+        maybe timeout => $options->{ 'max-time' },
     });
 };
 

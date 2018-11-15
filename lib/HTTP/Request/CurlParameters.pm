@@ -61,6 +61,10 @@ has body => (
     is => 'ro',
 );
 
+has timeout => (
+    is => 'ro',
+);
+
 has form_args => (
     is => 'ro',
     default => sub { [] },
@@ -190,6 +194,11 @@ sub as_snippet( $self, %options ) {
                                maybe ':content_file', $self->output
                            ], '')
                        ;
+    my $constructor_args = join ",",
+                           $self->_pairlist([
+                               maybe timeout => $self->timeout
+                           ], '')
+                           ;
     my $setup_credentials = '';
     if( defined( my $credentials = $self->credentials )) {
         my( $user, $pass ) = split /:/, $credentials, 2;
@@ -198,7 +207,7 @@ sub as_snippet( $self, %options ) {
             quotemeta $pass;
     };
     return <<SNIPPET;
-    my \$ua = WWW::Mechanize->new();$setup_credentials
+    my \$ua = WWW::Mechanize->new($constructor_args);$setup_credentials
     my \$r = HTTP::Request->new(
         '@{[$self->method]}' => '@{[$self->uri]}',
         [
