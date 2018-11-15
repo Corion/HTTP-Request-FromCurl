@@ -101,6 +101,12 @@ sub curl_request( @args ) {
         $res{ protocol } = $3;
 
         $res{ headers } = { map { /^> ([^:]+)\s*:\s*([^\r\n]*)$/ ? ($1 => $2) : () } @sent };
+
+        # Fix weirdo CentOS6 build of Curl which has a weirdo User-Agent header:
+        if( exists $res{ headers }->{ 'User-Agent' }) {
+            $res{ headers }->{ 'User-Agent' } =~ s!^(curl/7\.19\.7)\b.+!$1!;
+        };
+
         $res{ response_body } = $stdout;
     } else {
         diag $stderr;
