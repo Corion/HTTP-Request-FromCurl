@@ -90,7 +90,7 @@ Issue a C<HEAD> request
 
 Set a timeout for the request
 
-=item B<no-keepalive>
+=item B<keepalive> / B<no-keepalive>
 
 Don't send a keep-alive header (ignored)
 

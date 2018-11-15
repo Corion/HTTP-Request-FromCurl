@@ -102,6 +102,7 @@ our @option_spec = (
     'verbose|v',
     'silent|s',
     #'c|cookie-jar=s',   # ignored
+    'buffer!',
     'compressed',
     'data|d=s@',
     'data-binary=s@',
@@ -112,7 +113,7 @@ our @option_spec = (
     'include|i',         # ignored
     'head|I',
     'max-time|m=s',
-    'no-keepalive',
+    'keepalive!',
     'request|X=s',
     'oauth2-bearer=s',
     'output|o=s',
@@ -283,6 +284,13 @@ sub _build_request( $self, $uri, $options, %build_options ) {
     if( defined $options->{ agent }) {
         $headers{ 'User-Agent' } = $options->{ 'agent' };
     };
+
+    # Curl 7.61.0 ignores these:
+    #if( $options->{ keepalive }) {
+    #    $headers{ 'Keep-Alive' } = 1;
+    #} elsif( exists $options->{ keepalive }) {
+    #    $headers{ 'Keep-Alive' } = 0;
+    #};
 
     if( $options->{ compressed }) {
         my $compressions = HTTP::Message::decodable();
