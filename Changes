@@ -4,7 +4,8 @@
       Suggested by H Merijn Brand
     * Test stability RT #127642, thanks to SREZIC
     * Correct prerequisite versions RT 127644, thanks to SREZIC
-
+    * Test stability against weirdo Curl user agents (CentOS6)
+      reported by Slaven Rezic
 
 0.01 2018-11-14
     * Released on an unsuspecting world
