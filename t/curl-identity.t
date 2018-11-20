@@ -189,29 +189,26 @@ sub request_identical_ok {
     if( $r->method ne $res->{method} ) {
         is $r->method, $res->{method}, $name;
         diag join " ", @{ $test->{cmd} };
-        return;
-    };
-
-    if( url_decode($r->uri->path_query) ne $res->{path} ) {
+    } elsif( url_decode($r->uri->path_query) ne $res->{path} ) {
         is url_decode($r->uri->path_query), $res->{path}, $name;
         diag join " ", @{ $test->{cmd} };
-        return;
+    } else {
+
+        # There is no convenient way to get at the form data from curl
+        #if( $r->content ne $res->{body} ) {
+        #    is $r->content, $res->{body}, $name;
+        #    diag join " ", @{ $test->{cmd} };
+        #    return;
+        #};
+    
+        my %got = %{ $r->headers };
+        if( $test->{ignore} ) {
+            delete @got{ @{ $test->{ignore}}};
+            delete @{$res->{headers}}{ @{ $test->{ignore}}};
+        };
+    
+        is_deeply \%got, $res->{headers}, $name;
     };
-
-    # There is no convenient way to get at the form data from curl
-    #if( $r->content ne $res->{body} ) {
-    #    is $r->content, $res->{body}, $name;
-    #    diag join " ", @{ $test->{cmd} };
-    #    return;
-    #};
-
-    my %got = %{ $r->headers };
-    if( $test->{ignore} ) {
-        delete @got{ @{ $test->{ignore}}};
-        delete @{$res->{headers}}{ @{ $test->{ignore}}};
-    };
-
-    is_deeply \%got, $res->{headers}, $name;
 
     # Now create a program from the request, run it and check that it still
     # sends the same request as curl does
