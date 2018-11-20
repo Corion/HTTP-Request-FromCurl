@@ -162,6 +162,7 @@ sub request_identical_ok {
     local $TODO = "curl $test->{version} required, we have $cmp_version"
         if $test->{version} and $cmp_version < $test->{version};
 
+    my $name = $test->{name} || (join " ", @{ $test->{cmd}});
     my $cmd = [ @{ $test->{cmd} }];
 
     # Replace the dynamic parameters
@@ -181,7 +182,6 @@ sub request_identical_ok {
         read_files => 1,
     );
 
-    my $name = $test->{name} || (join " ", @{ $test->{cmd}});
     my $status;
     if( $r->method ne $res->{method} ) {
         is $r->method, $res->{method}, $name;
