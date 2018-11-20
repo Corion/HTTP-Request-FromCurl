@@ -174,6 +174,9 @@ sub request_identical_ok {
         fail $test->{name};
         diag join " ", @$cmd;
         diag $res->{error};
+        SKIP: {
+            skip "$name compiles ok", 1;
+        };
         return;
     };
 
