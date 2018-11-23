@@ -137,7 +137,7 @@ sub new( $class, %options ) {
     };
 
     my $p = Getopt::Long::Parser->new(
-        config => [ 'no_ignore_case' ],
+        config => [ 'bundling', 'no_auto_abbrev', 'no_ignore_case_always' ],
     );
     $p->getoptionsfromarray( $cmd,
         \my %curl_options,

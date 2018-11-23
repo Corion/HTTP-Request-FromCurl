@@ -25,6 +25,8 @@ END { unlink $tempfile; }
 my @tests = (
     { cmd => [ '--verbose', '-s', '$url' ] },
     { cmd => [ '--verbose', '-s', '-X', 'PATCH', '$url' ] },
+    { cmd => [ '--verbose', '-s', '-XPATCH', '$url' ],
+      name => 'short bundling options' },
     { cmd => [ '--verbose', '-s', '--head', '$url' ] },
     { cmd => [ '--verbose', '-s', '-H', 'Host: example.com', '$url' ] },
     { name => 'Multiple headers',
@@ -186,7 +188,10 @@ sub request_identical_ok {
     );
 
     my $status;
-    if( $r->method ne $res->{method} ) {
+    if( ! $r ) {
+        fail $name;
+
+    } elsif( $r->method ne $res->{method} ) {
         is $r->method, $res->{method}, $name;
         diag join " ", @{ $test->{cmd} };
     } elsif( url_decode($r->uri->path_query) ne $res->{path} ) {
@@ -213,9 +218,15 @@ sub request_identical_ok {
     # Now create a program from the request, run it and check that it still
     # sends the same request as curl does
 
-    my $code = $r->as_snippet;
-    compiles_ok( $code, "$name snippet compiles OK")
-        or diag $code;
+    if( $r ) {
+        my $code = $r->as_snippet;
+        compiles_ok( $code, "$name snippet compiles OK")
+            or diag $code;
+    } else {
+        SKIP: {
+            skip "Did not generate a request", 1;
+        };
+    };
 };
 
 plan tests => 0+@tests*2;
