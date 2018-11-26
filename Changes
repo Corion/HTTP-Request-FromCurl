@@ -1,3 +1,7 @@
+0.07 2018-11-26
+    * Fix broken code generation
+    * The requests worked but the generated code did not
+
 0.06 2018-11-26
     * Add support for --cookie option. This option doesn't read from a file
       though, but only supports literal cookies.
