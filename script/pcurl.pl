@@ -6,7 +6,7 @@ use HTTP::Request::FromCurl;
 use LWP::UserAgent;
 use Getopt::Long ':config','pass_through';
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 # parse output options from @ARGV
 GetOptions(

@@ -13,9 +13,9 @@ README.mkdn
 script/curl2lwp.pl
 script/pcurl.pl
 t/00-load.t
-t/curl-cookies.txt
 t/curl-identity.t
 t/curl-multi.t
+t/localserver-cookiejar.txt
 t/squash-url.t
 xt/99-changes.t
 xt/99-compile.t
