@@ -107,6 +107,7 @@ our @option_spec = (
     'cookie|b=s',
     'data|d=s@',
     'data-binary=s@',
+    'dump-header|D=s',   # ignored
     'referrer|e=s',
     'form|F=s@',
     'get|G',
