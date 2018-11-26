@@ -93,7 +93,23 @@ our %default_headers = (
 =head2 C<< @option_spec >>
 
 Contains the L<Getopt::Long> specification of the recognized command line
-parameters
+parameters.
+
+The following C<curl> options are recognized but ignored:
+
+=over 4
+
+=item C< --dump-header >
+
+=item C< --include >
+
+=item C< --progress-bar >
+
+=item C< --silent >
+
+=item C< --verbose >
+
+=back
 
 =cut
 
