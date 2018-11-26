@@ -1,3 +1,9 @@
+0.06 2018-11-26
+    * Add support for --cookie option. This option doesn't read from a file
+      though, but only supports literal cookies.
+    * Ignore --dump-header, document ignored options
+    * Tests for some other options
+
 0.05 2018-11-23
     * Fix -XPOST and other option-bundling commands
 
