@@ -132,6 +132,8 @@ in the raw body content and the `Content-Length` header.
 
 [LWP::CurlLog](https://metacpan.org/pod/LWP::CurlLog)
 
+[HTTP::Request::AsCurl](https://metacpan.org/pod/HTTP::Request::AsCurl) - for the inverse function
+
 # REPOSITORY
 
 The public repository of this module is

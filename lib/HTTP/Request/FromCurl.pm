@@ -383,6 +383,8 @@ L<LWP::Protocol::Net::Curl>
 
 L<LWP::CurlLog>
 
+L<HTTP::Request::AsCurl> - for the inverse function
+
 =head1 REPOSITORY
 
 The public repository of this module is
