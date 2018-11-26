@@ -75,6 +75,7 @@ my @tests = (
     },
     { cmd => [ '--verbose', '-s', '-d', q!{'content': '\u6d4b\u8bd5'}!, '$url' ],
     },
+    { cmd => [ '--verbose', '-s', '$url', '--user', 'Corion:secret' ] },
     { cmd => [ '--verbose', '-s', '$url', '--header', 'X-Test: test' ] },
     { cmd => [ '--verbose', '-s', '$url', '--request', 'TEST' ] },
     { cmd => [ '--verbose', '-s', '--cookie', 'cookie=nomnom', '$url', ] },
