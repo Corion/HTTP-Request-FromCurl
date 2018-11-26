@@ -76,7 +76,7 @@ will be returned.
 
 Helper method to clean up relative path elements from the URI the same way
 that curl does.
-    
+
 =head1 GLOBAL VARIABLES
 
 =head2 C<< %default_headers >>
@@ -117,10 +117,10 @@ our @option_spec = (
     'agent|A=s',
     'verbose|v',
     'silent|s',
-    #'c|cookie-jar=s',   # ignored
     'buffer!',
     'compressed',
     'cookie|b=s',
+    'cookie-jar|c=s',
     'data|d=s@',
     'data-binary=s@',
     'dump-header|D=s',   # ignored
@@ -300,8 +300,17 @@ sub _build_request( $self, $uri, $options, %build_options ) {
         $headers{ Referer } = $options->{ 'referrer' };
     };
 
-    if( defined $options->{ cookie }) {
-        $headers{ Cookie } = $options->{ 'cookie' };
+    if( defined $options->{ 'cookie-jar' }) {
+            $options->{'cookie-jar-options'}->{ 'write' } = 1;
+    };
+
+    if( defined( my $c = $options->{ cookie })) {
+        if( $c =~ /=/ ) {
+            $headers{ Cookie } = $options->{ 'cookie' };
+        } else {
+            $options->{'cookie-jar'} = $c;
+            $options->{'cookie-jar-options'}->{ 'read' } = 1;
+        };
     };
 
     if( defined $options->{ agent }) {
@@ -328,6 +337,8 @@ sub _build_request( $self, $uri, $options, %build_options ) {
         maybe credentials => $options->{ user },
         maybe output => $options->{ output },
         maybe timeout => $options->{ 'max-time' },
+        maybe cookie_jar => $options->{'cookie-jar'},
+        maybe cookie_jar_options => $options->{'cookie-jar-options'},
     });
 };
 
@@ -338,6 +349,12 @@ sub _build_request( $self, $uri, $options, %build_options ) {
 L<https://corion.net/curl2lwp.psgi>
 
 =head1 KNOWN DIFFERENCES
+
+=head2 Incompatible cookie jar formats
+
+Until somebody writes a robust Netscape cookie file parser and proper loading
+and storage for L<HTTP::CookieJar>, this module will not be able to load and
+save files in the format that Curl uses.
 
 =head2 Different Content-Length for POST requests
 
@@ -350,12 +367,6 @@ in the raw body content and the C<Content-Length> header.
 =head1 MISSING FUNCTIONALITY
 
 =over 4
-
-=item *
-
-Cookie files
-
-Curl cookie files are neither read nor written
 
 =item *
 

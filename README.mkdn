@@ -72,13 +72,27 @@ Contains the default headers added to every request
 ## `@option_spec`
 
 Contains the [Getopt::Long](https://metacpan.org/pod/Getopt::Long) specification of the recognized command line
-parameters
+parameters.
+
+The following `curl` options are recognized but ignored:
+
+- ` --dump-header `
+- ` --include `
+- ` --progress-bar `
+- ` --silent `
+- ` --verbose `
 
 # LIVE DEMO
 
 [https://corion.net/curl2lwp.psgi](https://corion.net/curl2lwp.psgi)
 
 # KNOWN DIFFERENCES
+
+## Incompatible cookie jar formats
+
+Until somebody writes a robust Netscape cookie file parser and proper loading
+and storage for [HTTP::CookieJar](https://metacpan.org/pod/HTTP::CookieJar), this module will not be able to load and
+save files in the format that Curl uses.
 
 ## Different Content-Length for POST requests
 
@@ -89,10 +103,6 @@ mechanism to come up with a unique data delimiter. This results in differences
 in the raw body content and the `Content-Length` header.
 
 # MISSING FUNCTIONALITY
-
-- Cookie files
-
-    Curl cookie files are neither read nor written
 
 - File uploads / content from files
 

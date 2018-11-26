@@ -48,6 +48,15 @@ has headers => (
     default => sub { {} },
 );
 
+has cookie_jar => (
+    is => 'ro',
+);
+
+has cookie_jar_options => (
+    is => 'ro',
+    default => sub { {} },
+);
+
 has credentials => (
     is => 'ro',
 );
@@ -164,6 +173,24 @@ sub _fill_snippet( $self, $snippet ) {
     $snippet
 }
 
+sub _init_cookie_jar( $self ) {
+    if( my $fn = $self->cookie_jar ) {
+        my $save = $self->cookie_jar_options->{'write'};
+        return {
+            preamble => [
+                'use Path::Tiny;',
+                'use HTTP::CookieJar;',
+            ],
+            code => [
+                "HTTP::CookieJar->new->load_cookies(path('$fn')->lines),"
+            ],
+            postamble => [
+                "path('$fn')->spew(\$ua->cookie_jar->dump_cookies())",
+            ],
+        };
+    }
+}
+
 sub _pairlist( $self, $l, $prefix = "    " ) {
     return join ",\n",
         pairmap { qq{$prefix'$a' => '$b'} } @$l
@@ -188,15 +215,24 @@ snippets from C<curl> examples.
 =cut
 
 sub as_snippet( $self, %options ) {
+    my @preamble;
+    push @preamble, @{ $options{ preamble } } if $options{ preamble };
+
     my $request_args = join ", ",
                                  '$r',
                            $self->_pairlist([
                                maybe ':content_file', $self->output
                            ], '')
                        ;
+    my $init_cookie_jar = $self->_init_cookie_jar();
+    if( my $p = $init_cookie_jar->{preamble}) {
+        push @preamble, @{$p}
+    };
+
     my $constructor_args = join ",",
                            $self->_pairlist([
-                               maybe timeout => $self->timeout
+                               maybe timeout => $self->timeout,
+                               maybe cookie_jar => $init_cookie_jar->{code},
                            ], '')
                            ;
     my $setup_credentials = '';
@@ -207,6 +243,7 @@ sub as_snippet( $self, %options ) {
             quotemeta $pass;
     };
     return <<SNIPPET;
+    @preamble
     my \$ua = WWW::Mechanize->new($constructor_args);$setup_credentials
     my \$r = HTTP::Request->new(
         '@{[$self->method]}' => '@{[$self->uri]}',
