@@ -77,6 +77,12 @@ my @tests = (
     },
     { cmd => [ '--verbose', '-s', '$url', '--header', 'X-Test: test' ] },
     { cmd => [ '--verbose', '-s', '$url', '--request', 'TEST' ] },
+    { cmd => [ '--verbose', '-s', '--cookie', 'cookie=nomnom', '$url', ] },
+    { cmd => [ '--verbose', '-s', '--cookie', 'cookie=nomnom; session=jam', '$url', ] },
+    { cmd => [ '--verbose', '-s', '--cookie', 't/curl-cookies.txt', '$url', ],
+      name => 'Cookie from a file',
+      todo => 'unimplemented'
+    },
 );
 
 sub curl( @args ) {

@@ -104,6 +104,7 @@ our @option_spec = (
     #'c|cookie-jar=s',   # ignored
     'buffer!',
     'compressed',
+    'cookie|b=s',
     'data|d=s@',
     'data-binary=s@',
     'referrer|e=s',
@@ -280,6 +281,10 @@ sub _build_request( $self, $uri, $options, %build_options ) {
 
     if( defined $options->{ referrer }) {
         $headers{ Referer } = $options->{ 'referrer' };
+    };
+
+    if( defined $options->{ cookie }) {
+        $headers{ Cookie } = $options->{ 'cookie' };
     };
 
     if( defined $options->{ agent }) {
