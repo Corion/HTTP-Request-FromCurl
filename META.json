@@ -34,7 +34,6 @@
          "requires" : {
             "Filter::signatures" : "0.09",
             "Getopt::Long" : "2.39",
-            "HTTP::CookieJar::LWP" : "0",
             "HTTP::Request" : "6.07",
             "HTTP::Request::Common" : "6.07",
             "List::Util" : "1.29",
@@ -50,7 +49,10 @@
          "requires" : {
             "Capture::Tiny" : "0",
             "Data::Dumper" : "0",
+            "HTTP::CookieJar" : "0",
+            "HTTP::CookieJar::LWP" : "0",
             "LWP::UserAgent" : "0",
+            "Path::Tiny" : "0",
             "Test::HTTP::LocalServer" : "0.61",
             "Test::More" : "0",
             "WWW::Mechanize" : "0"

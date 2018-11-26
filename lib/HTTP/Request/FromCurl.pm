@@ -356,6 +356,19 @@ Until somebody writes a robust Netscape cookie file parser and proper loading
 and storage for L<HTTP::CookieJar>, this module will not be able to load and
 save files in the format that Curl uses.
 
+=head2 Loading/saving cookie jars is the job of the UA
+
+You're expected to instruct your UA to load/save cookie jars:
+
+    use Path::Tiny;
+    use HTTP::CookieJar::LWP;
+
+    if( my $cookies = $r->cookie_jar ) {
+        $ua->cookie_jar( HTTP::CookieJar::LWP->new()->load_cookies(
+            path($cookies)->lines
+        ));
+    };
+
 =head2 Different Content-Length for POST requests
 
 =head2 Different delimiter for form data
