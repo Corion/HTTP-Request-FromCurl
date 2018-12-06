@@ -98,6 +98,7 @@ The following `curl` options are recognized but ignored:
 
 - ` --dump-header `
 - ` --include `
+- ` --location `
 - ` --progress-bar `
 - ` --silent `
 - ` --verbose `
