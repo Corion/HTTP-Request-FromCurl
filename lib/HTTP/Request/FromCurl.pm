@@ -127,6 +127,8 @@ The following C<curl> options are recognized but ignored:
 
 =item C< --include >
 
+=item C< --location >
+
 =item C< --progress-bar >
 
 =item C< --silent >
@@ -151,9 +153,10 @@ our @option_spec = (
     'referrer|e=s',
     'form|F=s@',
     'get|G',
+    'head|I',
     'header|H=s@',
     'include|i',         # ignored
-    'head|I',
+    'location|L',        # ignored, we always follow redirects
     'max-time|m=s',
     'keepalive!',
     'request|X=s',
