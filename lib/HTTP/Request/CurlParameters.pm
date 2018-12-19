@@ -273,6 +273,10 @@ sub as_snippet( $self, %options ) {
 SNIPPET
 };
 
+sub clone( $self, %options ) {
+    (ref $self)->new( %$self, %options )
+}
+
 1;
 
 =head1 REPOSITORY
