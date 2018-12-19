@@ -231,7 +231,7 @@ sub as_snippet( $self, %options ) {
 
     my @preamble;
     push @preamble, @{ $options{ preamble } } if $options{ preamble };
-    
+
     my $request_args = join ", ",
                                  '$r',
                            $self->_pairlist([
