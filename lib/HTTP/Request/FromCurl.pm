@@ -193,7 +193,7 @@ sub new( $class, %options ) {
 
     return
         wantarray ? map { $class->_build_request( $_, \%curl_options, %options ) } @$cmd
-                  :       $class->_build_request( $cmd->[0], \%curl_options, %options )
+                  :       ($class->_build_request( $cmd->[0], \%curl_options, %options ))[0]
                   ;
 }
 
