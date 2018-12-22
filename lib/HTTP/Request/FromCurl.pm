@@ -431,27 +431,6 @@ and little available memory.
 
 =item *
 
-Sequence expansion
-
-Curl supports speficying sequences of URLs such as
-C< https://example.com/[1-100] > , which expands to
-C< https://example.com/1 >, C< https://example.com/2 > ...
-C< https://example.com/100 >
-
-This is not (yet) supported.
-
-=item *
-
-List expansion
-
-Curl supports speficying sequences of URLs such as
-C< https://{www,ftp}.example.com/ > , which expands to
-C< https://www.example.com/ >, C< https://ftp.example.com/ >.
-
-This is not (yet) supported.
-
-=item *
-
 Multiple sets of parameters from the command line
 
 Curl supports the C<< --next >> command line switch which resets
