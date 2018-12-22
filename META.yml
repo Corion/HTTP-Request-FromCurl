@@ -31,6 +31,7 @@ requires:
   Getopt::Long: '2.39'
   HTTP::Request: '6.07'
   HTTP::Request::Common: '6.07'
+  HTTP::Request::Generator: '0.06'
   List::Util: '1.29'
   MIME::Base64: '0'
   Moo: '2'

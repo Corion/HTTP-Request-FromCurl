@@ -18,6 +18,8 @@
       Cartesian Products
     * Added option to limit the number of expanded requests
     * Added ->clone() method to HTTP::Request::CurlOptions
+    * We now need HTTP::Request::Generator 0.06, for bug fixes in URL generation
+      in that module
 
 0.08 2018-12-06
     * Add C<implicit_headers> option to leave out headers when generating code
