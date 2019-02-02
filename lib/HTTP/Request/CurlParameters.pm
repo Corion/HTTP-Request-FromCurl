@@ -79,6 +79,10 @@ has form_args => (
     default => sub { [] },
 );
 
+has insecure => (
+    is => 'ro',
+);
+
 has output => (
     is => 'ro',
 );
@@ -252,16 +256,22 @@ sub as_snippet( $self, %options ) {
                            ;
     if( defined( my $credentials = $self->credentials )) {
         my( $user, $pass ) = split /:/, $credentials, 2;
-        my $setup_credentials = sprintf q{\n    $ua->credentials("%s","%s");\n},
+        my $setup_credentials = sprintf qq{\$ua->credentials("%s","%s");},
             quotemeta $user,
             quotemeta $pass;
         push @setup_ua, $setup_credentials;
     };
+    if( $self->insecure ) {
+        push @preamble, 'use IO::Socket::SSL;';
+        my $setup_insecure = q{$ua->ssl_opts( SSL_verify_mode => IO::Socket::SSL::SSL_VERIFY_NONE, SSL_hostname => '', verify_hostname => 0 );};
+        push @setup_ua, $setup_insecure;
+    };
+
     @setup_ua = ()
         if @setup_ua == 1;
 
     @preamble = map { "$options{prefix}    $_\n" } @preamble;
-    @setup_ua = map { "    $_\n" } @setup_ua;
+    @setup_ua = map { "$options{prefix}    $_\n" } @setup_ua;
 
     return <<SNIPPET;
 @preamble
