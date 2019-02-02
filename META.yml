@@ -39,7 +39,7 @@ requires:
   PerlX::Maybe: '0'
   URI: '0'
   URL::Encode: '0'
-  perl: '5.008'
+  perl: '5.008008'
 resources:
   repository: git://github.com/Corion/HTTP-Request-FromCurl.git
 version: '0.09'

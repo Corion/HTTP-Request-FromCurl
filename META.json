@@ -43,7 +43,7 @@
             "PerlX::Maybe" : "0",
             "URI" : "0",
             "URL::Encode" : "0",
-            "perl" : "5.008"
+            "perl" : "5.008008"
          }
       },
       "test" : {
