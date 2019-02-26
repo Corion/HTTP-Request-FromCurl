@@ -205,7 +205,7 @@ sub request_identical_ok {
         diag join " ", @$cmd;
         diag $res->{error};
         SKIP: {
-            skip "$name compiles ok", 1;
+            skip "$name compiles ok", 2;
         };
         return;
     };
