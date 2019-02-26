@@ -167,7 +167,7 @@ sub as_request( $self ) {
     HTTP::Request->new(
         $self->method => $self->uri,
         [ %{ $self->headers } ],
-        $self->_build_quoted_body(),
+        $self->body(),
     )
 };
 
