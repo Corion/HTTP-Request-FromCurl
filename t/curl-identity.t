@@ -164,7 +164,7 @@ sub compiles_ok( $code, $name ) {
         diag $stderr;
         diag "Exit code: ", $exit;
         fail($name);
-    } elsif( $stderr !~ /^\Q$tempname\E syntax OK\s*$/) {
+    } elsif( $stderr !~ /(^|\n)\Q$tempname\E syntax OK\s*$/) {
         diag $stderr;
         diag $code;
         fail($name);
