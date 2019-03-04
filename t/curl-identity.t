@@ -218,13 +218,22 @@ sub request_identical_ok {
     my $status;
     if( ! $r ) {
         fail $name;
+        SKIP: {
+            skip "We can't check the request body", 1;
+        };
 
     } elsif( $r->method ne $res->{method} ) {
         is $r->method, $res->{method}, $name;
         diag join " ", @{ $test->{cmd} };
+        SKIP: {
+            skip "We can't check the request body", 1;
+        };
     } elsif( url_decode($r->uri->path_query) ne $res->{path} ) {
         is url_decode($r->uri->path_query), $res->{path}, $name;
         diag join " ", @{ $test->{cmd} };
+        SKIP: {
+            skip "We can't check the request body", 1;
+        };
     } else {
 
         # There is no convenient way to get at the form data from curl
