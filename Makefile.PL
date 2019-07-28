@@ -48,6 +48,7 @@ my %module = (
         'Getopt::Long'             => '2.39', # for ->getoptionsfromarray
         'Filter::signatures'       => '0.09',
         'Moo'                      => '2',
+        'feature'                  => 0,
         'HTTP::Request'            => '6.07',
         'HTTP::Request::Common'    => '6.07',
         'HTTP::Request::Generator' => '0.06', # earlier versions are buggy
