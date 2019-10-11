@@ -235,6 +235,10 @@ sub request_identical_ok {
     my %log;
     $log{ curl } = $server->get_log;
 
+    # Clean up some stuff that we will supply from our own values:
+    my $compressed = join ", ", HTTP::Message::decodable();
+    $log{ curl } =~ s!^Accept-Encoding: .*?$!Accept-Encoding: $compressed!s;
+
     my $r = HTTP::Request::FromCurl->new(
         argv => $cmd,
         read_files => 1,
@@ -305,7 +309,7 @@ sub request_identical_ok {
 
         identical_headers_ok( $code, $log{ curl },
             "We create (almost) the same headers with LWP", 'Connection'
-        );
+        ) or diag $code;
 
         $code = $r->as_snippet(type => 'Tiny',
             preamble => ['use strict;','use HTTP::Tiny;']
@@ -314,7 +318,7 @@ sub request_identical_ok {
             or diag $code;
         identical_headers_ok( $code, $log{ curl },
             "We create (almost) the same headers with HTTP::Tiny", 'Host'
-        );
+        ) or diag $code;
 
     } else {
         SKIP: {
