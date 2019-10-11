@@ -130,7 +130,7 @@ sub curl_request( @args ) {
 
         # Let's ignore duplicate headers and the order:
         my @sent = grep {/^> /} split /\r?\n/, $stderr;
-        if( !($sent[0] =~ /^> ([A-Z]+) (.*?) ([A-Z].*?)$/)) {
+        if( !($sent[0] =~ m!^> ([A-Z]+) (.*?) (HTTP/.*?)$!)) {
             $res{ error } = "Couldn't find a method in curl output '$sent[0]'. STDERR is $stderr";
         };
         shift @sent;
