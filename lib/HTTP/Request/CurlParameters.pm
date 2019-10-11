@@ -321,8 +321,14 @@ sub as_http_tiny_snippet( $self, %options ) {
         push @preamble, @{$p}
     };
 
+    my @ssl;
+    if( $self->insecure ) {
+    } else {
+        push @ssl, verify_SSL => 1;
+    };
     my $constructor_args = join ",",
                            $self->_pairlist([
+                                     @ssl,
                                maybe timeout => $self->timeout,
                                maybe cookie_jar => $init_cookie_jar->{code},
                            ], '')
@@ -334,11 +340,6 @@ sub as_http_tiny_snippet( $self, %options ) {
             quotemeta $pass;
         push @setup_ua, $setup_credentials;
     };
-    if( $self->insecure ) {
-        push @preamble, 'use IO::Socket::SSL;';
-        my $setup_insecure = q{$ua->ssl_opts( SSL_verify_mode => IO::Socket::SSL::SSL_VERIFY_NONE, SSL_hostname => '', verify_hostname => 0 );};
-        push @setup_ua, $setup_insecure;
-    };
 
     @setup_ua = ()
         if @setup_ua == 1;
@@ -348,7 +349,7 @@ sub as_http_tiny_snippet( $self, %options ) {
 
     my @content = $self->_build_quoted_body();
     if( grep {/\S/} @content ) {
-        unshift @content, 'content',
+        unshift @content, 'content => ',
     };
 
     return <<SNIPPET;
