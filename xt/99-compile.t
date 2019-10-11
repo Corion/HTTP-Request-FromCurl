@@ -1,5 +1,4 @@
-#!perl -w
-
+#!perl
 use warnings;
 use strict;
 use File::Find;
@@ -20,7 +19,7 @@ sub check {
     return if (! m{(\.pm|\.pl) \z}xmsi);
 
     my ($stdout, $stderr, $exit) = capture(sub {
-        system( $^X, '-Mblib', '-wc', $_ );
+        system( $^X, '-Mblib', '-c', $_ );
     });
 
     s!\s*\z!!
@@ -40,5 +39,5 @@ sub check {
 
 find({wanted => \&check, no_chdir => 1},
      grep { -d $_ }
-         'blib', 'script', 'examples', 'bin', 'lib'
+         'blib', 'scripts', 'examples', 'bin', 'lib'
      );
