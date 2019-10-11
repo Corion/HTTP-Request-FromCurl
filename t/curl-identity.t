@@ -14,7 +14,9 @@ no warnings 'experimental::signatures';
 
 $Data::Dumper::Useqq = 1;
 
-my $server = Test::HTTP::LocalServer->spawn();
+my $server = Test::HTTP::LocalServer->spawn(
+#    debug => 1,
+);
 END { undef $server }
 my $curl = 'curl';
 
@@ -180,8 +182,8 @@ sub identical_headers_ok( $code, $expected_request, $name,
 ) {
     my $res;
     $res = eval $code
-        or do { diag $@; diag Dumper $res; };
-    if( ref $res eq 'HASH' and $res->{status} >= 500 ) {
+        or do { diag $@; };
+    if( ref $res eq 'HASH' and $res->{status} >= 300 ) {
         diag Dumper $res;
     };
     my $log = $server->get_log;
@@ -219,7 +221,7 @@ if( ! $version) {
     exit;
 };
 
-diag "Curl version $version";
+note "Curl version $version";
 $HTTP::Request::FromCurl::default_headers{ 'User-Agent' } = "curl/$version";
 
 my $cmp_version = sprintf "%03d%03d%03d", split /\./, $version;

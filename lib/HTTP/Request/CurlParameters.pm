@@ -178,7 +178,23 @@ sub _fill_snippet( $self, $snippet ) {
     $snippet
 }
 
-sub _init_cookie_jar( $self ) {
+sub _init_cookie_jar_lwp( $self ) {
+    if( my $fn = $self->cookie_jar ) {
+        my $save = $self->cookie_jar_options->{'write'} ? 1 : 0;
+        return {
+            preamble => [
+                "use Path::Tiny;",
+                "use HTTP::Cookies;",
+            ],
+            code => \"HTTP::Cookies->new(\n    file => path('$fn'),\n    autosave => $save,\n)",
+            postamble => [
+                #"path('$fn')->spew(\$ua->cookie_jar->dump_cookies())",
+            ],
+        };
+    }
+}
+
+sub _init_cookie_jar_tiny( $self ) {
     if( my $fn = $self->cookie_jar ) {
         my $save = $self->cookie_jar_options->{'write'};
         return {
@@ -188,7 +204,9 @@ sub _init_cookie_jar( $self ) {
             ],
             code => \"HTTP::CookieJar->new->load_cookies(path('$fn')->lines),",
             postamble => [
-                "path('$fn')->spew(\$ua->cookie_jar->dump_cookies())",
+            $save ?
+                  ("path('$fn')->spew(\$ua->cookie_jar->dump_cookies())")
+                : (),
             ],
         };
     }
@@ -255,7 +273,7 @@ sub as_lwp_snippet( $self, %options ) {
                                maybe ':content_file', $self->output
                            ], '')
                        ;
-    my $init_cookie_jar = $self->_init_cookie_jar();
+    my $init_cookie_jar = $self->_init_cookie_jar_lwp();
     if( my $p = $init_cookie_jar->{preamble}) {
         push @preamble, @{$p}
     };
@@ -316,7 +334,7 @@ sub as_http_tiny_snippet( $self, %options ) {
                                maybe ':content_file', $self->output
                            ], '')
                        ;
-    my $init_cookie_jar = $self->_init_cookie_jar();
+    my $init_cookie_jar = $self->_init_cookie_jar_tiny();
     if( my $p = $init_cookie_jar->{preamble}) {
         push @preamble, @{$p}
     };
