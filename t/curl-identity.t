@@ -175,16 +175,40 @@ sub compiles_ok( $code, $name ) {
     };
 };
 
-sub identical_headers_ok( $code, $expected_request, $name, @ignore_headers ) {
-    eval $code or diag $@;
+sub identical_headers_ok( $code, $expected_request, $name,
+    %options
+) {
+    my $res;
+    $res = eval $code
+        or do { diag $@; diag Dumper $res; };
+    if( ref $res eq 'HASH' and $res->{status} >= 500 ) {
+        diag Dumper $res;
+    };
     my $log = $server->get_log;
+
+    my @ignore_headers;
+    @ignore_headers = $options{ ignore_headers } ? @{ $options{ ignore_headers } } : ();
+
+    if( my $boundary = $options{ boundary }) {
+        (my $old_boundary) = ($log =~ m!Content-Type: multipart/form-data; boundary=(.*?)$!ms);
+
+        $log =~ s!\bboundary=\Q$old_boundary!boundary=$boundary!ms
+            or die "Didn't replace $old_boundary in [[$log]]?!";
+        $log =~ s!^\Q--$old_boundary!--$boundary!msg
+            or die "Didn't replace '--$old_boundary' in [[$log]]?!";
+
+        push @ignore_headers, 'Content-Length';
+    };
 
     for my $h (@ignore_headers) {
         $log              =~ s!^$h: .*?\r?\n!!ms;
         $expected_request =~ s!^$h: .*?\r?\n!!ms;
     };
 
-    is $log, $expected_request, $name
+    my @log = split /\n/, $log;
+    my @exp = split /\n/, $expected_request;
+
+    is_deeply \@log, \@exp, $name
         or diag $log;
 }
 
@@ -237,7 +261,9 @@ sub request_identical_ok {
 
     # Clean up some stuff that we will supply from our own values:
     my $compressed = join ", ", HTTP::Message::decodable();
-    $log{ curl } =~ s!^Accept-Encoding: .*?$!Accept-Encoding: $compressed!s;
+    $log{ curl } =~ s!^Accept-Encoding: .*?$!Accept-Encoding: $compressed!ms;
+
+    (my $boundary) = ($log{ curl } =~ m!Content-Type: multipart/form-data; boundary=(.*?)$!ms);
 
     my $r = HTTP::Request::FromCurl->new(
         argv => $cmd,
@@ -308,7 +334,9 @@ sub request_identical_ok {
             or diag $code;
 
         identical_headers_ok( $code, $log{ curl },
-            "We create (almost) the same headers with LWP", 'Connection'
+            "We create (almost) the same headers with LWP",
+            ignore_headers => ['Connection'],
+            boundary       => $boundary,
         ) or diag $code;
 
         $code = $r->as_snippet(type => 'Tiny',
@@ -317,7 +345,9 @@ sub request_identical_ok {
         compiles_ok( $code, "$name as HTTP::Tiny snippet compiles OK")
             or diag $code;
         identical_headers_ok( $code, $log{ curl },
-            "We create (almost) the same headers with HTTP::Tiny", 'Host'
+            "We create (almost) the same headers with HTTP::Tiny",
+            ignore_headers => ['Host'],
+            boundary       => $boundary,
         ) or diag $code;
 
     } else {
