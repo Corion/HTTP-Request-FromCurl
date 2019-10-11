@@ -45,6 +45,7 @@ my %module = (
     },
 
     PREREQ_PM => {
+        'Carp'                     => 0,
         'Getopt::Long'             => '2.39', # for ->getoptionsfromarray
         'Filter::signatures'       => '0.09',
         'Moo'                      => '2',
