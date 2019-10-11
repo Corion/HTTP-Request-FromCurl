@@ -32,6 +32,16 @@ Objects of this class are mostly created from L<HTTP::Request::FromCurl>.
 
 Options:
 
+=over 4
+
+=item *
+
+C<method>
+
+    method => 'GET'
+
+The HTTP method to use.
+
 =cut
 
 has method => (
@@ -39,50 +49,159 @@ has method => (
     default => 'GET',
 );
 
+=item *
+
+C<uri>
+
+    uri => 'https://example.com'
+
+The URI of the request.
+
+=cut
+
 has uri => (
     is => 'ro',
     default => 'https://example.com',
 );
+
+=item *
+
+C<headers>
+
+    headers => {
+        'Content-Type' => 'text/json',
+        'X-Secret' => ['value-1', 'value-2'],
+    }
+
+The headers of the request. Multiple headers with the same
+name can be passed as an arrayref to the header key.
+
+=cut
 
 has headers => (
     is => 'ro',
     default => sub { {} },
 );
 
+=item *
+
+C<cookie_jar>
+
+The cookie jar to use.
+
+=cut
+
 has cookie_jar => (
     is => 'ro',
 );
+
+=item *
+
+C<cookie_jar_options>
+
+Options for the constructor of the cookie jar.
+
+=cut
 
 has cookie_jar_options => (
     is => 'ro',
     default => sub { {} },
 );
 
+=item *
+
+C<credentials>
+
+    credentials => 'hunter2:secret'
+
+The credentials to use for basic authentication.
+
+=cut
+
 has credentials => (
     is => 'ro',
 );
+
+=item *
+
+C<post_data>
+
+    post_data => ['A string','across multiple','scalars']
+
+The POST body to use.
+
+=cut
 
 has post_data => (
     is => 'ro',
     default => sub { [] },
 );
 
+=item *
+
+C<body>
+
+    body => '{"greeting":"Hello"}'
+
+The body of the request.
+
+=cut
+
 has body => (
     is => 'ro',
 );
 
+=item *
+
+C<timeout>
+
+    timeout => 50
+
+The timeout for the request
+
+=cut
+
 has timeout => (
     is => 'ro',
 );
+
+=item *
+
+C<form_args>
+
+The HTML form parameters. These get converted into
+a body.
+
+=cut
 
 has form_args => (
     is => 'ro',
     default => sub { [] },
 );
 
+=item *
+
+C<insecure>
+
+    insecure => 1
+
+Disable SSL certificate verification
+
+=cut
+
 has insecure => (
     is => 'ro',
 );
+
+=item *
+
+C<output>
+
+Name of the output file
+
+=back
+
+=cut
 
 has output => (
     is => 'ro',
@@ -172,6 +291,15 @@ sub _explode_headers( $self ) {
                  : ($h => $v)
          } keys %{ $self->headers };
 }
+
+=head2 C<< $r->as_request >>
+
+    my $r = $curl->as_request;
+
+Returns a L<HTTP::Request> object that represents
+the Curl options.
+
+=cut
 
 sub as_request( $self ) {
     HTTP::Request->new(
@@ -265,6 +393,13 @@ snippets from C<curl> examples.
 Arrayref of headers that will not be output.
 
 Convenient values are ['Content-Length']
+
+=item B<type>
+
+    type => 'Tiny',
+
+Type of snippet. Valid values are C<LWP> for L<LWP::UserAgent>
+and C<Tiny> for L<HTTP::Tiny>.
 
 =back
 
@@ -406,6 +541,12 @@ sub as_http_tiny_snippet( $self, %options ) {
     );
 SNIPPET
 };
+
+=head2 C<< $r->clone >>
+
+Returns a shallow copy of the object
+
+=cut
 
 sub clone( $self, %options ) {
     (ref $self)->new( %$self, %options )

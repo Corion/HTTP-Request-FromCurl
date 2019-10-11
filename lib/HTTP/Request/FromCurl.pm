@@ -292,7 +292,6 @@ sub _build_request( $self, $uri, $options, %build_options ) {
             );
             $body = $req->content;
             $request_default_headers{ 'Content-Type' } = join "; ", $req->headers->content_type;
-            warn "Adding default content type [$request_default_headers{ 'Content-Type' }]";
 
         } elsif( $options->{ get }) {
             $method = 'GET';
