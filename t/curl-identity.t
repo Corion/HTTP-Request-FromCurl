@@ -307,12 +307,12 @@ sub request_identical_ok {
 
     } else {
         SKIP: {
-            skip "Did not generate a request", 2;
+            skip "Did not generate a request", 4;
         };
     };
 };
 
-plan tests => 0+@tests*4;
+plan tests => 0+@tests*6;
 
 for my $test ( @tests ) {
     request_identical_ok( $test );
