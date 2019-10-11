@@ -12,6 +12,8 @@ use Filter::signatures;
 use feature 'signatures';
 no warnings 'experimental::signatures';
 
+$Data::Dumper::Useqq = 1;
+
 my $server = Test::HTTP::LocalServer->spawn();
 END { undef $server }
 my $curl = 'curl';
@@ -288,7 +290,8 @@ sub request_identical_ok {
 
         eval $code or diag $@;
         $log{ lwp }  = $server->get_log;
-        is $log{lwp}, $log{curl}, "We create the same headers with LWP";
+        $log{ lwp } =~ s!^Connection: close\r?\n!!ms;
+        is $log{lwp}, $log{curl}, "We create (almost) the same headers with LWP";
 
         $code = $r->as_snippet(type => 'Tiny',
             preamble => ['use strict;','use HTTP::Tiny;']
@@ -297,7 +300,10 @@ sub request_identical_ok {
             or diag $code;
         eval $code or diag $@;
         $log{ tiny } = $server->get_log;
-        is $log{ tiny }, $log{ curl }, "We create the same headers with HTTP::Tiny";
+        $log{ tiny } =~ s!^Host: .*?\r?\n!!ms;
+        $log{ curl } =~ s!^Host: .*?\r?\n!!ms;
+
+        is $log{ tiny }, $log{ curl }, "We create (almost) the same headers with HTTP::Tiny";
 
     } else {
         SKIP: {
