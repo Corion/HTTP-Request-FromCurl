@@ -59,7 +59,7 @@ my %module = (
         'MIME::Base64'             => 0,
     },
     TEST_REQUIRES => {
-        'Test::More'              => 0,
+        'Test::More'              => '0.88', # for done_testing support
         'Data::Dumper'            => 0,
         'Capture::Tiny'           => 0,
         'Path::Tiny'              => 0,
