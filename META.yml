@@ -8,6 +8,7 @@ build_requires:
   ExtUtils::MakeMaker: '0'
   HTTP::CookieJar: '0'
   HTTP::CookieJar::LWP: '0'
+  HTTP::Tiny: '0'
   IO::Socket::SSL: '0'
   LWP::UserAgent: '0'
   Path::Tiny: '0'
@@ -34,15 +35,15 @@ requires:
   HTTP::Request: '6.07'
   HTTP::Request::Common: '6.07'
   HTTP::Request::Generator: '0.06'
-  HTTP::Tiny: '0'
   List::Util: '1.29'
   MIME::Base64: '0'
   Moo: '2'
   PerlX::Maybe: '0'
   URI: '0'
   URL::Encode: '0'
-  perl: '5.008008'
+  perl: '5.010'
 resources:
+  license: https://dev.perl.org/licenses/
   repository: git://github.com/Corion/HTTP-Request-FromCurl.git
 version: '0.13'
 x_serialization_backend: 'CPAN::Meta::YAML version 0.018'
