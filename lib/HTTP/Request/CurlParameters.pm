@@ -90,8 +90,8 @@ has output => (
 
 sub _build_quoted_body( $self ) {
     if( my $body = $self->body ) {
-        $body =~ s!([\x00-\x1f'\\])!sprintf '\\x%02x', ord $1!ge;
-        return sprintf "'%s'", $body
+        $body =~ s!([\x00-\x1f'"\$\@\%\\])!sprintf '\\x%02x', ord $1!ge;
+        return sprintf qq{"%s"}, $body
 
     } else {
         # Sluuuurp
