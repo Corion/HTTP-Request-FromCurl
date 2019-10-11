@@ -164,10 +164,19 @@ Returns an equivalent L<HTTP::Request> object
 
 =cut
 
+sub _explode_headers( $self ) {
+    my @res =
+    map { my $h = $_;
+          my $v = $self->headers->{$h};
+          ref $v ? (map { $h => $_ } @$v)
+                 : ($h => $v)
+         } keys %{ $self->headers };
+}
+
 sub as_request( $self ) {
     HTTP::Request->new(
         $self->method => $self->uri,
-        [ %{ $self->headers } ],
+        [ $self->_explode_headers() ],
         $self->body(),
     )
 };
@@ -214,15 +223,28 @@ sub _init_cookie_jar_tiny( $self ) {
 
 sub _pairlist( $self, $l, $prefix = "    " ) {
     return join ",\n",
-        pairmap { my $v = ref $b ? $$b : qq{'$b'}; qq{$prefix'$a' => $v} } @$l
+        pairmap { my $v = ! ref $b ? qq{'$b'}
+                          : ref $b eq 'SCALAR' ? $$b
+                          : ref $b eq 'ARRAY' ? '[' . join( ", ", map {qq{'$_'}} @$b ) . ']'
+                          : die "Unknown type of $b";
+                  qq{$prefix'$a' => $v}
+                } @$l
 }
 
-sub _build_headers( $self, $prefix = "    ", %options ) {
+sub _build_lwp_headers( $self, $prefix = "    ", %options ) {
     # This is so we create the standard header order in our output
-    my $h = HTTP::Headers->new( %{ $self->headers });
+    my @h = $self->_explode_headers;
+    my $h = HTTP::Headers->new( @h );
     $h->remove_header( @{$options{implicit_headers}} );
     $self->_pairlist([ $h->flatten ], $prefix);
 }
+
+sub _build_tiny_headers( $self, $prefix = "    ", %options ) {
+    delete $self->{headers}->{Host};
+    my @result = (%{ $self->headers});
+    $self->_pairlist( \@result, $prefix );
+}
+
 
 =head2 C<< $r->as_snippet >>
 
@@ -310,7 +332,7 @@ sub as_lwp_snippet( $self, %options ) {
     my \$r = HTTP::Request->new(
         '@{[$self->method]}' => '@{[$self->uri]}',
         [
-@{[$self->_build_headers('            ', %options)]},
+@{[$self->_build_lwp_headers('            ', %options)]},
         ],
         @{[$self->_build_quoted_body()]}
     );
@@ -377,7 +399,7 @@ sub as_http_tiny_snippet( $self, %options ) {
         '@{[$self->method]}' => '@{[$self->uri]}',
         {
           headers => {
-@{[$self->_build_headers('            ', %options)]},
+@{[$self->_build_tiny_headers('            ', %options)]},
           },
           @content
         },

@@ -128,7 +128,7 @@ sub curl_request( @args ) {
 
     if( ! $exit ) {
 
-        # Let's ignore duplicate headers and the order:
+        # Let's ignore the order of the headers:
         my @sent = grep {/^> /} split /\r?\n/, $stderr;
         if( !($sent[0] =~ m!^> ([A-Z]+) (.*?) (HTTP/.*?)$!)) {
             $res{ error } = "Couldn't find a method in curl output '$sent[0]'. STDERR is $stderr";
@@ -138,7 +138,19 @@ sub curl_request( @args ) {
         $res{ path } = $2;
         $res{ protocol } = $3;
 
-        $res{ headers } = { map { /^> ([^:]+)\s*:\s*([^\r\n]*)$/ ? ($1 => $2) : () } @sent };
+        $res{ headers } = {};
+        for (map { /^> ([^:]+)\s*:\s*([^\r\n]*)$/ ? ([$1 => $2]) : () } @sent ) {
+            my ($k,$v) = @$_;
+            if( ! exists $res{ headers }->{ $k } ) {
+                $res{ headers }->{ $k } = $v;
+            } else {
+                if( ! ref $res{ header }->{ $k }) {
+                    $res{ headers }->{ $k } = [ $res{ headers }->{ $k } ];
+                };
+                push @{ $res{ headers }->{ $k } }, $v;
+            };
+        };
+        #diag "Parsed curl Headers: " . Dumper $res{ headers };
 
         # Fix weirdo CentOS6 build of Curl which has a weirdo User-Agent header:
         if( exists $res{ headers }->{ 'User-Agent' }) {
@@ -239,7 +251,6 @@ sub request_identical_ok {
     # Replace the dynamic parameters
     s!\$(url|port)!$server->$1!ge for @$cmd;
     s!\$(tempfile)!$tempfile!g for @$cmd;
-
     my $res = curl_request( @$cmd );
     if( $res->{error} ) {
         my $skipcount = 3;
@@ -266,7 +277,6 @@ sub request_identical_ok {
     $log{ curl } =~ s!^Accept-Encoding: .*?$!Accept-Encoding: $compressed!ms;
 
     (my $boundary) = ($log{ curl } =~ m!Content-Type: multipart/form-data; boundary=(.*?)$!ms);
-
     my $r = HTTP::Request::FromCurl->new(
         argv => $cmd,
         read_files => 1,
@@ -316,7 +326,8 @@ sub request_identical_ok {
             delete @{$res->{headers}}{ @{ $test->{ignore}}};
         };
 
-        is_deeply \%got, $res->{headers}, $name;
+        is_deeply \%got, $res->{headers}, $name
+            or diag Dumper [\%got, $res->{headers}];
 
         # Now, also check that our HTTP::Request looks similar
         my $http_request = $r->as_request;
