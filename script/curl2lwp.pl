@@ -6,7 +6,7 @@ use Pod::Usage;
 
 use HTTP::Request::FromCurl;
 
-our $VERSION = '0.12';
+our $VERSION = '0.13';
 
 Getopt::Long::Configure('pass_through');
 GetOptions(
