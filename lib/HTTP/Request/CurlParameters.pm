@@ -262,7 +262,8 @@ sub as_lwp_snippet( $self, %options ) {
 
     my $constructor_args = join ",",
                            $self->_pairlist([
-                               maybe timeout => $self->timeout,
+                                        send_te => 0,
+                               maybe timeout    => $self->timeout,
                                maybe cookie_jar => $init_cookie_jar->{code},
                            ], '')
                            ;
@@ -345,6 +346,11 @@ sub as_http_tiny_snippet( $self, %options ) {
     @preamble = map { "$options{prefix}    $_\n" } @preamble;
     @setup_ua = map { "$options{prefix}    $_\n" } @setup_ua;
 
+    my @content = $self->_build_quoted_body();
+    if( grep {/\S/} @content ) {
+        unshift @content, 'content',
+    };
+
     return <<SNIPPET;
 @preamble
     my \$ua = HTTP::Tiny->new($constructor_args);@setup_ua
@@ -354,7 +360,7 @@ sub as_http_tiny_snippet( $self, %options ) {
           headers => {
 @{[$self->_build_headers('            ', %options)]},
           },
-          @{[$self->_build_quoted_body()]}
+          @content
         },
     );
 SNIPPET
