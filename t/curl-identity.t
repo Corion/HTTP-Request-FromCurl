@@ -143,8 +143,8 @@ sub curl_request( @args ) {
 
         $res{ response_body } = $stdout;
     } else {
-        diag $stderr;
         $res{ error } = "Curl exit code $exit";
+        $res{ error_output } = $stderr;
     };
 
     \%res
@@ -201,14 +201,24 @@ sub request_identical_ok {
 
     my $res = curl_request( @$cmd );
     if( $res->{error} ) {
-        fail $test->{name};
-        diag join " ", @$cmd;
-        diag $res->{error};
+        my $skipcount = 3;
+        my $skipreason = $res->{error};
+        if( $res->{error_output} and $res->{error_output} =~ /\b(option .*?: the installed libcurl version doesn't support this\b)/) {
+            $skipcount++;
+            $skipreason = $1;
+
+        } else {
+            fail $test->{name};
+            diag join " ", @$cmd;
+            diag $res->{error_output};
+        };
         SKIP: {
-            skip "$name compiles ok", 2;
+            skip $skipreason, $skipcount;
         };
         return;
     };
+    my %log;
+    $log{ curl } = $server->get_log;
 
     my $r = HTTP::Request::FromCurl->new(
         argv => $cmd,
@@ -219,23 +229,22 @@ sub request_identical_ok {
     if( ! $r ) {
         fail $name;
         SKIP: {
-            skip "We can't check the request body", 1;
+            skip "We can't check the request body", 2;
         };
 
     } elsif( $r->method ne $res->{method} ) {
         is $r->method, $res->{method}, $name;
         diag join " ", @{ $test->{cmd} };
         SKIP: {
-            skip "We can't check the request body", 1;
+            skip "We can't check the request body", 2;
         };
     } elsif( url_decode($r->uri->path_query) ne $res->{path} ) {
         is url_decode($r->uri->path_query), $res->{path}, $name;
         diag join " ", @{ $test->{cmd} };
         SKIP: {
-            skip "We can't check the request body", 1;
+            skip "We can't check the request body", 2;
         };
     } else {
-
         # There is no convenient way to get at the form data from curl
         #if( $r->content ne $res->{body} ) {
         #    is $r->content, $res->{body}, $name;
@@ -273,17 +282,31 @@ sub request_identical_ok {
     # sends the same request as curl does
 
     if( $r ) {
-        my $code = $r->as_snippet;
-        compiles_ok( $code, "$name snippet compiles OK")
+        my $code = $r->as_snippet(type => 'LWP');
+        compiles_ok( $code, "$name as LWP snippet compiles OK")
             or diag $code;
+
+        eval $code or diag $@;
+        $log{ lwp }  = $server->get_log;
+        is $log{lwp}, $log{curl}, "We create the same headers with LWP";
+
+        $code = $r->as_snippet(type => 'Tiny',
+            preamble => ['use strict;','use HTTP::Tiny;']
+        );
+        compiles_ok( $code, "$name as HTTP::Tiny snippet compiles OK")
+            or diag $code;
+        eval $code or diag $@;
+        $log{ tiny } = $server->get_log;
+        is $log{ tiny }, $log{ curl }, "We create the same headers with HTTP::Tiny";
+
     } else {
         SKIP: {
-            skip "Did not generate a request", 1;
+            skip "Did not generate a request", 2;
         };
     };
 };
 
-plan tests => 0+@tests*3;
+plan tests => 0+@tests*4;
 
 for my $test ( @tests ) {
     request_identical_ok( $test );

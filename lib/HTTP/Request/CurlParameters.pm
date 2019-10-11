@@ -7,6 +7,7 @@ use URI;
 use File::Spec::Unix;
 use List::Util 'pairmap';
 use PerlX::Maybe;
+use Carp 'croak';
 
 use Moo 2;
 use Filter::signatures;
@@ -230,6 +231,17 @@ Convenient values are ['Content-Length']
 =cut
 
 sub as_snippet( $self, %options ) {
+    my $type = delete $options{ type } || 'LWP';
+    if( 'LWP' eq $type ) {
+        $self->as_lwp_snippet( %options )
+    } elsif( 'Tiny' eq $type ) {
+        $self->as_http_tiny_snippet( %options )
+    } else {
+        croak "Unknown type '$type'.";
+    }
+}
+
+sub as_lwp_snippet( $self, %options ) {
     $options{ prefix } ||= '';
     $options{ implicit_headers } ||= [];
 
@@ -275,7 +287,7 @@ sub as_snippet( $self, %options ) {
 
     return <<SNIPPET;
 @preamble
-    my \$ua = WWW::Mechanize->new($constructor_args);@setup_ua
+    my \$ua = LWP::UserAgent->new($constructor_args);@setup_ua
     my \$r = HTTP::Request->new(
         '@{[$self->method]}' => '@{[$self->uri]}',
         [
@@ -284,6 +296,67 @@ sub as_snippet( $self, %options ) {
         @{[$self->_build_quoted_body()]}
     );
     my \$res = \$ua->request( $request_args );
+SNIPPET
+};
+
+sub as_http_tiny_snippet( $self, %options ) {
+    $options{ prefix } ||= '';
+    $options{ implicit_headers } ||= [];
+
+    push @{ $options{ implicit_headers }}, 'Host'; # HTTP::Tiny dislikes that header
+
+    my @preamble;
+    push @preamble, @{ $options{ preamble } } if $options{ preamble };
+    my @setup_ua = ('');
+
+    my $request_args = join ", ",
+                                 '$r',
+                           $self->_pairlist([
+                               maybe ':content_file', $self->output
+                           ], '')
+                       ;
+    my $init_cookie_jar = $self->_init_cookie_jar();
+    if( my $p = $init_cookie_jar->{preamble}) {
+        push @preamble, @{$p}
+    };
+
+    my $constructor_args = join ",",
+                           $self->_pairlist([
+                               maybe timeout => $self->timeout,
+                               maybe cookie_jar => $init_cookie_jar->{code},
+                           ], '')
+                           ;
+    if( defined( my $credentials = $self->credentials )) {
+        my( $user, $pass ) = split /:/, $credentials, 2;
+        my $setup_credentials = sprintf qq{\$ua->credentials("%s","%s");},
+            quotemeta $user,
+            quotemeta $pass;
+        push @setup_ua, $setup_credentials;
+    };
+    if( $self->insecure ) {
+        push @preamble, 'use IO::Socket::SSL;';
+        my $setup_insecure = q{$ua->ssl_opts( SSL_verify_mode => IO::Socket::SSL::SSL_VERIFY_NONE, SSL_hostname => '', verify_hostname => 0 );};
+        push @setup_ua, $setup_insecure;
+    };
+
+    @setup_ua = ()
+        if @setup_ua == 1;
+
+    @preamble = map { "$options{prefix}    $_\n" } @preamble;
+    @setup_ua = map { "$options{prefix}    $_\n" } @setup_ua;
+
+    return <<SNIPPET;
+@preamble
+    my \$ua = HTTP::Tiny->new($constructor_args);@setup_ua
+    my \$res = \$ua->request(
+        '@{[$self->method]}' => '@{[$self->uri]}',
+        {
+          headers => {
+@{[$self->_build_headers('            ', %options)]},
+          },
+          @{[$self->_build_quoted_body()]}
+        },
+    );
 SNIPPET
 };
 

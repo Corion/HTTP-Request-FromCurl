@@ -10,7 +10,8 @@ our $VERSION = '0.12';
 
 Getopt::Long::Configure('pass_through');
 GetOptions(
-    'no-tidy' => \my $no_tidy,
+    'no-tidy'  => \my $no_tidy,
+    'type|t=s' => \my $ua_type,
 ) or pod2usage(2);
 
 =head1 NAME
@@ -122,7 +123,7 @@ my $request = HTTP::Request::FromCurl->new(
     read_files => 1,
 ) or exit 1; # Getopt::Long has already printed the error message
 
-my $lwp = $request->as_snippet( type => 'LWP' );
+my $lwp = $request->as_snippet( type => $ua_type );
 
 if( $has_tidy and ! $no_tidy) {
     my $formatted;
