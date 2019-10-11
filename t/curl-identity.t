@@ -43,68 +43,68 @@ COOKIES
 my $tempoutput = tempname();
 
 my @tests = (
-    { cmd => [ '--verbose', '-s', '$url' ] },
-    { cmd => [ '--verbose', '-s', '-X', 'PATCH', '$url' ] },
-    { cmd => [ '--verbose', '-s', '-XPATCH', '$url' ],
+    { cmd => [ '--verbose', '-g', '-s', '$url' ] },
+    { cmd => [ '--verbose', '-g', '-s', '-X', 'PATCH', '$url' ] },
+    { cmd => [ '--verbose', '-g', '-s', '-XPATCH', '$url' ],
       name => 'short bundling options' },
-    { cmd => [ '--verbose', '-s', '--head', '$url' ] },
-    { cmd => [ '--verbose', '-s', '-H', 'Host: example.com', '$url' ] },
+    { cmd => [ '--verbose', '-g', '-s', '--head', '$url' ] },
+    { cmd => [ '--verbose', '-g', '-s', '-H', 'Host: example.com', '$url' ] },
     { name => 'Multiple headers',
-      cmd => [ '--verbose', '-s', '-H', 'Host: example.com', '-H','X-Example: foo', '$url' ] },
+      cmd => [ '--verbose', '-g', '-s', '-H', 'Host: example.com', '-H','X-Example: foo', '$url' ] },
     { name => 'Duplicated header',
-      cmd => [ '--verbose', '-s', '-H', 'X-Host: example.com', '-H','X-Host: www.example.com', '$url' ] },
+      cmd => [ '--verbose', '-g', '-s', '-H', 'X-Host: example.com', '-H','X-Host: www.example.com', '$url' ] },
     { name => 'Form parameters',
       ignore => [ 'Content-Length', 'Content-Type' ],
-      cmd => [ '--verbose', '-s', '$url', '--get', '-F', 'name=Foo', '-F','version=1' ],
+      cmd => [ '--verbose', '-g', '-s', '$url', '--get', '-F', 'name=Foo', '-F','version=1' ],
       version => '007061000', # earlier versions send an Expect: 100-continue header
       },
     { name => 'Append GET data',
-      cmd => [ '--verbose', '-s', '$url', '--get', '-d', '{name:cool_event}' ] },
+      cmd => [ '--verbose', '-g', '-s', '$url', '--get', '-d', '{name:cool_event}' ] },
     { name => 'Append GET data to existing query',
-      cmd => [ '--verbose', '-s', '$url?foo=bar', '--get', '-d', '{name:cool_event}' ] },
-    { cmd => [ '--verbose', '-s', '$url', '-d', '{name:cool_event}' ] },
-    { cmd => [ '--verbose', '-s', '--oauth2-bearer','someWeirdStuff', '$url' ],
+      cmd => [ '--verbose', '-g', '-s', '$url?foo=bar', '--get', '-d', '{name:cool_event}' ] },
+    { cmd => [ '--verbose', '-g', '-s', '$url', '-d', '{name:cool_event}' ] },
+    { cmd => [ '--verbose', '-g', '-s', '--oauth2-bearer','someWeirdStuff', '$url' ],
       version => '007061000',
     },
-    { cmd => [ '--verbose', '-s', '-A', 'www::mechanize/1.0', '$url' ],
+    { cmd => [ '--verbose', '-g', '-s', '-A', 'www::mechanize/1.0', '$url' ],
     },
-    { cmd => [ '--verbose', '-s', '--data-binary', '@$tempfile', '$url' ] },
-    { cmd => [ '--verbose', '-s', '$url' ] },
-    { cmd => [ '--verbose', '-s', '$url', '--max-time', 5 ] },
-    { cmd => [ '--verbose', '-s', '$url', '--keepalive' ] },
-    { cmd => [ '--verbose', '-s', '$url', '--no-keepalive' ] },
-    { cmd => [ '--verbose', '-s', '$url', '--buffer' ] },
-    { cmd => [ '--verbose', '-s', '-i', '$url' ],
+    { cmd => [ '--verbose', '-g', '-s', '--data-binary', '@$tempfile', '$url' ] },
+    { cmd => [ '--verbose', '-g', '-s', '$url' ] },
+    { cmd => [ '--verbose', '-g', '-s', '$url', '--max-time', 5 ] },
+    { cmd => [ '--verbose', '-g', '-s', '$url', '--keepalive' ] },
+    { cmd => [ '--verbose', '-g', '-s', '$url', '--no-keepalive' ] },
+    { cmd => [ '--verbose', '-g', '-s', '$url', '--buffer' ] },
+    { cmd => [ '--verbose', '-g', '-s', '-i', '$url' ],
       name => 'ignore --include option' },
 
     # Curl canonicalizes (HTTP) URLs by resolving "." and ".."
-    { cmd => [ '--verbose', '-s', '$url/foo/..' ],
+    { cmd => [ '--verbose', '-g', '-s', '$url/foo/..' ],
       version => '007061000', # At least 7.26 on Debian/wheezy and 7.29 on CentOS 7 fail to clean up the path
     },
 
     # perlmonks post xxx
-    { cmd => [ '--verbose', '-s',
+    { cmd => [ '--verbose', '-s', '-g',
                '-X', 'POST',
                '-u', "apikey:xxx",
                '--header', "Content-Type: audio/flac",
                '--data-binary', '@$tempfile', '$url' ], },
-    { cmd => [ '--verbose', '-s', '--compressed', '$url' ],
+    { cmd => [ '--verbose', '-s', '-g', '--compressed', '$url' ],
       ignore => ['Accept-Encoding'], # this somewhat defeats this test but at least
       # we check we don't crash. Available compressions might differ between
       # Curl and Compress::Zlib, so ...
     },
-    { cmd => [ '--verbose', '-s', '-d', q!{'content': '\u6d4b\u8bd5'}!, '$url' ],
+    { cmd => [ '--verbose', '-s', '-g', '-d', q!{'content': '\u6d4b\u8bd5'}!, '$url' ],
     },
-    { cmd => [ '--verbose', '-s', '$url', '--user', 'Corion:secret' ] },
-    { cmd => [ '--verbose', '-s', '$url', '--dump-header', $tempoutput ] },
-    { cmd => [ '--verbose', '-s', '$url', '--header', 'X-Test: test' ] },
-    { cmd => [ '--verbose', '-s', '$url', '--request', 'TEST' ] },
-    { cmd => [ '--verbose', '-s', '--cookie', 'cookie=nomnom', '$url', ] },
-    { cmd => [ '--verbose', '-s', '--cookie', 'cookie=nomnom; session=jam', '$url', ] },
-    { cmd => [ '--verbose', '-s', '--cookie', 't/localserver-cookiejar.txt', '$url', ],},
-    { cmd => [ '--verbose', '-s', '--cookie-jar', $tempcookies, '$url', ],},
-    { cmd => [ '--verbose', '-s', '-L', '$url', ],},
-    { cmd => [ '--verbose', '-s', '-k', '$url', ],},
+    { cmd => [ '--verbose', '-s', '-g', '$url', '--user', 'Corion:secret' ] },
+    { cmd => [ '--verbose', '-s', '-g', '$url', '--dump-header', $tempoutput ] },
+    { cmd => [ '--verbose', '-s', '-g', '$url', '--header', 'X-Test: test' ] },
+    { cmd => [ '--verbose', '-s', '-g', '$url', '--request', 'TEST' ] },
+    { cmd => [ '--verbose', '-s', '-g', '--cookie', 'cookie=nomnom', '$url', ] },
+    { cmd => [ '--verbose', '-s', '-g', '--cookie', 'cookie=nomnom; session=jam', '$url', ] },
+    { cmd => [ '--verbose', '-s', '-g', '--cookie', 't/localserver-cookiejar.txt', '$url', ],},
+    { cmd => [ '--verbose', '-s', '-g', '--cookie-jar', $tempcookies, '$url', ],},
+    { cmd => [ '--verbose', '-s', '-g', '-L', '$url', ],},
+    { cmd => [ '--verbose', '-s', '-g', '-k', '$url', ],},
 );
 
 sub curl( @args ) {
@@ -175,6 +175,19 @@ sub compiles_ok( $code, $name ) {
     };
 };
 
+sub identical_headers_ok( $code, $expected_request, $name, @ignore_headers ) {
+    eval $code or diag $@;
+    my $log = $server->get_log;
+
+    for my $h (@ignore_headers) {
+        $log              =~ s!^$h: .*?\r?\n!!ms;
+        $expected_request =~ s!^$h: .*?\r?\n!!ms;
+    };
+
+    is $log, $expected_request, $name
+        or diag $log;
+}
+
 my $version = curl_version( $curl );
 
 if( ! $version) {
@@ -241,7 +254,7 @@ sub request_identical_ok {
             skip "We can't check the request body", 2;
         };
     } elsif( url_decode($r->uri->path_query) ne $res->{path} ) {
-        is url_decode($r->uri->path_query), $res->{path}, $name;
+        is url_decode($r->uri->path_query), $res->{path}, $name ;
         diag join " ", @{ $test->{cmd} };
         SKIP: {
             skip "We can't check the request body", 2;
@@ -284,26 +297,24 @@ sub request_identical_ok {
     # sends the same request as curl does
 
     if( $r ) {
-        my $code = $r->as_snippet(type => 'LWP');
+        my $code = $r->as_snippet(type => 'LWP',
+            preamble => ['use strict;','use LWP::UserAgent;']
+        );
         compiles_ok( $code, "$name as LWP snippet compiles OK")
             or diag $code;
 
-        eval $code or diag $@;
-        $log{ lwp }  = $server->get_log;
-        $log{ lwp } =~ s!^Connection: close\r?\n!!ms;
-        is $log{lwp}, $log{curl}, "We create (almost) the same headers with LWP";
+        identical_headers_ok( $code, $log{ curl },
+            "We create (almost) the same headers with LWP", 'Connection'
+        );
 
         $code = $r->as_snippet(type => 'Tiny',
             preamble => ['use strict;','use HTTP::Tiny;']
         );
         compiles_ok( $code, "$name as HTTP::Tiny snippet compiles OK")
             or diag $code;
-        eval $code or diag $@;
-        $log{ tiny } = $server->get_log;
-        $log{ tiny } =~ s!^Host: .*?\r?\n!!ms;
-        $log{ curl } =~ s!^Host: .*?\r?\n!!ms;
-
-        is $log{ tiny }, $log{ curl }, "We create (almost) the same headers with HTTP::Tiny";
+        identical_headers_ok( $code, $log{ curl },
+            "We create (almost) the same headers with HTTP::Tiny", 'Host'
+        );
 
     } else {
         SKIP: {
