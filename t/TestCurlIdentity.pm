@@ -288,9 +288,14 @@ sub request_identical_ok {
         compiles_ok( $code, "$name as LWP snippet compiles OK")
             or diag $code;
 
+        my @lwp_ignore;
+        if( LWP::UserAgent->VERSION < 6.33 ) {
+            push @lwp_ignore, 'TE';
+        };
+
         identical_headers_ok( $code, $log{ curl },
             "We create (almost) the same headers with LWP",
-            ignore_headers => ['Connection'],
+            ignore_headers => ['Connection', @lwp_ignore],
             boundary       => $boundary,
         ) or diag $code;
 
