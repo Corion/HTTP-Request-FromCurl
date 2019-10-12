@@ -49,6 +49,9 @@ L<LWP::CurlLog>
 
 L<HTTP::Request::AsCurl> - for the inverse function
 
+L<https://github.com/NickCarneiro/curlconverter> - a converter for multiple
+target languages
+
 AUTHOR
 
 Max Maischein C<corion@cpan.org>
