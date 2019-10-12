@@ -8,6 +8,7 @@ use Capture::Tiny 'capture';
 use Test::HTTP::LocalServer;
 use URL::Encode 'url_decode';
 use File::Temp 'tempfile';
+use LWP::UserAgent;
 
 use Filter::signatures;
 use feature 'signatures';
