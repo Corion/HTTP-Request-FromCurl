@@ -16,11 +16,11 @@ GetOptions(
 
 =head1 NAME
 
-curl2lwp.pl - convert curl arguments to Perl code
+curl2perl - convert curl arguments to Perl code
 
 =head1 SYNOPSIS
 
-    curl2lwp.pl [options] [url] [url] ...
+    curl2perl [options] [url] [url] ...
 
 =head1 OPTIONS
 

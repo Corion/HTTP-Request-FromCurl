@@ -10,7 +10,7 @@ META.json
 META.yml
 README
 README.mkdn
-script/curl2lwp.pl
+script/curl2perl
 script/pcurl.pl
 t/00-load.t
 t/curl-identity-cookie.t
