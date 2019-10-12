@@ -475,6 +475,9 @@ L<LWP::CurlLog>
 
 L<HTTP::Request::AsCurl> - for the inverse function
 
+L<https://github.com/NickCarneiro/curlconverter> - a converter for multiple
+target languages
+
 =head1 REPOSITORY
 
 The public repository of this module is
