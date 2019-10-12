@@ -351,7 +351,11 @@ sub request_identical_ok {
 };
 
 sub run_curl_tests( @tests ) {
-    plan tests => 0+@tests*6;
+    my $testcount = @tests * 6;
+    if( ! ref $tests[-1] ) {
+        $testcount = pop @tests;
+    };
+    plan tests => $testcount;
 
     for my $test ( @tests ) {
         request_identical_ok( $test );
