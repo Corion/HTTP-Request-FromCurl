@@ -201,7 +201,8 @@ sub request_identical_ok {
     my $port = $server->url->port;
     # For testing of globbing on an IPv6 system
     #s!\$(url)\b!http://localhost:$port!g for @$cmd;
-    s!\$(url|port)\b!$server->$1!ge for @$cmd;
+    s!\$(url)\b!$server->$1!ge for @$cmd;
+    s!\$(port)\b!$server->$1!ge for @$cmd;
     s!\$(tempfile)\b!$tempfile!g for @$cmd;
     s!\$(tempoutput)\b!$tempoutput!g for @$cmd;
     s!\$(tempcookies)\b!$tempcookies!g for @$cmd;
