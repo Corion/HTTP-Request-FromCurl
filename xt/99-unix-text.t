@@ -9,8 +9,18 @@ use strict;
 
 my @files = ('Makefile.PL', 'MANIFEST', 'MANIFEST.SKIP', glob 't/*.t');
 
+require './Makefile.PL';
+# Loaded from Makefile.PL
+our %module = get_module_info();
+
+my @files;
 my $blib = File::Spec->catfile(qw(blib lib));
-find(\&wanted, grep { -d } ($blib, 'bin'));
+find(\&wanted, grep { -d } ($blib));
+
+if( my $exe = $module{EXE_FILES}) {
+    push @files, @$exe;
+};
+
 plan tests => scalar @files;
 foreach my $file (@files) {
   unix_file_ok($file);
