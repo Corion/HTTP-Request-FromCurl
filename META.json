@@ -57,7 +57,7 @@
             "IO::Socket::SSL" : "0",
             "LWP::UserAgent" : "0",
             "Path::Tiny" : "0",
-            "Test::HTTP::LocalServer" : "0.61",
+            "Test::HTTP::LocalServer" : "0.67",
             "Test::More" : "0.88",
             "WWW::Mechanize" : "0"
          }

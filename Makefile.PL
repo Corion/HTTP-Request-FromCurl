@@ -73,7 +73,7 @@ my %module = (
         #'HTTP::Cookies::Netscape' => 0, # this can't cope with the Netscape cookie files that curl writes :(
         'HTTP::CookieJar'         => 0, # this one doesn't have an adapter to save/load at all :(
         'HTTP::CookieJar::LWP'    => 0, # this one doesn't have an adapter to save/load at all :(
-        'Test::HTTP::LocalServer' => 0.61, # we want the improved IPC
+        'Test::HTTP::LocalServer' => 0.67, # we want ->server_url()
     },
 
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
