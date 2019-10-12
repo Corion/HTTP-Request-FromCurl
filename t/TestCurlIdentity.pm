@@ -22,6 +22,7 @@ our $VERSION = '0.13';
 $Data::Dumper::Useqq = 1;
 
 our $server = Test::HTTP::LocalServer->spawn(
+#debug => 1,
 );
 END { undef $server }
 my $curl = 'curl';
@@ -65,46 +66,53 @@ sub curl_version( $curl ) {
 sub curl_request( @args ) {
     my ($stdout, $stderr, $exit) = curl(@args);
 
-    my %res;
+    my @res;
 
     if( ! $exit ) {
-
-        # Let's ignore the order of the headers:
-        my @sent = grep {/^> /} split /\r?\n/, $stderr;
-        if( !($sent[0] =~ m!^> ([A-Z]+) (.*?) (HTTP/.*?)$!)) {
-            $res{ error } = "Couldn't find a method in curl output '$sent[0]'. STDERR is $stderr";
-        };
-        shift @sent;
-        $res{ method } = $1;
-        $res{ path } = $2;
-        $res{ protocol } = $3;
-
-        $res{ headers } = {};
-        for (map { /^> ([^:]+)\s*:\s*([^\r\n]*)$/ ? ([$1 => $2]) : () } @sent ) {
-            my ($k,$v) = @$_;
-            if( ! exists $res{ headers }->{ $k } ) {
-                $res{ headers }->{ $k } = $v;
-            } else {
-                if( ! ref $res{ header }->{ $k }) {
-                    $res{ headers }->{ $k } = [ $res{ headers }->{ $k } ];
-                };
-                push @{ $res{ headers }->{ $k } }, $v;
+        my @requests = grep { /^> /m } split /^\* .*$/m, $stderr;
+        for my $stderr (@requests) {
+            my %res;
+            # Let's ignore the order of the headers:
+            my @sent = grep {/^> /} split /\r?\n/, $stderr;
+            if( !($sent[0] =~ m!^> ([A-Z]+) (.*?) (HTTP/.*?)$!)) {
+                $res{ error } = "Couldn't find a method in curl output '$sent[0]'. STDERR is $stderr";
             };
-        };
-        #diag "Parsed curl Headers: " . Dumper $res{ headers };
+            shift @sent;
+            $res{ method } = $1;
+            $res{ path } = $2;
+            $res{ protocol } = $3;
 
-        # Fix weirdo CentOS6 build of Curl which has a weirdo User-Agent header:
-        if( exists $res{ headers }->{ 'User-Agent' }) {
-            $res{ headers }->{ 'User-Agent' } =~ s!^(curl/7\.19\.7)\b.+!$1!;
-        };
+            $res{ headers } = {};
+            for (map { /^> ([^:]+)\s*:\s*([^\r\n]*)$/ ? ([$1 => $2]) : () } @sent ) {
+                my ($k,$v) = @$_;
+                if( ! exists $res{ headers }->{ $k } ) {
+                    $res{ headers }->{ $k } = $v;
+                } else {
+                    if( ! ref $res{ header }->{ $k }) {
+                        $res{ headers }->{ $k } = [ $res{ headers }->{ $k } ];
+                    };
+                    push @{ $res{ headers }->{ $k } }, $v;
+                };
+            };
+            #diag "Parsed curl Headers: " . Dumper $res{ headers };
 
-        $res{ response_body } = $stdout;
+            # Fix weirdo CentOS6 build of Curl which has a weirdo User-Agent header:
+            if( exists $res{ headers }->{ 'User-Agent' }) {
+                $res{ headers }->{ 'User-Agent' } =~ s!^(curl/7\.19\.7)\b.+!$1!;
+            };
+
+            $res{ response_body } = $stdout;
+
+            push @res, \%res,
+        };
     } else {
+        my %res;
         $res{ error } = "Curl exit code $exit";
         $res{ error_output } = $stderr;
+        push @res, \%res
     };
 
-    \%res
+    @res
 }
 
 sub compiles_ok( $code, $name ) {
@@ -190,130 +198,154 @@ sub request_identical_ok {
     my $cmd = [ @{ $test->{cmd} }];
 
     # Replace the dynamic parameters
+    my $port = $server->url->port;
+    # For testing of globbing on an IPv6 system
+    #s!\$(url)\b!http://localhost:$port!g for @$cmd;
     s!\$(url|port)\b!$server->$1!ge for @$cmd;
     s!\$(tempfile)\b!$tempfile!g for @$cmd;
     s!\$(tempoutput)\b!$tempoutput!g for @$cmd;
     s!\$(tempcookies)\b!$tempcookies!g for @$cmd;
-    my $res = curl_request( @$cmd );
-    if( $res->{error} ) {
-        my $skipcount = 3;
-        my $skipreason = $res->{error};
-        if( $res->{error_output} and $res->{error_output} =~ /\b(option .*?: the installed libcurl version doesn't support this\b)/) {
+
+    my @res = curl_request( @$cmd );
+    note sprintf "Made %d curl requests", 0+@res;
+    if( $res[0]->{error} ) {
+        my $skipcount = 5;
+        my $skipreason = $res[0]->{error};
+        if(     $res[0]->{error_output}
+            and $res[0]->{error_output} =~ /\b(option .*?: the installed libcurl version doesn't support this\b)/) {
             $skipcount++;
             $skipreason = $1;
 
         } else {
             fail $test->{name};
             diag join " ", @$cmd;
-            diag $res->{error_output};
+            diag $res[0]->{error_output};
         };
         SKIP: {
             skip $skipreason, $skipcount;
         };
         return;
     };
-    my %log;
-    $log{ curl } = $server->get_log;
 
+    my $log = $server->get_log;
     # Clean up some stuff that we will supply from our own values:
     my $compressed = join ", ", HTTP::Message::decodable();
-    $log{ curl } =~ s!^Accept-Encoding: .*?$!Accept-Encoding: $compressed!ms;
+    $log =~ s!^Accept-Encoding: .*?$!Accept-Encoding: $compressed!msg;
 
-    (my $boundary) = ($log{ curl } =~ m!Content-Type: multipart/form-data; boundary=(.*?)$!ms);
-    my $r = HTTP::Request::FromCurl->new(
+    my @curl_log = split /^(?=Request:)/m, $log;
+    note sprintf "Received %d curl requests", 0+@curl_log;
+
+
+    my @r = HTTP::Request::FromCurl->new(
         argv => $cmd,
         read_files => 1,
     );
 
-    my $status;
-    if( ! $r ) {
-        fail $name;
-        SKIP: {
-            skip "We can't check the request body", 2;
-        };
-
-    } elsif( $r->method ne $res->{method} ) {
-        is $r->method, $res->{method}, $name;
+    my $requests = @r;
+    if( $requests != @res ) {
+        is $requests, 0+@res, "$name (requests)";
         diag join " ", @{ $test->{cmd} };
-        SKIP: {
-            skip "We can't check the request body", 2;
-        };
-    } elsif( url_decode($r->uri->path_query) ne $res->{path} ) {
-        is url_decode($r->uri->path_query), $res->{path}, $name ;
-        diag join " ", @{ $test->{cmd} };
-        SKIP: {
-            skip "We can't check the request body", 2;
-        };
-    } else {
-        # There is no convenient way to get at the form data from curl
-        #if( $r->content ne $res->{body} ) {
-        #    is $r->content, $res->{body}, $name;
-        #    diag join " ", @{ $test->{cmd} };
-        #    return;
-        #};
-
-        # If the request has a cookie jar we need to load+extract the cookie:
-        if( my $j = $r->cookie_jar and $r->cookie_jar_options->{read}) {
-            require HTTP::CookieJar;
-            require Path::Tiny;
-            Path::Tiny->import('path');
-            my $jar = HTTP::CookieJar->new->load_cookies(path($j)->lines);
-            if( my $c = $jar->cookie_header($server->url)) {
-                $r->{headers}->{Cookie} = $c
-            };
-        };
-
-        my %got = %{ $r->headers };
-        if( $test->{ignore} ) {
-            delete @got{ @{ $test->{ignore}}};
-            delete @{$res->{headers}}{ @{ $test->{ignore}}};
-        };
-
-        is_deeply \%got, $res->{headers}, $name
-            or diag Dumper [\%got, $res->{headers}];
-
-        # Now, also check that our HTTP::Request looks similar
-        my $http_request = $r->as_request;
-        my $payload = $http_request->content;
-
-        is $payload, $r->body || '', "We don't munge the request body";
+        diag Dumper \@r;
+        SKIP: { skip "Weird number of requests", 0+@res*2; };
+        return;
     };
 
-    # Now create a program from the request, run it and check that it still
-    # sends the same request as curl does
+    for my $i (0..$#r) {
+        my $r = $r[$i];
+        my $res = $res[$i];
+        my $curl_log = $curl_log[$i];
+        (my $boundary) = ($curl_log =~ m!Content-Type: multipart/form-data; boundary=(.*?)$!ms);
 
-    if( $r ) {
-        my $code = $r->as_snippet(type => 'LWP',
-            preamble => ['use strict;','use LWP::UserAgent;']
-        );
-        compiles_ok( $code, "$name as LWP snippet compiles OK")
-            or diag $code;
+        my $status;
+        if( ! $r ) {
+            fail $name;
+            SKIP: {
+                skip "We can't check the request body", 2;
+            };
 
-        my @lwp_ignore;
-        if( LWP::UserAgent->VERSION < 6.33 ) {
-            push @lwp_ignore, 'TE';
+        } elsif( $r->method ne $res->{method} ) {
+            is $r->method, $res->{method}, $name;
+            diag join " ", @{ $test->{cmd} };
+            SKIP: {
+                skip "We can't check the request body", 2;
+            };
+        } elsif( url_decode($r->uri->path_query) ne $res->{path} ) {
+            is url_decode($r->uri->path_query), $res->{path}, $name ;
+            diag join " ", @{ $test->{cmd} };
+            SKIP: {
+                skip "We can't check the request body", 2;
+            };
+        } else {
+            # There is no convenient way to get at the form data from curl
+            #if( $r->content ne $res->{body} ) {
+            #    is $r->content, $res->{body}, $name;
+            #    diag join " ", @{ $test->{cmd} };
+            #    return;
+            #};
+
+            # If the request has a cookie jar we need to load+extract the cookie:
+            if( my $j = $r->cookie_jar and $r->cookie_jar_options->{read}) {
+                require HTTP::CookieJar;
+                require Path::Tiny;
+                Path::Tiny->import('path');
+                my $jar = HTTP::CookieJar->new->load_cookies(path($j)->lines);
+                if( my $c = $jar->cookie_header($server->url)) {
+                    $r->{headers}->{Cookie} = $c
+                };
+            };
+
+            my %got = %{ $r->headers };
+            if( $test->{ignore} ) {
+                delete @got{ @{ $test->{ignore}}};
+                delete @{$res->{headers}}{ @{ $test->{ignore}}};
+            };
+
+            is_deeply \%got, $res->{headers}, $name
+                or diag Dumper [\%got, $res->{headers}];
+
+            # Now, also check that our HTTP::Request looks similar
+            my $http_request = $r->as_request;
+            my $payload = $http_request->content;
+
+            is $payload, $r->body || '', "We don't munge the request body";
         };
 
-        identical_headers_ok( $code, $log{ curl },
-            "We create (almost) the same headers with LWP",
-            ignore_headers => ['Connection', @lwp_ignore],
-            boundary       => $boundary,
-        ) or diag $code;
+        # Now create a program from the request, run it and check that it still
+        # sends the same request as curl does
 
-        $code = $r->as_snippet(type => 'Tiny',
-            preamble => ['use strict;','use HTTP::Tiny;']
-        );
-        compiles_ok( $code, "$name as HTTP::Tiny snippet compiles OK")
-            or diag $code;
-        identical_headers_ok( $code, $log{ curl },
-            "We create (almost) the same headers with HTTP::Tiny",
-            ignore_headers => ['Host'],
-            boundary       => $boundary,
-        ) or diag $code;
+        if( $r ) {
+            my $code = $r->as_snippet(type => 'LWP',
+                preamble => ['use strict;','use LWP::UserAgent;']
+            );
+            compiles_ok( $code, "$name as LWP snippet compiles OK")
+                or diag $code;
 
-    } else {
-        SKIP: {
-            skip "Did not generate a request", 4;
+            my @lwp_ignore;
+            if( LWP::UserAgent->VERSION < 6.33 ) {
+                push @lwp_ignore, 'TE';
+            };
+
+            identical_headers_ok( $code, $curl_log,
+                "We create (almost) the same headers with LWP",
+                ignore_headers => ['Connection', @lwp_ignore],
+                boundary       => $boundary,
+            ) or diag $code;
+
+            $code = $r->as_snippet(type => 'Tiny',
+                preamble => ['use strict;','use HTTP::Tiny;']
+            );
+            compiles_ok( $code, "$name as HTTP::Tiny snippet compiles OK")
+                or diag $code;
+            identical_headers_ok( $code, $curl_log,
+                "We create (almost) the same headers with HTTP::Tiny",
+                ignore_headers => ['Host'],
+                boundary       => $boundary,
+            ) or diag $code;
+
+        } else {
+            SKIP: {
+                skip "Did not generate a request", 4;
+            };
         };
     };
 };
