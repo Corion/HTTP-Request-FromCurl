@@ -14,7 +14,7 @@ use Filter::signatures;
 use feature 'signatures';
 no warnings 'experimental::signatures';
 
-our $VERSION = '0.13';
+our $VERSION = '0.14';
 
 =head1 NAME
 
@@ -374,7 +374,7 @@ sub _build_tiny_headers( $self, $prefix = "    ", %options ) {
 }
 
 
-=head2 C<< $r->as_snippet( %options )>>
+=head2 C<< $r->as_snippet( %options ) >>
 
     print $r->as_snippet( type => 'LWP' );
 
