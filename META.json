@@ -38,6 +38,7 @@
             "HTTP::Request" : "6.07",
             "HTTP::Request::Common" : "6.07",
             "HTTP::Request::Generator" : "0.06",
+            "JSON" : "0",
             "List::Util" : "1.29",
             "MIME::Base64" : "0",
             "Moo" : "2",
