@@ -56,7 +56,7 @@ This is mostly a factory class for L<HTTP::Request::CurlParameters> objects.
 sub new( $class, $fetch ) {
 
 #use Regexp::Debugger;
-    $fetch =~ m!\A\s*(await)?\s+
+    $fetch =~ m!\A\s*(await\s+)?
                   fetch\s*\(\s*"(?<uri>(?:[^[\\"]+|\\.)+)"\s*(?:,\s*
                   (?<options>\{.*\}))?\s*
                   \)\s*;?

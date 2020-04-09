@@ -22,6 +22,10 @@ JS
         fetch("https://example.com/",{})
 JS
 
+    { js => <<'JS', name => 'empty options'},
+        fetch("https://example.com/",{ "method":"GET" })
+JS
+
     { js => <<'JS', name => 'full options'},
         fetch("https://example.com/foo",{
         "credentials": "include",
