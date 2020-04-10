@@ -55,12 +55,14 @@ sub curl( @args ) {
     my ($stdout, $stderr, $exit) = capture {
         system( $curl, @args )
     };
+
+    return ($stdout,$stderr,$exit)
 }
 
 sub curl_version( $curl ) {
     my( $stdout, undef, $exit ) = curl( '--version' );
     return undef if $exit;
-    ($stdout =~ /^curl\s+([\d.]+)/)[0]
+    return ($stdout =~ /^curl\s+([\d.]+)/)[0]
 };
 
 sub curl_request( @args ) {
@@ -236,7 +238,6 @@ sub request_identical_ok {
     my @curl_log = split /^(?=Request:)/m, $log;
     note sprintf "Received %d curl requests", 0+@curl_log;
 
-
     my @r = HTTP::Request::FromCurl->new(
         argv => $cmd,
         read_files => 1,
@@ -299,6 +300,11 @@ sub request_identical_ok {
             if( $test->{ignore} ) {
                 delete @got{ @{ $test->{ignore}}};
                 delete @{$res->{headers}}{ @{ $test->{ignore}}};
+            };
+
+            # Fix weirdo CentOS6 build of Curl which has a weirdo User-Agent header:
+            if( exists $res->{headers}->{ 'User-Agent' }) {
+                $res->{headers}->{ 'User-Agent' } =~ s!^(curl/7\.19\.7)\b.+!$1!;
             };
 
             is_deeply \%got, $res->{headers}, $name
