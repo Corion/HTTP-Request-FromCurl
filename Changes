@@ -1,6 +1,7 @@
 0.15 2020-04-10
     * Fix the test suite for longish curl version strings
       This addresses RT #127641 , as reported by SREZIC
+    * Also require HTTP::Request::Generator 0.09 , which handles IPv6.
 
 0.14 2020-04-09
     * Added ::FromFetch to convert data from the Javascript Fetch API
