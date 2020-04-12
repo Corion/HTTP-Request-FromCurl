@@ -321,6 +321,9 @@ sub request_identical_ok {
         # sends the same request as curl does
 
         if( $r ) {
+            # Fix weirdo CentOS6 build of Curl which has a weirdo User-Agent header:
+            $curl_log =~ s!^(User-Agent:\s+curl/[\d+\.])( .*)$!$1!;
+
             my $code = $r->as_snippet(type => 'LWP',
                 preamble => ['use strict;','use LWP::UserAgent;']
             );
