@@ -1,6 +1,9 @@
+0.15 2020-04-12
+    * (Hopefully) fix one more test inconsistency
     * Add ->as_curl method for round-tripping/canonicalizing curl invocations
       This also means you can now convert from fetch() to curl invocations
     * The --user-agent is now correctly recognized
+
 0.15 2020-04-10
     * Fix the test suite for longish curl version strings
       This addresses RT #127641 , as reported by SREZIC
