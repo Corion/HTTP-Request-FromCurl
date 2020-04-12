@@ -233,7 +233,8 @@ sub request_identical_ok {
     my $log = $server->get_log;
     # Clean up some stuff that we will supply from our own values:
     my $compressed = join ", ", HTTP::Message::decodable();
-    $log =~ s!^Accept-Encoding: .*?$!Accept-Encoding: $compressed!msg;
+    $log =~ s!^Accept-Encoding: (.*?)$!Accept-Encoding: $compressed!msg;
+    my $org_accept_encoding = $1;
 
     my @curl_log = split /^(?=Request:)/m, $log;
     note sprintf "Received %d curl requests", 0+@curl_log;
@@ -242,6 +243,80 @@ sub request_identical_ok {
         argv => $cmd,
         read_files => 1,
     );
+
+    my @reconstructed_commandline = ('--verbose', map {"$_"} $r[0]->as_curl(curl => undef));
+
+    my @reparse;
+    my $lived = eval {
+        @reparse = HTTP::Request::FromCurl->new(
+            argv => [@reconstructed_commandline],
+            read_files => 1,
+        );
+
+        1;
+    };
+    if( ! $lived or @reparse == 0 ) {
+        fail "Our reconstructed command line parses again";
+        diag $@;
+    } else {
+        pass "Our reconstructed command line parses again"
+    };
+
+    # Well, no!
+    # is_deeply \@reconstructed, $cmd, "Reconstructed command";
+    # Check that the reconstructed command behaves identically
+    my @reconstructed = curl_request( @reconstructed_commandline );
+
+    # Can we maybe even loop over all requests?!
+    for my $i ( 0..0 ) {
+        if( $reconstructed[$i]->{error}) {
+            SKIP: {
+                diag Dumper $test->{cmd};
+                diag Dumper \@reconstructed_commandline;
+                skip "$name (reconstructed): $reconstructed[$i]->{error_output}", 1;
+            };
+        } else {
+
+            # We will modify/fudge things a bit
+            my $copy = dclone( $res[$i] );
+            delete $copy->{response_body};
+            delete $reconstructed[$i]->{response_body};
+            if( exists $reconstructed[$i]->{headers}->{'Accept-Encoding'} ) {
+                $reconstructed[$i]->{headers}->{'Accept-Encoding'} = $org_accept_encoding;
+            };
+
+            # re-decode %7d and %7b to {}
+            if( exists $reconstructed[$i]->{query} ) {
+                $reconstructed[$i]->{query} =~ s!%7b!\{!gi;
+                $reconstructed[$i]->{query} =~ s!%7d!\}!gi;
+            };
+            if( exists $reconstructed[$i]->{path} ) {
+                $reconstructed[$i]->{path} =~ s!%7b!\{!gi;
+                $reconstructed[$i]->{path} =~ s!%7d!\}!gi;
+            };
+
+            if(     exists $copy->{headers}->{'Content-Type'}
+                and $copy->{headers}->{'Content-Type'} =~ m!^multipart/form-data\b! ) {
+                    # Our Content-Length and Content-Type will be somewhat different
+                if( $reconstructed[$i]->{headers}->{'Content-Type'} =~ m!^multipart/form-data\b! ) {
+                    $copy->{headers}->{'Content-Length'} = 0;
+                    $reconstructed[$i]->{headers}->{'Content-Length'} = 0;
+                    $reconstructed[$i]->{headers}->{'Content-Type'} = $copy->{headers}->{'Content-Type'};
+                };
+            };
+
+            if( !is_deeply $reconstructed[$i], $copy, "$name (reconstructed)" ) {
+                diag Dumper $test->{cmd};
+                diag Dumper $copy;
+                diag Dumper \@reconstructed_commandline;
+                diag Dumper $reconstructed[$i];
+            };
+            #request_logs_identical_ok( $test, "$name (reconstructed)", $reconstructed[$i], $res[$i] );
+        };
+    };
+
+    # clean out the second round
+    $server->get_log;
 
     my $requests = @r;
     if( $requests != @res ) {
@@ -354,14 +429,14 @@ sub request_identical_ok {
 
         } else {
             SKIP: {
-                skip "Did not generate a request", 4;
+                skip "Did not generate a request", 5;
             };
         };
     };
 };
 
 sub run_curl_tests( @tests ) {
-    my $testcount = @tests * 6;
+    my $testcount = @tests * 8;
     if( ! ref $tests[-1] ) {
         $testcount = pop @tests;
     };

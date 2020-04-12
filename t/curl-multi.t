@@ -20,4 +20,4 @@ my @tests = (
 #    my $url = $server->url;
 #    note "Fudged server URL to '$url', hopefully they resolve both to the same process";
 #};
-run_curl_tests( @tests, 12*@tests );
+run_curl_tests( @tests, 14*@tests );

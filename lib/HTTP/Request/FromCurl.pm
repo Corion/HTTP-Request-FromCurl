@@ -120,7 +120,7 @@ our %default_headers = (
 Contains the L<Getopt::Long> specification of the recognized command line
 parameters.
 
-The following C<curl> options are recognized but ignored:
+The following C<curl> options are recognized but largely ignored:
 
 =over 4
 
