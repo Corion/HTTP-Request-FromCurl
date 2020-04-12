@@ -8,6 +8,7 @@ use Capture::Tiny 'capture';
 use Test::HTTP::LocalServer;
 use URL::Encode 'url_decode';
 use File::Temp 'tempfile';
+use Storable 'dclone';
 use LWP::UserAgent;
 
 use Filter::signatures;
@@ -17,7 +18,7 @@ no warnings 'experimental::signatures';
 use Exporter 'import';
 
 our @EXPORT_OK = (qw(&run_curl_tests $server));
-our $VERSION = '0.13';
+our $VERSION = '0.15';
 
 $Data::Dumper::Useqq = 1;
 
@@ -67,7 +68,6 @@ sub curl_version( $curl ) {
 
 sub curl_request( @args ) {
     my ($stdout, $stderr, $exit) = curl(@args);
-
     my @res;
 
     if( ! $exit ) {
@@ -188,6 +188,69 @@ note "Curl version $version";
 $HTTP::Request::FromCurl::default_headers{ 'User-Agent' } = "curl/$version";
 
 my $cmp_version = sprintf "%03d%03d%03d", split /\./, $version;
+
+# Generates 2 OK stanzas
+sub request_logs_identical_ok {
+    my( $test, $name, $r, $res ) = @_;
+    my $status;
+    if( ! $r ) {
+        fail $name;
+        SKIP: {
+            skip "We can't check the request body", 2;
+        };
+
+    } elsif( $r->method ne $res->{method} ) {
+        is $r->method, $res->{method}, $name;
+        diag join " ", @{ $test->{cmd} };
+        SKIP: {
+            skip "We can't check the request body", 2;
+        };
+    } elsif( url_decode($r->uri->path_query) ne $res->{path} ) {
+        is url_decode($r->uri->path_query), $res->{path}, $name ;
+        diag join " ", @{ $test->{cmd} };
+        SKIP: {
+            skip "We can't check the request body", 2;
+        };
+    } else {
+        # There is no convenient way to get at the form data from curl
+        #if( $r->content ne $res->{body} ) {
+        #    is $r->content, $res->{body}, $name;
+        #    diag join " ", @{ $test->{cmd} };
+        #    return;
+        #};
+
+        # If the request has a cookie jar we need to load+extract the cookie:
+        if( my $j = $r->cookie_jar and $r->cookie_jar_options->{read}) {
+            require HTTP::CookieJar;
+            require Path::Tiny;
+            Path::Tiny->import('path');
+            my $jar = HTTP::CookieJar->new->load_cookies(path($j)->lines);
+            if( my $c = $jar->cookie_header($server->url)) {
+                $r->{headers}->{Cookie} = $c
+            };
+        };
+
+        my %got = %{ $r->headers };
+        if( $test->{ignore} ) {
+            delete @got{ @{ $test->{ignore}}};
+            delete @{$res->{headers}}{ @{ $test->{ignore}}};
+        };
+
+        # Fix weirdo CentOS6 build of Curl which has a weirdo User-Agent header:
+        if( exists $res->{headers}->{ 'User-Agent' }) {
+            $res->{headers}->{ 'User-Agent' } =~ s!^(curl/7\.19\.7)\b.+!$1!;
+        };
+
+        is_deeply \%got, $res->{headers}, $name
+            or diag Dumper [\%got, $res->{headers}];
+
+        # Now, also check that our HTTP::Request looks similar
+        my $http_request = $r->as_request;
+        my $payload = $http_request->content;
+
+        is $payload, $r->body || '', "We don't munge the request body";
+    };
+}
 
 sub request_identical_ok {
     my( $test ) = @_;
@@ -333,64 +396,7 @@ sub request_identical_ok {
         my $curl_log = $curl_log[$i];
         (my $boundary) = ($curl_log =~ m!Content-Type: multipart/form-data; boundary=(.*?)$!ms);
 
-        my $status;
-        if( ! $r ) {
-            fail $name;
-            SKIP: {
-                skip "We can't check the request body", 2;
-            };
-
-        } elsif( $r->method ne $res->{method} ) {
-            is $r->method, $res->{method}, $name;
-            diag join " ", @{ $test->{cmd} };
-            SKIP: {
-                skip "We can't check the request body", 2;
-            };
-        } elsif( url_decode($r->uri->path_query) ne $res->{path} ) {
-            is url_decode($r->uri->path_query), $res->{path}, $name ;
-            diag join " ", @{ $test->{cmd} };
-            SKIP: {
-                skip "We can't check the request body", 2;
-            };
-        } else {
-            # There is no convenient way to get at the form data from curl
-            #if( $r->content ne $res->{body} ) {
-            #    is $r->content, $res->{body}, $name;
-            #    diag join " ", @{ $test->{cmd} };
-            #    return;
-            #};
-
-            # If the request has a cookie jar we need to load+extract the cookie:
-            if( my $j = $r->cookie_jar and $r->cookie_jar_options->{read}) {
-                require HTTP::CookieJar;
-                require Path::Tiny;
-                Path::Tiny->import('path');
-                my $jar = HTTP::CookieJar->new->load_cookies(path($j)->lines);
-                if( my $c = $jar->cookie_header($server->url)) {
-                    $r->{headers}->{Cookie} = $c
-                };
-            };
-
-            my %got = %{ $r->headers };
-            if( $test->{ignore} ) {
-                delete @got{ @{ $test->{ignore}}};
-                delete @{$res->{headers}}{ @{ $test->{ignore}}};
-            };
-
-            # Fix weirdo CentOS6 build of Curl which has a weirdo User-Agent header:
-            if( exists $res->{headers}->{ 'User-Agent' }) {
-                $res->{headers}->{ 'User-Agent' } =~ s!^(curl/7\.19\.7)\b.+!$1!;
-            };
-
-            is_deeply \%got, $res->{headers}, $name
-                or diag Dumper [\%got, $res->{headers}];
-
-            # Now, also check that our HTTP::Request looks similar
-            my $http_request = $r->as_request;
-            my $payload = $http_request->content;
-
-            is $payload, $r->body || '', "We don't munge the request body";
-        };
+        request_logs_identical_ok( $test, $name, $r, $res );
 
         # Now create a program from the request, run it and check that it still
         # sends the same request as curl does
