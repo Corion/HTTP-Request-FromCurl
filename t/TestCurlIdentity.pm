@@ -264,8 +264,6 @@ sub request_identical_ok {
 
     # Replace the dynamic parameters
     my $port = $server->url->port;
-    # For testing of globbing on an IPv6 system
-    #s!\$(url)\b!http://localhost:$port!g for @$cmd;
     s!\$(url)\b!$server->$1!ge for @$cmd;
     s!\$(port)\b!$server->$1!ge for @$cmd;
     s!\$(tempfile)\b!$tempfile!g for @$cmd;
@@ -403,7 +401,8 @@ sub request_identical_ok {
 
         if( $r ) {
             # Fix weirdo CentOS6 build of Curl which has a weirdo User-Agent header:
-            $curl_log =~ s!^(User-Agent:\s+curl/[\d+\.])( .*)$!$1!;
+            $curl_log =~ s!^(User-Agent:\s+curl/[\d\.]+)( .*)?$!$1!m;
+                #or die "Didn't find UA header in [$curl_log]?!";
 
             my $code = $r->as_snippet(type => 'LWP',
                 preamble => ['use strict;','use LWP::UserAgent;']
