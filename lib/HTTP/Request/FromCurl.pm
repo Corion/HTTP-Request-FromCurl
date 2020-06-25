@@ -140,6 +140,23 @@ The following C<curl> options are recognized but largely ignored:
 
 =item C< --verbose >
 
+=item C< --junk-session-cookies >
+
+If you want to keep session cookies between subsequent requests, you need to
+provide a cookie jar in your user agent.
+
+=item C<--next>
+
+Resetting the UA between requests is something you need to handle yourself
+
+=item C<--parallel>
+
+=item C<--parallel-immediate>
+
+=item C<--parallel-max>
+
+Parallel requests is something you need to handle in the UA
+
 =back
 
 =cut
@@ -173,6 +190,11 @@ our @option_spec = (
     'output|o=s',
     'progress-bar|#',    # ignored
     'user|u=s',
+    'next',                      # ignored
+    'parallel|Z',                # ignored
+    'parallel-immediate',        # ignored
+    'parallel-max',              # ignored
+    'junk-session-cookies|j',    # ignored, must be set in code using the HTTP request
 );
 
 sub new( $class, %options ) {
@@ -188,6 +210,11 @@ sub new( $class, %options ) {
 
         # remove the implicit curl command:
         shift @$cmd;
+    };
+
+    for (@$cmd) {
+        $_ = '--next'
+            if $_ eq '-:'; # GetOptions does not like "next|:" as specification
     };
 
     my $p = Getopt::Long::Parser->new(
@@ -482,6 +509,9 @@ L<LWP::Protocol::Net::Curl>
 L<LWP::CurlLog>
 
 L<HTTP::Request::AsCurl> - for the inverse function
+
+The module HTTP::Request::AsCurl likely also implements a much better version
+of C<< ->as_curl >> than this module.
 
 L<https://github.com/NickCarneiro/curlconverter> - a converter for multiple
 target languages
