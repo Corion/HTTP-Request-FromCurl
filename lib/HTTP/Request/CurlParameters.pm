@@ -199,11 +199,25 @@ C<output>
 
 Name of the output file
 
+=cut
+
+has output => (
+    is => 'ro',
+);
+
+=item *
+
+C<show_error>
+
+    show_error => 0
+
+Show error message on HTTP errors
+
 =back
 
 =cut
 
-has output => (
+has show_error => (
     is => 'ro',
 );
 
@@ -421,7 +435,9 @@ sub as_lwp_snippet( $self, %options ) {
     $options{ implicit_headers } ||= [];
 
     my @preamble;
+    my @postamble;
     push @preamble, @{ $options{ preamble } } if $options{ preamble };
+    push @postamble, @{ $options{ postamble } } if $options{ postamble };
     my @setup_ua = ('');
 
     my $request_args = join ", ",
@@ -455,10 +471,18 @@ sub as_lwp_snippet( $self, %options ) {
         push @setup_ua, $setup_insecure;
     };
 
+    if( $self->show_error ) {
+        push @postamble,
+            '    die $res->message if $res->is_error;',
+    } elsif( $self->fail ) {
+            '    exit 1 if !$res->{success};',
+    };
+
     @setup_ua = ()
         if @setup_ua == 1;
 
     @preamble = map { "$options{prefix}    $_\n" } @preamble;
+    @postamble = map { "$options{prefix}    $_\n" } @postamble;
     @setup_ua = map { "$options{prefix}    $_\n" } @setup_ua;
 
     return <<SNIPPET;
@@ -472,6 +496,7 @@ sub as_lwp_snippet( $self, %options ) {
         @{[$self->_build_quoted_body()]}
     );
     my \$res = \$ua->request( $request_args );
+@postamble
 SNIPPET
 };
 
@@ -482,7 +507,9 @@ sub as_http_tiny_snippet( $self, %options ) {
     push @{ $options{ implicit_headers }}, 'Host'; # HTTP::Tiny dislikes that header
 
     my @preamble;
+    my @postamble;
     push @preamble, @{ $options{ preamble } } if $options{ preamble };
+    push @postamble, @{ $options{ postamble } } if $options{ postamble };
     my @setup_ua = ('');
 
     my $request_args = join ", ",
@@ -500,6 +527,12 @@ sub as_http_tiny_snippet( $self, %options ) {
     if( $self->insecure ) {
     } else {
         push @ssl, verify_SSL => 1;
+    };
+    if( $self->show_error ) {
+        push @postamble,
+            '    die $res->{reason} if !$res->{success};',
+    } elsif( $self->fail ) {
+            '    exit 1 if !$res->{success};',
     };
     my $constructor_args = join ",",
                            $self->_pairlist([
@@ -520,6 +553,7 @@ sub as_http_tiny_snippet( $self, %options ) {
         if @setup_ua == 1;
 
     @preamble = map { "$options{prefix}    $_\n" } @preamble;
+    @postamble = map { "$options{prefix}    $_\n" } @postamble;
     @setup_ua = map { "$options{prefix}    $_\n" } @setup_ua;
 
     my @content = $self->_build_quoted_body();
@@ -539,6 +573,7 @@ sub as_http_tiny_snippet( $self, %options ) {
           @content
         },
     );
+@postamble
 SNIPPET
 };
 

@@ -132,6 +132,10 @@ The following C<curl> options are recognized but largely ignored:
 
 =item C< --progress-bar >
 
+=item C< --show-error >
+
+=item C< --fail >
+
 =item C< --silent >
 
 =item C< --verbose >
@@ -142,8 +146,10 @@ The following C<curl> options are recognized but largely ignored:
 
 our @option_spec = (
     'user-agent|A=s',
-    'verbose|v',
-    'silent|s',
+    'verbose|v',         # ignored
+    'show-error|S',      # ignored
+    'fail|f',            # ignored
+    'silent|s',          # ignored
     'buffer!',
     'compressed',
     'cookie|b=s',
@@ -401,6 +407,8 @@ sub _build_request( $self, $uri, $options, %build_options ) {
             maybe cookie_jar => $options->{'cookie-jar'},
             maybe cookie_jar_options => $options->{'cookie-jar-options'},
             maybe insecure => $options->{'insecure'},
+            maybe show_error => $options->{'show_error'},
+            maybe fail => $options->{'fail'},
         });
     }
 
