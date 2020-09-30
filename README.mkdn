@@ -160,6 +160,13 @@ in the raw body content and the `Content-Length` header.
     is slurped into memory completely. This can be problematic for large files
     and little available memory.
 
+- Mixed data instances
+
+    Multiple mixed instances of `--data`, `--data-ascii`, `--data-raw`,
+    `--data-binary` or `--data-raw` are sorted by type first instead of getting
+    concatenated in the order they appear on the command line.
+    If the order is important to you, use one type only.
+
 - Multiple sets of parameters from the command line
 
     Curl supports the `--next` command line switch which resets

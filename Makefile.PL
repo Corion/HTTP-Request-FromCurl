@@ -56,6 +56,7 @@ my %module = (
         'HTTP::Request::Common'    => '6.07',
         'HTTP::Request::Generator' => '0.09', # earlier versions don't handle IPv6 well
         'URI'                      => 0,
+        'URI::Escape'              => 0,
         'URL::Encode'              => 0,
         'List::Util'               => '1.29', # for pairmap
         'PerlX::Maybe'             => 0,

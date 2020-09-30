@@ -4,6 +4,7 @@ use warnings;
 use HTTP::Request;
 use HTTP::Request::Common;
 use URI;
+use URI::Escape;
 use Getopt::Long;
 use File::Spec::Unix;
 use HTTP::Request::CurlParameters;
@@ -172,7 +173,10 @@ our @option_spec = (
     'cookie|b=s',
     'cookie-jar|c=s',
     'data|d=s@',
+    'data-ascii=s@',
     'data-binary=s@',
+    'data-raw=s@',
+    'data-urlencode=s@',
     'dump-header|D=s',   # ignored
     'referrer|e=s',
     'form|F=s@',
@@ -272,12 +276,40 @@ sub _add_header( $self, $headers, $h, $value ) {
     }
 }
 
+sub _maybe_read_data_file( $self, $read_files, $data ) {
+    my $res;
+    if( $read_files ) {
+        if( $data =~ /^\@(.*)/ ) {
+            open my $fh, '<', $1
+                or die "$1: $!";
+            local $/;
+            binmode $fh;
+            $res = <$fh>
+        } else {
+            $res = $_
+        }
+    } else {
+        $res = ($data =~ /^\@(.*)/)
+             ? "... contents of $1 ..."
+             : $data
+    }
+    return $res
+}
+
 sub _build_request( $self, $uri, $options, %build_options ) {
     my $body;
 
     my @headers = @{ $options->{header} || []};
     my $method = $options->{request};
-    my @post_data = @{ $options->{data} || $options->{'data-binary'} || []};
+    # Ideally, we shouldn't sort the data but process it in-order
+    my @post_read_data = (@{ $options->{'data'} || []},
+                          @{ $options->{'data-ascii'} || [] }
+                         );
+                         ;
+    my @post_raw_data = @{ $options->{'data-raw'} || [] },
+                    ;
+    my @post_urlencode_data = @{ $options->{'data-urlencode'} || [] };
+    my @post_binary_data = @{ $options->{'data-binary'} || [] };
     my @form_args = @{ $options->{form} || []};
 
     # expand the URI here if wanted
@@ -297,22 +329,47 @@ sub _build_request( $self, $uri, $options, %build_options ) {
         my %request_default_headers = %default_headers;
 
         # Sluuuurp
-        if( $build_options{ read_files }) {
-            @post_data = map {
-                /^\@(.*)/ ? do {
-                                open my $fh, '<', $1
-                                    or die "$1: $!";
-                                local $/;
-                                binmode $fh;
-                                <$fh>
-                            }
-                        : $_
-            } @post_data;
-        } else {
-            @post_data = map {
-                /^\@(.*)/ ? "... contents of $1 ..."
-                        : $_
-            } @post_data;
+        # Thous should be hoisted out of the loop
+        @post_binary_data = map {
+            $self->_maybe_read_data_file( $build_options{ read_files }, $_ );
+        } @post_binary_data;
+
+        @post_read_data = map {
+            my $v = $self->_maybe_read_data_file( $build_options{ read_files }, $_ );
+            $v =~ s![\r\n]!!g;
+            $v
+        } @post_read_data;
+
+        @post_urlencode_data = map {
+            m/\A([^@=]*)([=@])?(.*)\z/sm
+                or die "This should never happen";
+            my ($name, $op, $content) = ($1,$2,$3);
+            if(! $op) {
+                $content = $name;
+            } elsif( $op eq '@' ) {
+                $content = "$op$content";
+            };
+            if( defined $name and length $name ) {
+                $name .= '=';
+            } else {
+                $name = '';
+            };
+            my $v = $self->_maybe_read_data_file( $build_options{ read_files }, $content );
+            $name . uri_escape( $v )
+        } @post_urlencode_data;
+
+        my $data;
+        if(    @post_read_data
+                or @post_binary_data
+                or @post_raw_data
+                or @post_urlencode_data
+        ) {
+            $data = join "&",
+                @post_read_data,
+                @post_binary_data,
+                @post_raw_data,
+                @post_urlencode_data
+                ;
         };
 
         if( @form_args) {
@@ -329,23 +386,23 @@ sub _build_request( $self, $uri, $options, %build_options ) {
         } elsif( $options->{ get }) {
             $method = 'GET';
             # Also, append the POST data to the URL
-            if( @post_data ) {
+            if( $data ) {
                 my $q = $uri->query;
                 if( defined $q and length $q ) {
                     $q .= "&";
                 } else {
                     $q = "";
                 };
-                $q .= join "", @post_data;
+                $q .= $data;
                 $uri->query( $q );
             };
 
         } elsif( $options->{ head }) {
             $method = 'HEAD';
 
-        } elsif( @post_data ) {
+        } elsif( defined $data ) {
             $method = 'POST';
-            $body = join "", @post_data;
+            $body = $data;
             $request_default_headers{ 'Content-Type' } = 'application/x-www-form-urlencoded';
 
         } else {
@@ -488,6 +545,15 @@ File uploads / content from files
 While file uploads and reading POST data from files are supported, the content
 is slurped into memory completely. This can be problematic for large files
 and little available memory.
+
+=item *
+
+Mixed data instances
+
+Multiple mixed instances of C<--data>, C<--data-ascii>, C<--data-raw>,
+C<--data-binary> or C<--data-raw> are sorted by type first instead of getting
+concatenated in the order they appear on the command line.
+If the order is important to you, use one type only.
 
 =item *
 

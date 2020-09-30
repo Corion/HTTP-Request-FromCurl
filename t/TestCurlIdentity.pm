@@ -370,9 +370,13 @@ sub request_identical_ok {
             };
 
             if( !is_deeply $reconstructed[$i], $copy, "$name (reconstructed)" ) {
+                diag "Original command:";
                 diag Dumper $test->{cmd};
+                diag "Original request:";
                 diag Dumper $copy;
+                diag "Reconstructed command:";
                 diag Dumper \@reconstructed_commandline;
+                diag "Reconstructed request:";
                 diag Dumper $reconstructed[$i];
             };
             #request_logs_identical_ok( $test, "$name (reconstructed)", $reconstructed[$i], $res[$i] );
