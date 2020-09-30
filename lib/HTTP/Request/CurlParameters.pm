@@ -213,11 +213,25 @@ C<show_error>
 
 Show error message on HTTP errors
 
+=cut
+
+has show_error => (
+    is => 'ro',
+);
+
+=item *
+
+C<fail>
+
+    fail => 1
+
+Let the Perl code C<die> on error
+
 =back
 
 =cut
 
-has show_error => (
+has fail => (
     is => 'ro',
 );
 
@@ -475,6 +489,7 @@ sub as_lwp_snippet( $self, %options ) {
         push @postamble,
             '    die $res->message if $res->is_error;',
     } elsif( $self->fail ) {
+        push @postamble,
             '    exit 1 if !$res->{success};',
     };
 
@@ -532,6 +547,7 @@ sub as_http_tiny_snippet( $self, %options ) {
         push @postamble,
             '    die $res->{reason} if !$res->{success};',
     } elsif( $self->fail ) {
+        push @postamble,
             '    exit 1 if !$res->{success};',
     };
     my $constructor_args = join ",",
