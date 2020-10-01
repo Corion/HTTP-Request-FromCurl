@@ -306,7 +306,7 @@ sub request_identical_ok {
         read_files => 1,
     );
 
-    my @reconstructed_commandline = ('--verbose', map {"$_"} $r[0]->as_curl(curl => undef));
+    my @reconstructed_commandline = ('--verbose', '--silent', map {"$_"} $r[0]->as_curl(curl => undef));
 
     my @reparse;
     my $lived = eval {
