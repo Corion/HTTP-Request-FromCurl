@@ -282,7 +282,7 @@ sub _maybe_read_data_file( $self, $read_files, $data ) {
         if( $data =~ /^\@(.*)/ ) {
             open my $fh, '<', $1
                 or die "$1: $!";
-            local $/;
+            local $/; # / for Filter::Simple
             binmode $fh;
             $res = <$fh>
         } else {
