@@ -1,3 +1,8 @@
+0.20 2020-10-05
+    * No functionality changes, no need to upgrade
+    * Only test --data-* switches on Curl versions that support --data-*
+    * Ignore sent cookies when testing multiple URIs
+
 0.19 2020-10-02
     * No functionality changes, no need to upgrade
     * Fix Filter::signatures usage for Perl versions below 5.20
