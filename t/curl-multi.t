@@ -15,9 +15,11 @@ my @tests = (
       ignore_headers => 'Cookie', # Curl handling of these is inconsistent
     },
     { cmd => [ '--verbose', '-s', '$url', '--next', '$url?foo=bar', ],
+      version => 7036000,
       ignore_headers => 'Cookie', # Curl handling of these is inconsistent
     },
     { cmd => [ '--verbose', '-s', '$url', '-:', '$url?foo=bar', ],
+      version => 7036000,
       ignore_headers => 'Cookie', # Curl handling of these is inconsistent
     },
     { cmd => [ '--verbose', '-s', '$url?foo={bar,baz}', ],
