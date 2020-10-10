@@ -1,3 +1,7 @@
+0.22 2020-10-10
+    * Properly ignore some more headers in the test suite
+    * No functionality changes, no need to upgrade
+
 0.21 2020-10-09
     * --next was introduced in Curl 7.36.0, skip tests on versions before that
     * Adjust test count when things fail
