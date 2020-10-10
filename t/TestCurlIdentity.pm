@@ -232,9 +232,10 @@ sub request_logs_identical_ok {
         };
 
         my %got = %{ $r->headers };
-        if( $test->{ignore} ) {
-            delete @got{ @{ $test->{ignore}}};
-            delete @{$res->{headers}}{ @{ $test->{ignore}}};
+        if( my $h = $test->{ignore_headers} ) {
+            $h = [$h] if ! ref $h;
+            delete @got{ @{ $h }};
+            delete @{$res->{headers}}{ @{ $h }};
         };
 
         # Fix weirdo CentOS6 build of Curl which has a weirdo User-Agent header:
@@ -392,7 +393,6 @@ sub request_identical_ok {
                 diag "Reconstructed request:";
                 diag Dumper $reconstructed[$i];
             };
-            #request_logs_identical_ok( $test, "$name (reconstructed)", $reconstructed[$i], $res[$i] );
         };
     };
 
