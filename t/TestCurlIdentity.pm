@@ -191,8 +191,7 @@ $HTTP::Request::FromCurl::default_headers{ 'User-Agent' } = "curl/$version";
 my $cmp_version = sprintf "%03d%03d%03d", split /\./, $version;
 
 # Generates 2 OK stanzas
-sub request_logs_identical_ok {
-    my( $test, $name, $r, $res ) = @_;
+sub request_logs_identical_ok( $test, $name, $r, $res ) {
     my $status;
     if( ! $r ) {
         fail $name;
@@ -254,8 +253,7 @@ sub request_logs_identical_ok {
     };
 }
 
-sub request_identical_ok {
-    my( $test ) = @_;
+sub request_identical_ok( $test ) {
     local $TODO = $test->{todo};
 
     local $TODO = "curl $test->{version} required, we have $cmp_version"
