@@ -1,6 +1,6 @@
 #!perl
-#!perl
 use strict;
+use warnings;
 use Test::More;
 use HTTP::Request::FromCurl;
 
