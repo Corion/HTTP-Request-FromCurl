@@ -265,11 +265,13 @@ sub request_identical_ok {
 
     # Replace the dynamic parameters
     my $port = $server->url->port;
-    s!\$(url)\b!$server->$1!ge for @$cmd;
-    s!\$(port)\b!$server->$1!ge for @$cmd;
-    s!\$(tempfile)\b!$tempfile!g for @$cmd;
-    s!\$(tempoutput)\b!$tempoutput!g for @$cmd;
-    s!\$(tempcookies)\b!$tempcookies!g for @$cmd;
+    for (@$cmd) {
+        s!\$(url)\b!$server->$1!ge;
+        s!\$(port)\b!$server->$1!ge;
+        s!\$(tempfile)\b!$tempfile!g;
+        s!\$(tempoutput)\b!$tempoutput!g;
+        s!\$(tempcookies)\b!$tempcookies!g;
+    };
 
     my @res = curl_request( @$cmd );
     note sprintf "Made %d curl requests", 0+@res;
