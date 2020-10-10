@@ -381,6 +381,13 @@ sub request_identical_ok( $test ) {
                 };
             };
 
+            # Ignore headers that the test says should be ignored
+            if( my $h = $test->{ignore_headers} ) {
+                $h = [$h] if ! ref $h;
+                delete @{$reconstructed[$i]->{headers}}{ @{ $h }};
+                delete @{$copy->{headers}}{ @{ $h }};
+            };
+
             if( !is_deeply $reconstructed[$i], $copy, "$name (reconstructed)" ) {
                 diag "Original command:";
                 diag Dumper $test->{cmd};
@@ -412,7 +419,12 @@ sub request_identical_ok( $test ) {
         my $curl_log = $curl_log[$i];
         (my $boundary) = ($curl_log =~ m!Content-Type: multipart/form-data; boundary=(.*?)$!ms);
 
-        request_logs_identical_ok( $test, $name, $r, $res );
+        my $copy = dclone($r);
+        if( exists $copy->{headers}->{'Accept-Encoding'} ) {
+            $copy->{headers}->{'Accept-Encoding'} = $org_accept_encoding;
+        };
+
+        request_logs_identical_ok( $test, $name, $copy, $res );
 
         # Now create a program from the request, run it and check that it still
         # sends the same request as curl does
