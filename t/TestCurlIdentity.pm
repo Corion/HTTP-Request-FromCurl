@@ -289,7 +289,7 @@ sub request_identical_ok( $test ) {
             $skipreason = $1;
 
         } else {
-            fail $test->{name};
+            fail $name;
             diag join " ", @$cmd;
             diag $res[0]->{error_output};
         };
