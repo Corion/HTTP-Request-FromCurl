@@ -281,7 +281,8 @@ sub request_identical_ok( $test ) {
     # For consistency checking the skip counts
     # $res[0]->{error} = "Dummy error";
     if( $res[0]->{error} ) {
-        my $skipcount = 7;
+        # We run 8 tests per request
+        my $skipcount = 8;
         my $skipreason = $res[0]->{error};
         if(     $res[0]->{error_output}
             and $res[0]->{error_output} =~ /\b(option .*?: the installed libcurl version doesn't support this\b)/) {
@@ -294,7 +295,8 @@ sub request_identical_ok( $test ) {
             diag $res[0]->{error_output};
         };
         SKIP: {
-            skip $skipreason, $skipcount * $request_count;
+            # -1 for the fail() above
+            skip $skipreason, $skipcount * $request_count -1;
         };
         return;
     };
