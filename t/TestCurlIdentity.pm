@@ -18,7 +18,7 @@ no warnings 'experimental::signatures';
 use Exporter 'import';
 
 our @EXPORT_OK = (qw(&run_curl_tests $server));
-our $VERSION = '0.17';
+our $VERSION = '0.22';
 
 $Data::Dumper::Useqq = 1;
 
@@ -179,16 +179,20 @@ sub identical_headers_ok( $code, $expected_request, $name,
 }
 
 my $version = curl_version( $curl );
-
+my $cmp_version = sprintf "%03d%03d%03d", split /\./, $version;
 if( ! $version) {
     plan skip_all => "Couldn't find curl executable";
     exit;
-};
+
+    # https://curl.haxx.se/changes.html#7_37_0
+} elsif( $cmp_version < 7037000 and $server->url->host_port =~ /\[/ ) {
+    plan skip_all => sprintf "Curl %s doesn't handle IPv6 hostnames like '%s'",
+                             $version, $server->url;
+    exit;
+}
 
 note "Curl version $version";
 $HTTP::Request::FromCurl::default_headers{ 'User-Agent' } = "curl/$version";
-
-my $cmp_version = sprintf "%03d%03d%03d", split /\./, $version;
 
 # Generates 2 OK stanzas
 sub request_logs_identical_ok( $test, $name, $r, $res ) {
