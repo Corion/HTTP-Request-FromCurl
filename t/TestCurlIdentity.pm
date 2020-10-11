@@ -259,10 +259,8 @@ sub request_logs_identical_ok( $test, $name, $r, $res ) {
 
 sub request_identical_ok( $test ) {
     local $TODO = $test->{todo};
-
     local $TODO = "curl $test->{version} required, we have $cmp_version"
         if $test->{version} and $cmp_version < $test->{version};
-
     my $name = $test->{name} || (join " ", @{ $test->{cmd}});
     my $cmd = [ @{ $test->{cmd} }];
 
@@ -276,10 +274,14 @@ sub request_identical_ok( $test ) {
         s!\$(tempcookies)\b!$tempcookies!g;
     };
 
+    my $request_count = $test->{request_count} || 1;
+
     my @res = curl_request( @$cmd );
     note sprintf "Made %d curl requests", 0+@res;
+    # For consistency checking the skip counts
+    # $res[0]->{error} = "Dummy error";
     if( $res[0]->{error} ) {
-        my $skipcount = 5;
+        my $skipcount = 7;
         my $skipreason = $res[0]->{error};
         if(     $res[0]->{error_output}
             and $res[0]->{error_output} =~ /\b(option .*?: the installed libcurl version doesn't support this\b)/) {
@@ -292,7 +294,7 @@ sub request_identical_ok( $test ) {
             diag $res[0]->{error_output};
         };
         SKIP: {
-            skip $skipreason, $skipcount;
+            skip $skipreason, $skipcount * $request_count;
         };
         return;
     };
