@@ -3,6 +3,7 @@
       combination in tests
     * This is a really minor release to investigate/eliminate one CPAN tester
       failure
+    * Test infrastructure now runs on Github Actions as well
     * No functionality changes, no need to upgrade
 
 0.22 2020-10-10
