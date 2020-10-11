@@ -18,7 +18,7 @@ no warnings 'experimental::signatures';
 use Exporter 'import';
 
 our @EXPORT_OK = (qw(&run_curl_tests $server));
-our $VERSION = '0.22';
+our $VERSION = '0.23';
 
 $Data::Dumper::Useqq = 1;
 
