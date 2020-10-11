@@ -1,0 +1,39 @@
+name: windows
+
+on:
+  push:
+    branches:
+      - '*'
+    tags-ignore:
+      - '*'
+  pull_request:
+
+jobs:
+  perl:
+
+    runs-on: windows-latest
+
+    steps:
+      - run: git config --global core.autocrlf false
+      - uses: actions/checkout@master
+      - name: Set up Perl, Curl
+        run: |
+          choco install strawberryperl curl
+          echo "##[add-path]C:\strawberry\c\bin;C:\strawberry\perl\site\bin;C:\strawberry\perl\bin"
+      - name: perl -V
+        run: perl -V
+      - name: Install build infrastructure
+        shell: cmd
+        run: |
+            call cpanm --notest --installdeps .
+      - name: Build
+        shell: cmd
+        run: |
+            perl Makefile.PL
+            gmake
+      - name: Environment
+        shell: cmd
+        run: |
+            set
+      - name: Run Tests
+        run: prove -I local/ -bl xt t

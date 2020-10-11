@@ -1,0 +1,44 @@
+name: linux
+
+on:
+  push:
+    branches:
+      - '*'
+    tags-ignore:
+      - '*'
+  pull_request:
+
+jobs:
+  perl:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        perl-version:
+          #- '5.8'
+          - '5.10'
+          - '5.14'
+          #- '5.16'
+          #- '5.22'
+          #- '5.24'
+          - '5.26'
+          - '5.30'
+          #- 'blead'
+
+    container:
+      image: perl:${{ matrix.perl-version }}
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: perl -V
+        run: perl -V
+      - name: Install build infrastructure
+        run: |
+            cpanm --notest --installdeps .
+      - name: Build
+        run: |
+            perl Makefile.PL && make
+      - name: Run Tests
+        run: |
+            prove --nocount --jobs 3 -I local/ -bl xt t
