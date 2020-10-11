@@ -462,7 +462,7 @@ sub request_identical_ok( $test ) {
                 or diag $code;
             identical_headers_ok( $code, $curl_log,
                 "We create (almost) the same headers with HTTP::Tiny",
-                ignore_headers => ['Host'],
+                ignore_headers => ['Host','Connection'],
                 boundary       => $boundary,
             ) or diag $code;
 
