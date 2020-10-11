@@ -40,4 +40,4 @@ my @tests = (
     },
 );
 
-run_curl_tests( @tests, 8*2*@tests );
+run_curl_tests( @tests );

@@ -279,10 +279,10 @@ sub request_identical_ok( $test ) {
     my @res = curl_request( @$cmd );
     note sprintf "Made %d curl requests", 0+@res;
     # For consistency checking the skip counts
-    # $res[0]->{error} = "Dummy error";
+    #$res[0]->{error} = "Dummy error";
     if( $res[0]->{error} ) {
-        # We run 8 tests per request
-        my $skipcount = 8;
+        # We run 2 tests for the setup and then 6 tests per request
+        my $skipcount = 6;
         my $skipreason = $res[0]->{error};
         if(     $res[0]->{error_output}
             and $res[0]->{error_output} =~ /\b(option .*?: the installed libcurl version doesn't support this\b)/) {
@@ -296,7 +296,7 @@ sub request_identical_ok( $test ) {
         };
         SKIP: {
             # -1 for the fail() above
-            skip $skipreason, $skipcount * $request_count -1;
+            skip $skipreason, 2 + ($skipcount * $request_count) -1;
         };
         return;
     };
@@ -479,9 +479,12 @@ sub request_identical_ok( $test ) {
 };
 
 sub run_curl_tests( @tests ) {
-    my $testcount = @tests * 8;
-    if( ! ref $tests[-1] ) {
-        $testcount = pop @tests;
+    my $testcount = 0;
+
+    for( @tests ) {
+        my $request_count = $_->{request_count} || 1;
+        $testcount +=   2
+                      + ($request_count * 6);
     };
     plan tests => $testcount;
 
