@@ -1,1 +1,0 @@
-See [lib/WWW/Mechanize/Chrome/Contributing.pod]
