@@ -481,6 +481,20 @@ sub request_identical_ok( $test ) {
 sub run_curl_tests( @tests ) {
     my $testcount = 0;
 
+    # Clean out environment variables that might mess up
+    # the HTTP connection to a local host
+    local @ENV{qw(
+        HTTP_PROXY
+        http_proxy
+        HTTP_PROXY_ALL
+        http_proxy_all
+        HTTPS_PROXY
+        https_proxy
+        CGI_HTTP_PROXY
+        ALL_PROXY
+        all_proxy
+    )};
+
     for( @tests ) {
         my $request_count = $_->{request_count} || 1;
         $testcount +=   2
