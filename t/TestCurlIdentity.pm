@@ -453,9 +453,11 @@ sub request_identical_ok( $test ) {
                 push @lwp_ignore, 'TE';
             };
 
+            my $h = $test->{ignore_headers} || [];
+
             identical_headers_ok( $code, $curl_log,
                 "We create (almost) the same headers with LWP",
-                ignore_headers => ['Connection', @lwp_ignore],
+                ignore_headers => ['Connection', @lwp_ignore, @$h],
                 boundary       => $boundary,
             ) or diag $code;
 
@@ -466,7 +468,7 @@ sub request_identical_ok( $test ) {
                 or diag $code;
             identical_headers_ok( $code, $curl_log,
                 "We create (almost) the same headers with HTTP::Tiny",
-                ignore_headers => ['Host','Connection'],
+                ignore_headers => ['Host','Connection', @$h],
                 boundary       => $boundary,
             ) or diag $code;
 
