@@ -15,7 +15,7 @@ jobs:
 
     steps:
       - run: git config --global core.autocrlf false
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v2
       - name: Set up Perl, Curl
         run: |
           choco install strawberryperl curl
