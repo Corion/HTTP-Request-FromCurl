@@ -594,9 +594,8 @@ L<https://perlmonks.org/>.
 
 =head1 BUG TRACKER
 
-Please report bugs in this module via the RT CPAN bug queue at
-L<https://rt.cpan.org/Public/Dist/Display.html?Name=HTTP-Request-FromCurl>
-or via mail to L<filter-signatures-Bugs@rt.cpan.org>.
+Please report bugs in this module via the Github bug queue at
+L<https://github.com/Corion/HTTP-Request-FromCurl/issues>
 
 =head1 AUTHOR
 
