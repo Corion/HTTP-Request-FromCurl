@@ -22,9 +22,18 @@ HTTP::Request::CurlParameters - container for a Curl-like HTTP request
 
 =head1 SYNOPSIS
 
+  my $ua = LWP::UserAgent->new;
+  my $params = HTTP::Request::CurlParameters->new(...);
+  my $response = $ua->request($params->as_request);
+
 =head1 DESCRIPTION
 
-Objects of this class are mostly created from L<HTTP::Request::FromCurl>.
+Objects of this class are mostly created from L<HTTP::Request::FromCurl>. Most
+likely you want to use that module instead:
+
+  my $ua = LWP::UserAgent->new;
+  my $params = HTTP::Request::FromCurl->new(command_curl => $cmd);
+  my $response = $ua->request($params->as_request);
 
 =head1 METHODS
 

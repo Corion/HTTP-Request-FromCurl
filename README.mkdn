@@ -43,7 +43,7 @@ HTTP::Request::FromCurl - create a HTTP::Request from a curl command line
         command => '--user-agent myscript/1.0 https://example.com',
     );
 
-The constructor returns one or more [HTTP::Request::CurlParameters](https://metacpan.org/pod/HTTP::Request::CurlParameters) objects
+The constructor returns one or more [HTTP::Request::CurlParameters](https://metacpan.org/pod/HTTP%3A%3ARequest%3A%3ACurlParameters) objects
 that encapsulate the parameters. If the command generates multiple requests,
 they will be returned in list context. In scalar context, only the first request
 will be returned.
@@ -91,7 +91,7 @@ Contains the default headers added to every request
 
 ## `@option_spec`
 
-Contains the [Getopt::Long](https://metacpan.org/pod/Getopt::Long) specification of the recognized command line
+Contains the [Getopt::Long](https://metacpan.org/pod/Getopt%3A%3ALong) specification of the recognized command line
 parameters.
 
 The following `curl` options are recognized but largely ignored:
@@ -128,7 +128,7 @@ The following `curl` options are recognized but largely ignored:
 ## Incompatible cookie jar formats
 
 Until somebody writes a robust Netscape cookie file parser and proper loading
-and storage for [HTTP::CookieJar](https://metacpan.org/pod/HTTP::CookieJar), this module will not be able to load and
+and storage for [HTTP::CookieJar](https://metacpan.org/pod/HTTP%3A%3ACookieJar), this module will not be able to load and
 save files in the format that Curl uses.
 
 ## Loading/saving cookie jars is the job of the UA
@@ -148,7 +148,7 @@ You're expected to instruct your UA to load/save cookie jars:
 
 ## Different delimiter for form data
 
-The delimiter is built by [HTTP::Message](https://metacpan.org/pod/HTTP::Message), and `curl` uses a different
+The delimiter is built by [HTTP::Message](https://metacpan.org/pod/HTTP%3A%3AMessage), and `curl` uses a different
 mechanism to come up with a unique data delimiter. This results in differences
 in the raw body content and the `Content-Length` header.
 
@@ -176,13 +176,13 @@ in the raw body content and the `Content-Length` header.
 
 # SEE ALSO
 
-[LWP::Curl](https://metacpan.org/pod/LWP::Curl)
+[LWP::Curl](https://metacpan.org/pod/LWP%3A%3ACurl)
 
-[LWP::Protocol::Net::Curl](https://metacpan.org/pod/LWP::Protocol::Net::Curl)
+[LWP::Protocol::Net::Curl](https://metacpan.org/pod/LWP%3A%3AProtocol%3A%3ANet%3A%3ACurl)
 
-[LWP::CurlLog](https://metacpan.org/pod/LWP::CurlLog)
+[LWP::CurlLog](https://metacpan.org/pod/LWP%3A%3ACurlLog)
 
-[HTTP::Request::AsCurl](https://metacpan.org/pod/HTTP::Request::AsCurl) - for the inverse function
+[HTTP::Request::AsCurl](https://metacpan.org/pod/HTTP%3A%3ARequest%3A%3AAsCurl) - for the inverse function
 
 The module HTTP::Request::AsCurl likely also implements a much better version
 of `->as_curl` than this module.
@@ -202,9 +202,8 @@ The public support forum of this module is
 
 # BUG TRACKER
 
-Please report bugs in this module via the RT CPAN bug queue at
-[https://rt.cpan.org/Public/Dist/Display.html?Name=HTTP-Request-FromCurl](https://rt.cpan.org/Public/Dist/Display.html?Name=HTTP-Request-FromCurl)
-or via mail to [filter-signatures-Bugs@rt.cpan.org](https://metacpan.org/pod/filter-signatures-Bugs@rt.cpan.org).
+Please report bugs in this module via the Github bug queue at
+[https://github.com/Corion/HTTP-Request-FromCurl/issues](https://github.com/Corion/HTTP-Request-FromCurl/issues)
 
 # AUTHOR
 
