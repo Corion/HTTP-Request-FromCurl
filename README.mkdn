@@ -29,6 +29,12 @@ HTTP::Request::FromCurl - create a HTTP::Request from a curl command line
         $ua->request( $r->as_request )
     }
 
+# RATIONALE
+
+`curl` command lines are found everywhere in documentation. The Firefox
+developer tools can also copy network requests as `curl` command lines from
+the network panel. This module enables converting these to Perl code.
+
 # METHODS
 
 ## `->new`
