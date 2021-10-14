@@ -1,3 +1,7 @@
+0.26 2021-10-14
+    * Fix synopses to be more illustrative
+    * Update bugtracker URLs
+
 0.25 2020-10-14
     * Output more diagnostics on failure/suspect requests to find out
       what makes the test suite unhappy on Cygwin
