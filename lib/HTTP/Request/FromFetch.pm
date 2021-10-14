@@ -15,7 +15,7 @@ our $VERSION = '0.25';
 
 HTTP::Request::FromFetch - turn a Javascript fetch() statement into HTTP::Request
 
-=head1 SYNPSIS
+=head1 SYNOPSIS
 
   my $ua = LWP::UserAgent->new();
   my $req = HTTP::Request::FromFetch->new(<<'JS')->as_request;

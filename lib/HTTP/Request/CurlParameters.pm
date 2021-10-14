@@ -23,7 +23,7 @@ HTTP::Request::CurlParameters - container for a Curl-like HTTP request
 =head1 SYNOPSIS
 
   my $ua = LWP::UserAgent->new;
-  my $params = HTTP::Request::CurlParameters->new(...);
+  my $params = HTTP::Request::CurlParameters->new(argv => \@ARGV);
   my $response = $ua->request($params->as_request);
 
 =head1 DESCRIPTION
