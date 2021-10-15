@@ -133,7 +133,15 @@ The following C<wget> options are recognized but largely ignored:
 
 =over 4
 
-XXX
+=item B<verbose>
+
+=item B<quiet>
+
+=item B<auth-no-challenge>
+
+=item B<output-document>
+
+=item B<debug>
 
 If you want to keep session cookies between subsequent requests, you need to
 provide a cookie jar in your user agent.
@@ -146,8 +154,6 @@ our @option_spec = (
     'user-agent|U=s',
     'referer=s',
     'verbose|v',             # ignored
-    'show-error|S',          # ignored
-    'fail|f',                # ignored
     'quiet',                 # ignored
     'buffer!',
     'compression=s',
@@ -162,13 +168,9 @@ our @option_spec = (
     'form|F=s@',
     'header|H=s@',
     'method=s',
-    'include|i',             # ignored
-    'insecure|k',
-    'location|L',            # ignored, we always follow redirects
     'max-time|m=s',
     'http-keep-alive!',
     'cache!',
-    'progress-bar|#',        # ignored
     'http-user|u=s',
     'http-password|u=s',
     'output-document|O=s',   # ignored
