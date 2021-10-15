@@ -1,5 +1,6 @@
 0.27 To be released
     * Add HTTP::Request::FromWGet
+    * HTTP::Request::FromFetch now optionally takes named arguments
 
 0.26 2021-10-14
     * Fix synopses to be more illustrative
