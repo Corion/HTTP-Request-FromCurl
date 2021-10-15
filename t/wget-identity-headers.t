@@ -17,6 +17,7 @@ my @tests = (
     { cmd => [  '--debug', '--compression', 'auto', '$url', '--header', 'X-Test: test', '-O', '-' ] },
     { cmd => [  '--debug', '--compression', 'gzip', '$url', '--header', 'X-Test: test', '-O', '-' ] },
     { cmd => [  '--debug', '--compression', 'none', '$url', '--header', 'X-Test: test', '-O', '-' ] },
+    { cmd => [  '--debug', '--no-cache', '$url', '--header', 'X-Test: test', '-O', '-' ] },
 );
 
 run_wget_tests( @tests );

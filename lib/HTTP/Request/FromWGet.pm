@@ -168,7 +168,7 @@ our @option_spec = (
     'location|L',        # ignored, we always follow redirects
     'max-time|m=s',
     'http-keepalive!',
-    'cache!',            # XXX unimplemented, adds cache headers
+    'no-cache',
     'progress-bar|#',    # ignored
     'http-user|u=s',
     'http-password|u=s',
@@ -423,7 +423,12 @@ sub _build_request( $self, $uri, $options, %build_options ) {
             $self->_set_header( \%headers, "User-Agent", $options->{ 'user-agent' } );
         };
 
-        if( defined $options->{ referrer }) {
+        if( $options->{ 'no-cache' }) {
+            $self->_set_header( \%headers, "Cache-Control" => 'no-cache' );
+            $self->_set_header( \%headers, "Pragma" => 'no-cache' );
+        };
+
+        if( defined $options->{ referer }) {
             $self->_set_header( \%headers, "Referer" => $options->{ 'referrer' } );
         };
 
