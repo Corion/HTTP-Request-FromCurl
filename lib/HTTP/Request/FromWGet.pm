@@ -71,7 +71,7 @@ they will be returned in list context. In scalar context, only the first request
 will be returned.
 
     my $req = HTTP::Request::FromWGet->new(
-        command => '--data-binary @/etc/passwd https://example.com',
+        command => '--post-file /etc/passwd https://example.com',
         read_files => 1,
     );
 
@@ -153,13 +153,12 @@ our @option_spec = (
     'compression=s',
     'cookie|b=s',
     'load-cookies|c=s',
-    'post-data=s@',
-    'post-file=s@',
-    'body-data=s@',
-    'body-file=s@',
+    'post-data=s',
+    'post-file=s',
+    'body-data=s',
+    'body-file=s',
     'content-disposition=s',
     'auth-no-challenge',     # ignored
-    'referer=s',
     'form|F=s@',
     'header|H=s@',
     'method=s',
@@ -259,19 +258,13 @@ sub _set_header( $self, $headers, $h, $value ) {
 sub _maybe_read_data_file( $self, $read_files, $data ) {
     my $res;
     if( $read_files ) {
-        if( $data =~ /^\@(.*)/ ) {
-            open my $fh, '<', $1
-                or die "$1: $!";
-            local $/; # / for Filter::Simple
-            binmode $fh;
-            $res = <$fh>
-        } else {
-            $res = $_
-        }
+        open my $fh, '<', $data
+            or die "$data: $!";
+        local $/; # / for Filter::Simple
+        binmode $fh;
+        $res = <$fh>
     } else {
-        $res = ($data =~ /^\@(.*)/)
-             ? "... contents of $1 ..."
-             : $data
+        $res = "... contents of $data ..."
     }
     return $res
 }
@@ -281,15 +274,19 @@ sub _build_request( $self, $uri, $options, %build_options ) {
 
     my @headers = @{ $options->{header} || []};
     my $method = $options->{request};
+
     # Ideally, we shouldn't sort the data but process it in-order
-    my @post_read_data = (@{ $options->{'data'} || []},
-                          @{ $options->{'data-ascii'} || [] }
-                         );
-                         ;
-    my @post_raw_data = @{ $options->{'data-raw'} || [] },
+    my @post_raw_data;
+    if( exists $options->{ 'post-data' }) {
+        @post_raw_data = $options->{'post-data'};
+        $method = 'POST';
+    };
                     ;
-    my @post_urlencode_data = @{ $options->{'data-urlencode'} || [] };
-    my @post_binary_data = @{ $options->{'data-binary'} || [] };
+    if( my $file = $options->{'post-file'} ) {
+        @post_raw_data = $self->_maybe_read_data_file( $build_options{ read_files }, $file );
+        $method = 'POST';
+    };
+                    ;
     my @form_args = @{ $options->{form} || []};
 
     # expand the URI here if wanted
@@ -308,47 +305,10 @@ sub _build_request( $self, $uri, $options, %build_options ) {
         # Stuff we use unless nothing else hits
         my %request_default_headers = %default_headers;
 
-        # Sluuuurp
-        # Thous should be hoisted out of the loop
-        @post_binary_data = map {
-            $self->_maybe_read_data_file( $build_options{ read_files }, $_ );
-        } @post_binary_data;
-
-        @post_read_data = map {
-            my $v = $self->_maybe_read_data_file( $build_options{ read_files }, $_ );
-            $v =~ s![\r\n]!!g;
-            $v
-        } @post_read_data;
-
-        @post_urlencode_data = map {
-            m/\A([^@=]*)([=@])?(.*)\z/sm
-                or die "This should never happen";
-            my ($name, $op, $content) = ($1,$2,$3);
-            if(! $op) {
-                $content = $name;
-            } elsif( $op eq '@' ) {
-                $content = "$op$content";
-            };
-            if( defined $name and length $name ) {
-                $name .= '=';
-            } else {
-                $name = '';
-            };
-            my $v = $self->_maybe_read_data_file( $build_options{ read_files }, $content );
-            $name . uri_escape( $v )
-        } @post_urlencode_data;
-
         my $data;
-        if(    @post_read_data
-                or @post_binary_data
-                or @post_raw_data
-                or @post_urlencode_data
-        ) {
+        if( @post_raw_data ) {
             $data = join "&",
-                @post_read_data,
-                @post_binary_data,
                 @post_raw_data,
-                @post_urlencode_data
                 ;
         };
 
