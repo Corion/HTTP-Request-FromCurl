@@ -630,7 +630,7 @@ our %curl_header_defaults = (
 
 sub as_curl($self,%options) {
     $options{ curl } = 'curl'
-        if ! exists $options{ long_options };
+        if ! exists $options{ curl };
     $options{ long_options } = 1
         if ! exists $options{ long_options };
 
