@@ -166,7 +166,7 @@ our @option_spec = (
     'insecure|k',
     'location|L',            # ignored, we always follow redirects
     'max-time|m=s',
-    'http-keepalive!',
+    'http-keep-alive!',
     'cache!',
     'progress-bar|#',        # ignored
     'http-user|u=s',
@@ -389,6 +389,13 @@ sub _build_request( $self, $uri, $options, %build_options ) {
                 $self->_set_header( \%headers, "Pragma" => 'no-cache' );
             };
         };
+
+        if( exists $options->{ 'http-keep-alive' }) {
+            if(! $options->{ 'http-keep-alive' } ) {
+                $self->_set_header( \%headers, "Connection" => 'Close' );
+            };
+        };
+
 
         if( defined $options->{ referer }) {
             $self->_set_header( \%headers, "Referer" => $options->{ 'referer' } );
