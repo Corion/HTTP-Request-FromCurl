@@ -320,7 +320,7 @@ sub request_identical_ok( $test ) {
     my $org_accept_encoding = $1;
 
     my @curl_log = split /^(?=Request:)/m, $log;
-    diag sprintf "Received %d curl requests", 0+@curl_log;
+    note sprintf "Received %d curl requests", 0+@curl_log;
 
     my @r = HTTP::Request::FromCurl->new(
         argv => $cmd,

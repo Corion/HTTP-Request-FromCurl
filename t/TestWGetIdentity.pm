@@ -310,7 +310,7 @@ sub request_identical_ok( $test ) {
     my $org_accept_encoding = $1;
 
     my @wget_log = split /^(?=Request:)/m, $log;
-    diag sprintf "Received %d wget requests", 0+@wget_log;
+    note sprintf "Received %d wget requests", 0+@wget_log;
 
     my @r = HTTP::Request::FromWGet->new(
         argv => $cmd,
