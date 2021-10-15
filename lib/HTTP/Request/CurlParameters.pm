@@ -709,8 +709,12 @@ sub as_wget($self,%options) {
     my @request_commands;
 
     if( $self->method ne 'GET' ) {
-        push @request_commands,
-            '--method' => $self->method;
+        if( $self->method eq 'POST' and $self->body ) {
+            # This is implied by '--post-data', below
+        } else {
+            push @request_commands,
+                '--method' => $self->method;
+        };
     };
 
     if( scalar keys %{ $self->headers }) {
@@ -727,7 +731,6 @@ sub as_wget($self,%options) {
             };
             for my $val (@$v) {
                 if( !defined $default or $val ne $default ) {
-
                     # also skip the Host: header if it derives from $uri
                     if( $h eq 'Host' and ($val eq $self->uri->host_port
                                           or $val eq $self->uri->host   )) {
@@ -747,9 +750,15 @@ sub as_wget($self,%options) {
     };
 
     if( my $body = $self->body ) {
-        push @request_commands,
-            $options{ long_options } ? '--data-raw' : '--data-raw',
-            $body;
+        if( $self->method eq 'POST' ) {
+            push @request_commands,
+                '--post-data',
+                $body;
+        } else {
+            push @request_commands,
+                '--body-data',
+                $body;
+        };
     };
 
     push @request_commands, $self->uri;
