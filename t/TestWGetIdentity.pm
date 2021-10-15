@@ -317,7 +317,7 @@ sub request_identical_ok( $test ) {
         read_files => 1,
     );
 
-    my @reconstructed_commandline = ('--debug', map {"$_"} $r[0]->as_wget(wget => undef));
+    my @reconstructed_commandline = ('--debug', '-O', '-', map {"$_"} $r[0]->as_wget(wget => undef));
 
     my @reparse;
     my $lived = eval {

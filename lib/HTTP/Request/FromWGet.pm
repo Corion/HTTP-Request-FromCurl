@@ -145,10 +145,10 @@ provide a cookie jar in your user agent.
 our @option_spec = (
     'user-agent|U=s',
     'referer=s',
-    'verbose|v',         # ignored
-    'show-error|S',      # ignored
-    'fail|f',            # ignored
-    'silent|s',          # ignored
+    'verbose|v',             # ignored
+    'show-error|S',          # ignored
+    'fail|f',                # ignored
+    'quiet',                 # ignored
     'buffer!',
     'compression=s',
     'cookie|b=s',
@@ -158,22 +158,22 @@ our @option_spec = (
     'body-data=s@',
     'body-file=s@',
     'content-disposition=s',
-    'auth-no-challenge', # ignored
+    'auth-no-challenge',     # ignored
     'referer=s',
     'form|F=s@',
     'header|H=s@',
     'method=s',
-    'include|i',         # ignored
+    'include|i',             # ignored
     'insecure|k',
-    'location|L',        # ignored, we always follow redirects
+    'location|L',            # ignored, we always follow redirects
     'max-time|m=s',
     'http-keepalive!',
     'cache!',
-    'progress-bar|#',    # ignored
+    'progress-bar|#',        # ignored
     'http-user|u=s',
     'http-password|u=s',
-    'output-file|O=s',   # ignored
-    'debug',             # ignored
+    'output-document|O=s',   # ignored
+    'debug',                 # ignored
 );
 
 sub new( $class, %options ) {
