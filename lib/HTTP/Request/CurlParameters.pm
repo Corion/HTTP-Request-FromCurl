@@ -692,11 +692,12 @@ sub as_curl($self,%options) {
         @request_commands;
 }
 
-# These are what curl uses as defaults, not what Perl should use as default!
+# These are what wget uses as defaults, not what Perl should use as default!
 our %wget_header_defaults = (
     'Accept'          => '*/*',
     'Accept-Encoding' => 'identity',
-    # For Perl, use HTTP::Message::decodable() instead of the above list
+    'User-Agent' => 'Wget/1.21',
+    'Connection' => 'Keep-Alive',
 );
 
 sub as_wget($self,%options) {
