@@ -391,7 +391,7 @@ sub _build_request( $self, $uri, $options, %build_options ) {
         };
 
         if( defined $options->{ referer }) {
-            $self->_set_header( \%headers, "Referer" => $options->{ 'referrer' } );
+            $self->_set_header( \%headers, "Referer" => $options->{ 'referer' } );
         };
 
         for my $k (keys %request_default_headers) {
