@@ -692,6 +692,73 @@ sub as_curl($self,%options) {
         @request_commands;
 }
 
+# These are what curl uses as defaults, not what Perl should use as default!
+our %wget_header_defaults = (
+    'Accept'          => '*/*',
+    'Accept-Encoding' => 'identity',
+    # For Perl, use HTTP::Message::decodable() instead of the above list
+);
+
+sub as_wget($self,%options) {
+    $options{ wget } = 'wget'
+        if ! exists $options{ wget };
+    $options{ long_options } = 1
+        if ! exists $options{ long_options };
+
+    my @request_commands;
+
+    if( $self->method ne 'GET' ) {
+        push @request_commands,
+            '--method' => $self->method;
+    };
+
+    if( scalar keys %{ $self->headers }) {
+        for my $h (sort keys %{$self->headers}) {
+            my $v = $self->headers->{$h};
+
+            my $default;
+            if( exists $wget_header_defaults{ $h }) {
+                $default = $wget_header_defaults{ $h };
+            };
+
+            if( ! ref $v ) {
+                $v = [$v];
+            };
+            for my $val (@$v) {
+                if( !defined $default or $val ne $default ) {
+
+                    # also skip the Host: header if it derives from $uri
+                    if( $h eq 'Host' and ($val eq $self->uri->host_port
+                                          or $val eq $self->uri->host   )) {
+                        # trivial host header
+                    } elsif( $h eq 'User-Agent' ) {
+                        push @request_commands,
+                            '--user-agent',
+                            $val;
+                    } else {
+                        push @request_commands,
+                            '--header',
+                            "$h: $val";
+                    };
+                };
+            };
+        };
+    };
+
+    if( my $body = $self->body ) {
+        push @request_commands,
+            $options{ long_options } ? '--data-raw' : '--data-raw',
+            $body;
+    };
+
+    push @request_commands, $self->uri;
+
+    return
+        #(defined $options{ curl } ? $options{curl} : () ),
+        @request_commands;
+}
+
+
 =head2 C<< $r->clone >>
 
 Returns a shallow copy of the object
