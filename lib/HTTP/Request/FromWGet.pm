@@ -171,8 +171,8 @@ our @option_spec = (
     'max-time|m=s',
     'http-keep-alive!',
     'cache!',
-    'http-user|u=s',
-    'http-password|u=s',
+    'http-user=s',
+    'http-password=s',
     'output-document|O=s',   # ignored
     'debug',                 # ignored
 );
@@ -359,7 +359,7 @@ sub _build_request( $self, $uri, $options, %build_options ) {
             push @headers, sprintf 'Authorization: Bearer %s', $options->{'oauth2-bearer'};
         };
 
-        if( $options->{ 'user' } ) {
+        if( $options->{ 'user' } || $options->{'http-user'} ) {
             if(    $options->{anyauth}
                 || $options->{ntlm}
                 || $options->{negotiate}
@@ -369,7 +369,7 @@ sub _build_request( $self, $uri, $options, %build_options ) {
                 # 401 response asking for credentials, but ...
             } else {
                 # $options->{basic} or none at all
-                my $info = delete $options->{'user'};
+                my $info = delete $options->{'user'} || delete $options->{'http-user'};
                 # We need to bake this into the header here?!
                 push @headers, sprintf 'Authorization: Basic %s', encode_base64( $info );
             }
