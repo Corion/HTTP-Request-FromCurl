@@ -79,16 +79,6 @@ will be returned.
     `--data=@/etc/passwd`. The default is to not read the contents of files
     specified this way.
 
-## `->squash_uri( $uri )`
-
-    my $uri = HTTP::Request::FromCurl->squash_uri(
-        URI->new( 'https://example.com/foo/bar/..' )
-    );
-    # https://example.com/foo/
-
-Helper method to clean up relative path elements from the URI the same way
-that curl does.
-
 # GLOBAL VARIABLES
 
 ## `%default_headers`
@@ -124,6 +114,18 @@ The following `curl` options are recognized but largely ignored:
 - `--parallel-max`
 
     Parallel requests is something you need to handle in the UA
+
+# METHODS
+
+## `->squash_uri( $uri )`
+
+    my $uri = HTTP::Request::FromCurl->squash_uri(
+        URI->new( 'https://example.com/foo/bar/..' )
+    );
+    # https://example.com/foo/
+
+Helper method to clean up relative path elements from the URI the same way
+that curl does.
 
 # LIVE DEMO
 

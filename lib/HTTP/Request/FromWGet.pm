@@ -99,16 +99,6 @@ specified this way.
 
 =back
 
-=head2 C<< ->squash_uri( $uri ) >>
-
-    my $uri = HTTP::Request::FromWGet->squash_uri(
-        URI->new( 'https://example.com/foo/bar/..' )
-    );
-    # https://example.com/foo/
-
-Helper method to clean up relative path elements from the URI the same way
-that wget does.
-
 =head1 GLOBAL VARIABLES
 
 =head2 C<< %default_headers >>
@@ -210,6 +200,20 @@ sub new( $class, %options ) {
                   :       ($class->_build_request( $cmd->[0], \%wget_options, %options ))[0]
                   ;
 }
+
+=head1 METHODS
+
+=head2 C<< ->squash_uri( $uri ) >>
+
+    my $uri = HTTP::Request::FromWGet->squash_uri(
+        URI->new( 'https://example.com/foo/bar/..' )
+    );
+    # https://example.com/foo/
+
+Helper method to clean up relative path elements from the URI the same way
+that wget does.
+
+=cut
 
 sub squash_uri( $class, $uri ) {
     my $u = $uri->clone;
