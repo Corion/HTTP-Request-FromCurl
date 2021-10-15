@@ -13,7 +13,6 @@ my @tests = (
       cmd => [ '-O', '-', '--debug', '--header', 'X-Host: example.com', '--header','X-Host: www.example.com', '$url' ] },
     { cmd => [ '-O', '-', '--debug', , '--user-agent', 'www::mechanize/1.0', '$url' ],
     },
-    { cmd => [ '-O', '-', '--debug', '$url', '--header', 'X-Test: test' ] },
     { cmd => [ '-O', '-', '--debug', '--no-cache', '$url', '--header', 'X-Test: test' ] },
     { cmd => [ '-O', '-', '--debug', '--cache', '$url', '--header', 'X-Test: test' ] },
     { cmd => [ '-O', '-', '--debug', '--referer', 'https://referer.example.com', '$url' ] },
