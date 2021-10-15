@@ -1,3 +1,6 @@
+0.27 To be released
+    * Add HTTP::Request::FromWGet
+
 0.26 2021-10-14
     * Fix synopses to be more illustrative
     * Update bugtracker URLs
