@@ -739,6 +739,14 @@ sub as_wget($self,%options) {
                         push @request_commands,
                             '--user-agent',
                             $val;
+                    } elsif( $h eq 'Cache-Control' ) {
+                        if( $val =~ /^no-cache\b/i ) {
+                            push @request_commands, '--no-cache';
+                        } else {
+                            push @request_commands,
+                                '--header',
+                                "$h: $val";
+                        }
                     } else {
                         push @request_commands,
                             '--header',
