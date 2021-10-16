@@ -172,6 +172,20 @@ sub identical_headers_ok( $code, $expected_request, $name,
         push @ignore_headers, 'Content-Length';
     };
 
+    # Content-Length gets a special treatment for Content-Type application/x-www-form-urlencoded
+    # because %20 and + are used to encode space between different versions of curl
+    # 7.74.0 and prior use %20 , 7.78 seems to use +
+    if(     $expected_request =~ m!^Content-Type: application/x-www-form-urlencoded!
+        and $expected_request =~ /^Content-Length: (\d+)$/ms
+    ) {
+        my $len = $1;
+        if( $log !~ /^Content-Length: $len$/ms ) {
+            diag "Content-Length differs, likely due to different encoding for space (% vs. +)";
+            push @ignore_headers, 'Content-Length';
+        };
+    };
+
+
     for my $h (@ignore_headers) {
         $log              =~ s!^$h: .*?\r?\n!!ms;
         $expected_request =~ s!^$h: .*?\r?\n!!ms;

@@ -1,6 +1,9 @@
-0.27 To be released
+0.27 2021-10-15
     * Add HTTP::Request::FromWGet
     * HTTP::Request::FromFetch now optionally takes named arguments
+    * Curl seems to URL-encode differently between versions - we adapt our
+      tests to ignore the difference, but we use the "old" style of URL-encoding
+      The curl versions making the change seem to be 7.74 (%) and 7.78 (+)
 
 0.26 2021-10-14
     * Fix synopses to be more illustrative
