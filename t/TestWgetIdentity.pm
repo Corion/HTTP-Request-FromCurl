@@ -91,10 +91,10 @@ sub wget_request( @args ) {
 
                 $res{ headers } = +{ $msg->headers->flatten() };
 
-                ## Fix weirdo CentOS6 build of wget which has a weirdo User-Agent header:
-                #if( exists $res{ headers }->{ 'User-Agent' }) {
-                #    $res{ headers }->{ 'User-Agent' } =~ s!^(Wget/1\.21)\b.+!$1!;
-                #};
+                ## Fix FreeBSD build of wget which has "freebsd10.3 in the User-Agent header:
+                if( exists $res{ headers }->{ 'User-Agent' }) {
+                    $res{ headers }->{ 'User-Agent' } =~ s!^(Wget/\d+\.\d+)\b.+!$1!;
+                };
             };
 
             $res{ response_body } = $_stdout;
@@ -246,6 +246,11 @@ sub request_logs_identical_ok( $test, $name, $r, $res ) {
             delete @{$res->{headers}}{ @{ $h }};
         };
 
+        ## Fix FreeBSD build of wget which has "freebsd10.3 in the User-Agent header:
+        if( exists $res->{headers}->{ 'User-Agent' }) {
+            $res->{ headers }->{ 'User-Agent' } =~ s!^(Wget/\d+\.\d+)\b.+!$1!;
+        };
+
         is_deeply \%got, $res->{headers}, $name
             or diag Dumper [\%got, $res->{headers}];
 
@@ -340,6 +345,7 @@ sub request_identical_ok( $test ) {
     # is_deeply \@reconstructed, $cmd, "Reconstructed command";
     # Check that the reconstructed command behaves identically
     my @reconstructed = wget_request( @reconstructed_commandline );
+
     # Can we maybe even loop over all requests?!
     # We need to fix our test count for numbers higher than 1
     for my $i ( 0..0 ) {
@@ -429,6 +435,10 @@ sub request_identical_ok( $test ) {
         # sends the same request as wget does
 
         if( $r ) {
+            ## Fix FreeBSD build of wget which has "freebsd10.3 in the User-Agent header:
+            if( exists $res->{headers}->{ 'User-Agent' }) {
+                $wget_log =~ s!^(User-Agent:\s+wget/[\d\.]+)( .*)?$!$1!m;
+            };
             # Fix weirdo CentOS6 build of wget which has a weirdo User-Agent header:
             $wget_log =~ s!^(User-Agent:\s+wget/[\d\.]+)( .*)?$!$1!m;
                 #or die "Didn't find UA header in [$wget_log]?!";
