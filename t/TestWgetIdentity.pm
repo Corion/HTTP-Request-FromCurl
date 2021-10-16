@@ -1,7 +1,7 @@
 package # hide from CPAN
-    TestWGetIdentity;
+    TestWgetIdentity;
 use strict;
-use HTTP::Request::FromWGet;
+use HTTP::Request::FromWget;
 use Test::More;
 use Data::Dumper;
 use Capture::Tiny 'capture';
@@ -197,7 +197,7 @@ if( ! $version) {
 }
 
 note "wget version $version";
-$HTTP::Request::FromWGet::default_headers{ 'User-Agent' } = "Wget/$version";
+$HTTP::Request::FromWget::default_headers{ 'User-Agent' } = "Wget/$version";
 
 # Generates 2 OK stanzas
 sub request_logs_identical_ok( $test, $name, $r, $res ) {
@@ -312,7 +312,7 @@ sub request_identical_ok( $test ) {
     my @wget_log = split /^(?=Request:)/m, $log;
     note sprintf "Received %d wget requests", 0+@wget_log;
 
-    my @r = HTTP::Request::FromWGet->new(
+    my @r = HTTP::Request::FromWget->new(
         argv => $cmd,
         read_files => 1,
     );
@@ -321,7 +321,7 @@ sub request_identical_ok( $test ) {
 
     my @reparse;
     my $lived = eval {
-        @reparse = HTTP::Request::FromWGet->new(
+        @reparse = HTTP::Request::FromWget->new(
             argv => [@reconstructed_commandline],
             read_files => 1,
         );

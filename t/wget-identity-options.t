@@ -1,9 +1,9 @@
 #!perl
 use strict;
-use HTTP::Request::FromWGet;
+use HTTP::Request::FromWget;
 
 use lib 't';
-use TestWGetIdentity 'run_wget_tests';
+use TestWgetIdentity 'run_wget_tests';
 
 my @tests = (
     #{ cmd => [ '--verbose', '-g', '-s', '$url', '--max-time', 5 ] },

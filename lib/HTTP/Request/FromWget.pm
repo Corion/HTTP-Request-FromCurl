@@ -1,4 +1,4 @@
-package HTTP::Request::FromWGet;
+package HTTP::Request::FromWget;
 use strict;
 use warnings;
 use HTTP::Request;
@@ -20,24 +20,24 @@ our $VERSION = '0.27';
 
 =head1 NAME
 
-HTTP::Request::FromWGet - create a HTTP::Request from a wget command line
+HTTP::Request::FromWget - create a HTTP::Request from a wget command line
 
 =head1 SYNOPSIS
 
-    my $req = HTTP::Request::FromWGet->new(
+    my $req = HTTP::Request::FromWget->new(
         # Note - wget itself may not appear
         argv => ['https://example.com'],
     );
 
-    my $req = HTTP::Request::FromWGet->new(
+    my $req = HTTP::Request::FromWget->new(
         command => 'https://example.com',
     );
 
-    my $req = HTTP::Request::FromWGet->new(
+    my $req = HTTP::Request::FromWget->new(
         command_wget => 'wget -A mywget/1.0 https://example.com',
     );
 
-    my @requests = HTTP::Request::FromWGet->new(
+    my @requests = HTTP::Request::FromWget->new(
         command_wget => 'wget -A mywget/1.0 https://example.com https://www.example.com',
     );
     # Send the requests
@@ -55,12 +55,12 @@ the network panel. This module enables converting these to Perl code.
 
 =head2 C<< ->new >>
 
-    my $req = HTTP::Request::FromWGet->new(
+    my $req = HTTP::Request::FromWget->new(
         # Note - wget itself may not appear
         argv => ['--user-agent', 'myscript/1.0', 'https://example.com'],
     );
 
-    my $req = HTTP::Request::FromWGet->new(
+    my $req = HTTP::Request::FromWget->new(
         # Note - wget itself may not appear
         command => '--user-agent myscript/1.0 https://example.com',
     );
@@ -70,7 +70,7 @@ that encapsulate the parameters. If the command generates multiple requests,
 they will be returned in list context. In scalar context, only the first request
 will be returned.
 
-    my $req = HTTP::Request::FromWGet->new(
+    my $req = HTTP::Request::FromWget->new(
         command => '--post-file /etc/passwd https://example.com',
         read_files => 1,
     );
@@ -205,7 +205,7 @@ sub new( $class, %options ) {
 
 =head2 C<< ->squash_uri( $uri ) >>
 
-    my $uri = HTTP::Request::FromWGet->squash_uri(
+    my $uri = HTTP::Request::FromWget->squash_uri(
         URI->new( 'https://example.com/foo/bar/..' )
     );
     # https://example.com/foo/
@@ -515,7 +515,7 @@ of C<< ->as_curl >> than this module.
 =head1 REPOSITORY
 
 The public repository of this module is
-L<http://github.com/Corion/HTTP-Request-FromWGet>.
+L<http://github.com/Corion/HTTP-Request-FromWget>.
 
 =head1 SUPPORT
 
@@ -525,7 +525,7 @@ L<https://perlmonks.org/>.
 =head1 BUG TRACKER
 
 Please report bugs in this module via the Github bug queue at
-L<https://github.com/Corion/HTTP-Request-FromWGet/issues>
+L<https://github.com/Corion/HTTP-Request-FromWget/issues>
 
 =head1 AUTHOR
 
