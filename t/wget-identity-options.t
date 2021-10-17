@@ -9,9 +9,9 @@ my @tests = (
     #{ cmd => [ '--verbose', '-g', '-s', '$url', '--max-time', 5 ] },
     { cmd => [ '-O', '-', '--debug', '--http-keep-alive', '$url', '--header', 'X-Test: test' ] },
     { cmd => [ '-O', '-', '--debug', '--no-http-keep-alive', '$url', '--header', 'X-Test: test' ] },
+    { cmd => [ '-O', '-', '--debug', '--no-check-certificate', '$url' ] },
     #{ cmd => [ '--verbose', '-g', '-s', '$url', '--buffer' ] },
     #{ cmd => [ '--verbose', '-g', '-s', '$url', '--show-error' ] },
-    #{ cmd => [ '--verbose', '-g', '-s', '$url', '-S' ] },
 
     { cmd => [ '-O', '-', '--debug', '--compression', 'auto', '$url', '--header', 'X-Test: test' ] },
     { cmd => [ '-O', '-', '--debug', '--compression', 'gzip', '$url', '--header', 'X-Test: test' ] },

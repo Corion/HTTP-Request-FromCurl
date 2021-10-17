@@ -163,6 +163,7 @@ our @option_spec = (
     'cache!',
     'http-user=s',
     'http-password=s',
+    'check-certificate!',
     'output-document|O=s',   # ignored
     'debug',                 # ignored
 );
@@ -428,7 +429,7 @@ sub _build_request( $self, $uri, $options, %build_options ) {
             maybe timeout => $options->{ 'max-time' },
             maybe cookie_jar => $options->{'cookie-jar'},
             maybe cookie_jar_options => $options->{'cookie-jar-options'},
-            maybe insecure => $options->{'insecure'},
+            maybe insecure => !$options->{'check-certificate'},
             maybe show_error => $options->{'show_error'},
             maybe fail => $options->{'fail'},
         });
