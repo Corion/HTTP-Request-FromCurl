@@ -184,7 +184,7 @@ sub identical_headers_ok( $code, $expected_request, $name,
 }
 
 my $version = wget_version( $wget );
-my $cmp_version = sprintf "%03d%03d", split /\./, $version;
+my $cmp_version = sprintf "%03d%03d%03d", split /\./, $version;
 if( ! $version) {
     plan skip_all => "Couldn't find wget executable";
     exit;
@@ -196,7 +196,7 @@ if( ! $version) {
 #    exit;
 }
 
-note "wget version $version";
+note "wget version $version ( $cmp_version )";
 $HTTP::Request::FromWget::default_headers{ 'User-Agent' } = "Wget/$version";
 
 # Generates 2 OK stanzas
