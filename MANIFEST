@@ -14,6 +14,8 @@ README
 README.mkdn
 script/curl2perl
 script/pcurl.pl
+script/pwget.pl
+script/request2perl
 t/00-load.t
 t/curl-identity-cookie.t
 t/curl-identity-data.t
