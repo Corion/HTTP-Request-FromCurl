@@ -718,12 +718,26 @@ sub as_wget($self,%options) {
     };
 
     if( scalar keys %{ $self->headers }) {
-        for my $h (sort keys %{$self->headers}) {
-            my $v = $self->headers->{$h};
+        my %h = %{ $self->headers };
+
+        # "--no-cache" implies two headers, Cache-Control and Pragma
+        my $is_cache =    exists $h{ 'Pragma' }
+                       && exists $h{ 'Cache-Control' }
+                       && $h{ 'Cache-Control' } =~ /^no-cache\b/
+                       && $h{ 'Pragma' } eq 'no-cache'
+                       ;
+        if( $is_cache ) {
+            delete $h{ 'Pragma' };
+            delete $h{ 'Cache-Control' };
+            push @request_commands, '--no-cache';
+        };
+
+        for my $name (sort keys %h) {
+            my $v = $h{ $name };
 
             my $default;
-            if( exists $wget_header_defaults{ $h }) {
-                $default = $wget_header_defaults{ $h };
+            if( exists $wget_header_defaults{ $name }) {
+                $default = $wget_header_defaults{ $name };
             };
 
             if( ! ref $v ) {
@@ -732,25 +746,17 @@ sub as_wget($self,%options) {
             for my $val (@$v) {
                 if( !defined $default or $val ne $default ) {
                     # also skip the Host: header if it derives from $uri
-                    if( $h eq 'Host' and ($val eq $self->uri->host_port
+                    if( $name eq 'Host' and ($val eq $self->uri->host_port
                                           or $val eq $self->uri->host   )) {
-                        # trivial host header
-                    } elsif( $h eq 'User-Agent' ) {
+                        # trivial host header, ignore
+                    } elsif( $name eq 'User-Agent' ) {
                         push @request_commands,
                             '--user-agent',
                             $val;
-                    } elsif( $h eq 'Cache-Control' ) {
-                        if( $val =~ /^no-cache\b/i ) {
-                            push @request_commands, '--no-cache';
-                        } else {
-                            push @request_commands,
-                                '--header',
-                                "$h: $val";
-                        }
                     } else {
                         push @request_commands,
                             '--header',
-                            "$h: $val";
+                            "$name: $val";
                     };
                 };
             };

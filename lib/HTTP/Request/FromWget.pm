@@ -261,6 +261,12 @@ sub _set_header( $self, $headers, $h, $value ) {
     $headers->{ $h } = $value;
 }
 
+sub _maybe_set_header( $self, $headers, $h, $value ) {
+    if( ! exists $headers->{ $h }) {
+        $headers->{ $h } = $value;
+    };
+}
+
 sub _maybe_read_data_file( $self, $read_files, $data ) {
     my $res;
     if( $read_files ) {
@@ -329,23 +335,6 @@ sub _build_request( $self, $uri, $options, %build_options ) {
             $body = $req->content;
             $request_default_headers{ 'Content-Type' } = join "; ", $req->headers->content_type;
 
-        } elsif( $options->{ get }) {
-            $method = 'GET';
-            # Also, append the POST data to the URL
-            if( $data ) {
-                my $q = $uri->query;
-                if( defined $q and length $q ) {
-                    $q .= "&";
-                } else {
-                    $q = "";
-                };
-                $q .= $data;
-                $uri->query( $q );
-            };
-
-        } elsif( $options->{ head }) {
-            $method = 'HEAD';
-
         } elsif( defined $data ) {
             $method = 'POST';
             $body = $data;
@@ -357,10 +346,6 @@ sub _build_request( $self, $uri, $options, %build_options ) {
 
         if( defined $body ) {
             $request_default_headers{ 'Content-Length' } = length $body;
-        };
-
-        if( $options->{ 'oauth2-bearer' } ) {
-            push @headers, sprintf 'Authorization: Bearer %s', $options->{'oauth2-bearer'};
         };
 
         if( $options->{ 'user' } || $options->{'http-user'} ) {
@@ -391,8 +376,8 @@ sub _build_request( $self, $uri, $options, %build_options ) {
 
         if( exists $options->{ 'cache' }) {
             if(! $options->{ 'cache' } ) {
-                $self->_set_header( \%headers, "Cache-Control" => 'no-cache' );
-                $self->_set_header( \%headers, "Pragma" => 'no-cache' );
+                $self->_maybe_set_header( \%headers, "Cache-Control" => 'no-cache' );
+                $self->_maybe_set_header( \%headers, "Pragma" => 'no-cache' );
             };
         };
 
@@ -401,7 +386,6 @@ sub _build_request( $self, $uri, $options, %build_options ) {
                 $self->_set_header( \%headers, "Connection" => 'Close' );
             };
         };
-
 
         if( defined $options->{ referer }) {
             $self->_set_header( \%headers, "Referer" => $options->{ 'referer' } );
@@ -412,9 +396,7 @@ sub _build_request( $self, $uri, $options, %build_options ) {
                 $self->_add_header( \%headers, $k, $request_default_headers{ $k });
             };
         };
-        if( ! $headers{ 'Host' }) {
-            $self->_add_header( \%headers, 'Host' => $host );
-        };
+        $self->_maybe_set_header( \%headers, 'Host' => $host );
 
         if( defined $options->{ 'cookie-jar' }) {
                 $options->{'cookie-jar-options'}->{ 'write' } = 1;
