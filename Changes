@@ -1,7 +1,9 @@
-0.28 to be released
+0.28 2021-10-17
     * Rename ::FromWGet to ::FromWget , to match other CPAN modules
     * Print the content, not the status code in the utilities pwget.pl
       and pcurl.pl
+    * Add a tool to print generated Perl code for wget or curl
+    * Support --no-check-certificate option for wget
 
 0.27 2021-10-15
     * Add HTTP::Request::FromWGet
