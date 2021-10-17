@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use HTTP::Request::FromCurl;
+use HTTP::Request::FromWget;
 use LWP::UserAgent;
 use Getopt::Long ':config','pass_through';
 
@@ -10,7 +10,7 @@ our $VERSION = '0.27';
 
 # parse output options from @ARGV
 GetOptions(
-    'output|o=s' => \my $outfilename,
+    'output-file|O=s' => \my $outfilename,
 );
 
 my @output_options;
@@ -19,7 +19,7 @@ if( $outfilename ) {
 };
 
 # now execute all requests
-my @requests = HTTP::Request::FromCurl->new(
+my @requests = HTTP::Request::FromWget->new(
     argv => \@ARGV,
     read_files => 1,
 );
