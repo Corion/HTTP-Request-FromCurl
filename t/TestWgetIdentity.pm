@@ -323,6 +323,7 @@ sub request_identical_ok( $test ) {
     );
 
     my @reconstructed_commandline = ('--debug', '-O', '-', map {"$_"} $r[0]->as_wget(wget => undef));
+    note "Reconstructed as @reconstructed_commandline";
 
     my @reparse;
     my $lived = eval {

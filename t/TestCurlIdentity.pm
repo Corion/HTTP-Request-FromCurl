@@ -379,6 +379,7 @@ sub request_identical_ok( $test ) {
     );
 
     my @reconstructed_commandline = ('--verbose', '--silent', map {"$_"} $r[0]->as_curl(curl => undef));
+    note "Reconstructed as @reconstructed_commandline";
 
     for( @reconstructed_commandline ) {
         # fudge --data-* into --data if version is below (whatever)
