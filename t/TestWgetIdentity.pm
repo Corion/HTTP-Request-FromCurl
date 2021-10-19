@@ -170,6 +170,10 @@ sub identical_headers_ok( $code, $expected_request, $name,
         $expected_request =~ s!^$h: .*?\r?\n!!ms;
     };
 
+    # Fix up User-Agent header to consist only of "Wget/9.876.5":
+    $log =~ s!^(User-Agent: Wget/[\d.]+)(?:\s.*)?$!$1!m;
+    $expected_request =~ s!^(User-Agent: Wget/[\d.]+)(?:\s.*)?$!$1!m;;
+
     my @log = split /\n/, $log;
     my @exp = split /\n/, $expected_request;
 
@@ -248,7 +252,7 @@ sub request_logs_identical_ok( $test, $name, $r, $res ) {
 
         ## Fix FreeBSD build of wget which has "freebsd10.3 in the User-Agent header:
         if( exists $res->{headers}->{ 'User-Agent' }) {
-            $res->{ headers }->{ 'User-Agent' } =~ s!^(Wget/\d+\.\d+)\b.+!$1!;
+            $res->{ headers }->{ 'User-Agent' } =~ s!^(Wget/[\d\.]+)(?:\s.*)?!$1!;
         };
 
         is_deeply \%got, $res->{headers}, $name
