@@ -143,11 +143,11 @@ sub compiles_ok( $code, $name ) {
 sub identical_headers_ok( $code, $expected_request, $name,
     %options
 ) {
-    my $res;
-    $res = eval $code
+    my $lived;
+    $lived = eval $code
         or do { diag $@; };
-    if( ref $res eq 'HASH' and $res->{status} >= 300 ) {
-        diag Dumper $res;
+    if( ref $lived eq 'HASH' and $lived->{status} >= 300 ) {
+        diag Dumper $lived;
     };
     my $log = $server->get_log;
 
