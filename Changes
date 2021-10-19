@@ -1,3 +1,6 @@
+0.29 2021-10-19
+    * Various test suite resiliency fixes, reported by SREZIC
+
 0.28 2021-10-17
     * Rename ::FromWGet to ::FromWget , to match other CPAN modules
     * Print the content, not the status code in the utilities pwget.pl
