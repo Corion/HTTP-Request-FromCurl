@@ -1,3 +1,7 @@
+0.30 2021-10-20
+    * More test suite resiliency fixes
+      Unfortunately I can't conveniently replicate the situation on my system
+
 0.29 2021-10-19
     * Various test suite resiliency fixes, reported by SREZIC
 
