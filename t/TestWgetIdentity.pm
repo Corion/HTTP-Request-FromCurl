@@ -25,6 +25,7 @@ $Data::Dumper::Useqq = 1;
 
 our $server = Test::HTTP::LocalServer->spawn(
 #debug => 1,
+    request_pause => 0,
 );
 END { undef $server }
 my $wget = 'wget';

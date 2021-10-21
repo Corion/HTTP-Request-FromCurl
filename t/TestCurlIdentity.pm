@@ -23,6 +23,7 @@ our $VERSION = '0.25';
 $Data::Dumper::Useqq = 1;
 
 our $server = Test::HTTP::LocalServer->spawn(
+    request_pause => 0,
 #debug => 1,
 );
 END { undef $server }
