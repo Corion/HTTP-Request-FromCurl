@@ -58,6 +58,10 @@ sub wget( @args ) {
         system( $wget, @args )
     };
 
+    # This is mostly for testing the differences between Wget versions
+    # $stderr =~ s!Wget/[\d.]+!Wget/1.2.3 (foo)!g;
+    # $stdout =~ s!Wget/[\d.]+!Wget/1.2.3 (foo)!g;
+
     return ($stdout,$stderr,$exit)
 }
 
@@ -93,7 +97,7 @@ sub wget_request( @args ) {
 
                 ## Fix FreeBSD build of wget which has "freebsd10.3 in the User-Agent header:
                 if( exists $res{ headers }->{ 'User-Agent' }) {
-                    $res{ headers }->{ 'User-Agent' } =~ s!^(Wget/\d+\.\d+)\b.+!$1!;
+                    $res{ headers }->{ 'User-Agent' } =~ s!^(Wget/[\d.]+).*!$1!;
                 };
             };
 
@@ -188,6 +192,7 @@ sub identical_headers_ok( $code, $expected_request, $name,
 }
 
 my $version = wget_version( $wget );
+#$version = '1.2.3';
 my $cmp_version = sprintf "%03d%03d%03d", split /\./, $version;
 if( ! $version) {
     plan skip_all => "Couldn't find wget executable";
@@ -284,7 +289,6 @@ sub request_identical_ok( $test ) {
     };
 
     my $request_count = $test->{request_count} || 1;
-
     my @res = wget_request( @$cmd );
     note sprintf "Made %d wget requests", 0+@res;
     # For consistency checking the skip counts
@@ -433,7 +437,6 @@ sub request_identical_ok( $test ) {
         if( exists $copy->{headers}->{'Accept-Encoding'} ) {
             $copy->{headers}->{'Accept-Encoding'} = $org_accept_encoding;
         };
-
         request_logs_identical_ok( $test, "$name (Logs)", $copy, $res );
 
         # Now create a program from the request, run it and check that it still
@@ -442,6 +445,7 @@ sub request_identical_ok( $test ) {
         if( $r ) {
             ## Fix FreeBSD build of wget which has "freebsd10.3 in the User-Agent header:
             if( exists $res->{headers}->{ 'User-Agent' }) {
+                warn "Mushing UA";
                 $wget_log =~ s!^(User-Agent:\s+Wget/[\d\.]+)( .*)?$!$1!m;
             };
             # Fix weirdo CentOS6 build of wget which has a weirdo User-Agent header:
