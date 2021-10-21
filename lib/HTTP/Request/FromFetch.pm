@@ -9,7 +9,7 @@ use JSON;
 use PerlX::Maybe;
 use HTTP::Request::CurlParameters;
 
-our $VERSION = '0.30';
+our $VERSION = '0.31';
 
 =head1 NAME
 

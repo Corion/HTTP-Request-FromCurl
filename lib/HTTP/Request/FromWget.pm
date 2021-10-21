@@ -16,7 +16,7 @@ use Filter::signatures;
 use feature 'signatures';
 no warnings 'experimental::signatures';
 
-our $VERSION = '0.30';
+our $VERSION = '0.31';
 
 =head1 NAME
 
