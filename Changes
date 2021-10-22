@@ -1,3 +1,10 @@
+0.32 2021-10-22
+    * Wget only supports the --compression option since 1.19.2 , and then only
+      if compiled with zlib.
+
+      We skip the test on Wget versions smaller than 1.19.2 and hope that all
+      later versions are compiled with zlib.
+
 0.31 2021-10-21
     * More test suite resiliency fixes
       This time I was able to replicate a part
