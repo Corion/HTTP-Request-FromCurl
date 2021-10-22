@@ -446,7 +446,6 @@ sub request_identical_ok( $test ) {
         if( $r ) {
             ## Fix FreeBSD build of wget which has "freebsd10.3 in the User-Agent header:
             if( exists $res->{headers}->{ 'User-Agent' }) {
-                warn "Mushing UA";
                 $wget_log =~ s!^(User-Agent:\s+Wget/[\d\.]+)( .*)?$!$1!m;
             };
             # Fix weirdo CentOS6 build of wget which has a weirdo User-Agent header:
