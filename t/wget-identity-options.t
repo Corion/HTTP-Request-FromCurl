@@ -13,9 +13,17 @@ my @tests = (
     #{ cmd => [ '--verbose', '-g', '-s', '$url', '--buffer' ] },
     #{ cmd => [ '--verbose', '-g', '-s', '$url', '--show-error' ] },
 
-    { cmd => [ '-O', '-', '--debug', '--compression', 'auto', '$url', '--header', 'X-Test: test' ] },
-    { cmd => [ '-O', '-', '--debug', '--compression', 'gzip', '$url', '--header', 'X-Test: test' ] },
-    { cmd => [ '-O', '-', '--debug', '--compression', 'none', '$url', '--header', 'X-Test: test' ] },
+    # This is not entirely correct - later releases of wget might be built
+    # without zlib and thus not support --compression either
+    { cmd => [ '-O', '-', '--debug', '--compression', 'auto', '$url', '--header', 'X-Test: test' ],
+        version => 1019003,
+    },
+    { cmd => [ '-O', '-', '--debug', '--compression', 'gzip', '$url', '--header', 'X-Test: test' ],
+        version => 1019003,
+    },
+    { cmd => [ '-O', '-', '--debug', '--compression', 'none', '$url', '--header', 'X-Test: test' ],
+        version => 1019003,
+    },
 );
 
 run_wget_tests( @tests );
