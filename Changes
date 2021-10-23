@@ -1,3 +1,9 @@
+0.33 2021-10-23
+    * Mark the tests testing the --compression option as TODO, so they don't
+      fail even if --compression is not supported by the local version of Wget.
+      This is easier than trying to find out whether the option is supported
+      just for the sake of the test suite.
+
 0.32 2021-10-22
     * Wget only supports the --compression option since 1.19.2 , and then only
       if compiled with zlib.
