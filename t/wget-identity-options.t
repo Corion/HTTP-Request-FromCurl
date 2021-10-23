@@ -17,12 +17,15 @@ my @tests = (
     # without zlib and thus not support --compression either
     { cmd => [ '-O', '-', '--debug', '--compression', 'auto', '$url', '--header', 'X-Test: test' ],
         version => 1019003,
+        todo => 'Versions of Wget beyond 1.19.3 must be built with zlib to support --compression',
     },
     { cmd => [ '-O', '-', '--debug', '--compression', 'gzip', '$url', '--header', 'X-Test: test' ],
         version => 1019003,
+        todo => 'Versions of Wget beyond 1.19.3 must be built with zlib to support --compression',
     },
     { cmd => [ '-O', '-', '--debug', '--compression', 'none', '$url', '--header', 'X-Test: test' ],
         version => 1019003,
+        todo => 'Versions of Wget beyond 1.19.3 must be built with zlib to support --compression',
     },
 );
 
