@@ -63,6 +63,9 @@ sub wget( @args ) {
     # $stderr =~ s!Wget/[\d.]+!Wget/1.2.3 (foo)!g;
     # $stdout =~ s!Wget/[\d.]+!Wget/1.2.3 (foo)!g;
 
+    # This is for testing Wget not creating specific headers in some versions
+    #$stderr =~ s!^Accept-Encoding: [^\r\n]*\r?\n!!msg;
+
     return ($stdout,$stderr,$exit)
 }
 
@@ -321,7 +324,11 @@ sub request_identical_ok( $test ) {
     #            warn "Fudging accept-encoding to '$compressed'";
     #$log =~ s!^Accept-Encoding: (.*?)$!Accept-Encoding: $compressed!msg;
     $log =~ m!^Accept-Encoding: (.*?)$!ms;
+
     my $org_accept_encoding = $1;
+    if( ! $org_accept_encoding ) {
+        diag "This version of Wget does not set/send the Accept-Encoding header?!";
+    };
 
     my @wget_log = split /^(?=Request:)/m, $log;
     note sprintf "Received %d wget requests", 0+@wget_log;
@@ -373,7 +380,12 @@ sub request_identical_ok( $test ) {
             delete $copy->{response_body};
             delete $reconstructed[$i]->{response_body};
             if( exists $reconstructed[$i]->{headers}->{'Accept-Encoding'} ) {
-                $reconstructed[$i]->{headers}->{'Accept-Encoding'} = $org_accept_encoding;
+                if( defined $org_accept_encoding ) {
+                    $reconstructed[$i]->{headers}->{'Accept-Encoding'} = $org_accept_encoding;
+                } else {
+                    # Just to match what this old version of Wget sends
+                    delete $reconstructed[$i]->{headers}->{'Accept-Encoding'};
+                };
             };
 
             # re-decode %7d and %7b to {}
@@ -436,7 +448,13 @@ sub request_identical_ok( $test ) {
 
         my $copy = dclone($r);
         if( exists $copy->{headers}->{'Accept-Encoding'} ) {
-            $copy->{headers}->{'Accept-Encoding'} = $org_accept_encoding;
+            if( defined $org_accept_encoding ) {
+                $copy->{headers}->{'Accept-Encoding'} = $org_accept_encoding;
+            } else {
+                # This old version of Wget does not send Accept-Encoding: identity,
+                # so we match that in our test suite
+                delete $copy->{headers}->{'Accept-Encoding'};
+            };
         };
         request_logs_identical_ok( $test, "$name (Logs)", $copy, $res );
 
