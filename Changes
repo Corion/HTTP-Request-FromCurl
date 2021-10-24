@@ -1,3 +1,8 @@
+0.34 2021-10-24
+    * Wget 1.14 does not send an Accept-Encoding header; adjust the test suite
+      for that
+    * Don't test the Perl version compatibility in the author tests anymore
+
 0.33 2021-10-23
     * Mark the tests testing the --compression option as TODO, so they don't
       fail even if --compression is not supported by the local version of Wget.
