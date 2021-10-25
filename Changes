@@ -1,3 +1,7 @@
+0.35 2021-10-25
+    * Wget 1.14 does not send an Accept-Encoding header; adjust the test suite
+      more for that
+
 0.34 2021-10-24
     * Wget 1.14 does not send an Accept-Encoding header; adjust the test suite
       for that
