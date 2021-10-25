@@ -147,6 +147,8 @@ sub compiles_ok( $code, $name ) {
     };
 };
 
+our $org_accept_encoding;
+
 # Creates one test output
 sub identical_headers_ok( $code, $expected_request, $name,
     %options
@@ -171,6 +173,10 @@ sub identical_headers_ok( $code, $expected_request, $name,
             or die "Didn't replace '--$old_boundary' in [[$log]]?!";
 
         push @ignore_headers, 'Content-Length';
+    };
+
+    if( ! $org_accept_encoding ) {
+        push @ignore_headers, 'Accept-Encoding';
     };
 
     for my $h (@ignore_headers) {
@@ -325,7 +331,7 @@ sub request_identical_ok( $test ) {
     #$log =~ s!^Accept-Encoding: (.*?)$!Accept-Encoding: $compressed!msg;
     $log =~ m!^Accept-Encoding: (.*?)$!ms;
 
-    my $org_accept_encoding = $1;
+    $org_accept_encoding = $1;
     if( ! $org_accept_encoding ) {
         diag "This version of Wget does not set/send the Accept-Encoding header?!";
     };
