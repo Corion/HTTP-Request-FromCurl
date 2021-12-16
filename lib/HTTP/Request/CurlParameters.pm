@@ -401,6 +401,15 @@ sub _build_lwp_headers( $self, $prefix = "    ", %options ) {
     my @h = $self->_explode_headers;
     my $h = HTTP::Headers->new( @h );
     $h->remove_header( @{$options{implicit_headers}} );
+
+    # also skip the Host: header if it derives from $uri
+    my $val = $h->header('Host');
+    if( $val and ($val eq $self->uri->host_port
+                  or $val eq $self->uri->host   )) {
+                        # trivial host header
+        $h->remove_header('Host');
+    };
+
     $self->_pairlist([ $h->flatten ], $prefix);
 }
 
