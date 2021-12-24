@@ -42,7 +42,6 @@ requires:
   PerlX::Maybe: '0'
   URI: '0'
   URI::Escape: '0'
-  URL::Encode: '0'
   perl: '5.010'
 resources:
   bugtracker: http://github.com/Corion/HTTP-Request-FromCurl/issues
