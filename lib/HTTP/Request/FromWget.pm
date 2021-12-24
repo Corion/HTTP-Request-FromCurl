@@ -4,7 +4,6 @@ use warnings;
 use HTTP::Request;
 use HTTP::Request::Common;
 use URI;
-use URI::Escape;
 use Getopt::Long;
 use File::Spec::Unix;
 use HTTP::Request::CurlParameters;
