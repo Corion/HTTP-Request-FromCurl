@@ -1,6 +1,7 @@
 package HTTP::Request::FromCurl;
 use strict;
 use warnings;
+use File::Basename 'basename';
 use HTTP::Request;
 use HTTP::Request::Common;
 use URI;
@@ -165,6 +166,8 @@ our @option_spec = (
     'show-error|S',      # ignored
     'fail|f',            # ignored
     'silent|s',          # ignored
+    'anyauth',           # ignored
+    'basic',
     'buffer!',
     'compressed',
     'cookie|b=s',
@@ -174,6 +177,7 @@ our @option_spec = (
     'data-binary=s@',
     'data-raw=s@',
     'data-urlencode=s@',
+    'digest',
     'dump-header|D=s',   # ignored
     'referrer|e=s',
     'form|F=s@',
@@ -186,6 +190,7 @@ our @option_spec = (
     'insecure|k',
     'location|L',        # ignored, we always follow redirects
     'max-time|m=s',
+    'ntlm',
     'keepalive!',
     'request|X=s',
     'oauth2-bearer=s',
@@ -469,6 +474,7 @@ sub _build_request( $self, $uri, $options, %build_options ) {
 
         if( $options->{ 'user' } ) {
             if(    $options->{anyauth}
+                || $options->{digest}
                 || $options->{ntlm}
                 || $options->{negotiate}
                 ) {
@@ -533,19 +539,29 @@ sub _build_request( $self, $uri, $options, %build_options ) {
             my $compressions = HTTP::Message::decodable();
             $self->_add_header( \%headers, 'Accept-Encoding' => $compressions );
         };
+
+        my $auth;
+        for my $kind (qw(basic ntlm negotiate)) {
+            if( $options->{$kind}) {
+                $auth = $kind;
+            }
+        };
+
         push @res, HTTP::Request::CurlParameters->new({
             method => $method,
             uri    => $uri,
             headers => \%headers,
             body   => $body,
+            maybe auth => $auth,
             maybe credentials => $options->{ user },
             maybe output => $options->{ output },
             maybe timeout => $options->{ 'max-time' },
             maybe cookie_jar => $options->{'cookie-jar'},
             maybe cookie_jar_options => $options->{'cookie-jar-options'},
             maybe insecure => $options->{'insecure'},
-            maybe show_error => $options->{'show_error'},
+            maybe show_error => $options->{'show-error'},
             maybe fail => $options->{'fail'},
+            maybe unix_socket => $options->{'unix-socket'},
         });
     }
 
