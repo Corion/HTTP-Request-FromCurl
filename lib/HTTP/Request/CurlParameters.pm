@@ -176,6 +176,20 @@ has timeout => (
 
 =item *
 
+C<unix_socket>
+
+    unix_socket => '/var/run/docker/docker.sock'
+
+The timeout for the request
+
+=cut
+
+has unix_socket => (
+    is => 'ro',
+);
+
+=item *
+
 C<form_args>
 
 The HTML form parameters. These get converted into

@@ -195,6 +195,7 @@ our @option_spec = (
     'parallel-immediate',        # ignored
     'parallel-max',              # ignored
     'junk-session-cookies|j',    # ignored, must be set in code using the HTTP request
+    'unix-socket=s',
 );
 
 sub new( $class, %options ) {
