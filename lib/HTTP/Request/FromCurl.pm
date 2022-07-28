@@ -177,6 +177,7 @@ our @option_spec = (
     'dump-header|D=s',   # ignored
     'referrer|e=s',
     'form|F=s@',
+    'form-string=s@',
     'get|G',
     'globoff|g',
     'head|I',
@@ -298,7 +299,7 @@ sub _maybe_read_data_file( $self, $read_files, $data ) {
             binmode $fh;
             $res = <$fh>
         } else {
-            $res = $_
+            $res = $data
         }
     } else {
         $res = ($data =~ /^\@(.*)/)
