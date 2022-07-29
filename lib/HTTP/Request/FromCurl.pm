@@ -331,7 +331,7 @@ sub _maybe_read_upload_file( $self, $read_files, $data ) {
         }
     } else {
         if( $data =~ /^\@(.*)/ ) {
-            $res = [ undef => basename($1), Content => "... contents of $1 ..." ],
+            $res = [ undef,  basename($1), Content_Type => 'application/octet-stream', Content => "... contents of $1 ..." ],
         } else {
             $res = $data
         }
@@ -359,7 +359,7 @@ sub _build_request( $self, $uri, $options, %build_options ) {
         # support --form uploaded_file=@myfile
         #     and --form "uploaded_text=<~/texts/content.txt"
         push @form_args, map {   /^([^=]+)=(.*)$/
-                                 ? ($1 => $self->_maybe_read_upload_file( $build_options{ read_files }, "$2" ))
+                                 ? ($1 => $self->_maybe_read_upload_file( $build_options{ read_files }, $2 ))
                                  : () } @{$options->{form}
                              };
     };
