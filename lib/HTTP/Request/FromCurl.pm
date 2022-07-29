@@ -11,6 +11,7 @@ use HTTP::Request::CurlParameters;
 use HTTP::Request::Generator 'generate_requests';
 use PerlX::Maybe;
 use MIME::Base64 'encode_base64';
+use File::Basename 'basename';
 
 use Filter::signatures;
 use feature 'signatures';
@@ -307,6 +308,31 @@ sub _maybe_read_data_file( $self, $read_files, $data ) {
     return $res
 }
 
+sub _maybe_read_upload_file( $self, $read_files, $data ) {
+    my $res;
+    if( $read_files ) {
+        if( $data =~ /^<(.*)/ ) {
+            open my $fh, '<', $1
+                or die "$1: $!";
+            local $/; # / for Filter::Simple
+            binmode $fh;
+            $res = <$fh>
+        } elsif( $data =~ /^\@(.*)/ ) {
+            # Upload the file
+            $res = [ $1 => basename($1), Content_Type => 'application/octet-stream' ];
+        } else {
+            $res = $data
+        }
+    } else {
+        if( $data =~ /^\@(.*)/ ) {
+            $res = [ undef => basename($1), Content => "... contents of $1 ..." ],
+        } else {
+            $res = $data
+        }
+    }
+    return $res
+}
+
 sub _build_request( $self, $uri, $options, %build_options ) {
     my $body;
 
@@ -321,7 +347,19 @@ sub _build_request( $self, $uri, $options, %build_options ) {
                     ;
     my @post_urlencode_data = @{ $options->{'data-urlencode'} || [] };
     my @post_binary_data = @{ $options->{'data-binary'} || [] };
-    my @form_args = @{ $options->{form} || []};
+
+    my @form_args;
+    if( $options->{form}) {
+        # support --form uploaded_file=@myfile
+        #     and --form "uploaded_text=<~/texts/content.txt"
+        push @form_args, map {   /^([^=]+)=(.*)$/
+                                 ? ($1 => $self->_maybe_read_upload_file( $build_options{ read_files }, "$2" ))
+                                 : () } @{$options->{form}
+                             };
+    };
+    if( $options->{'form-string'}) {
+        push @form_args, map {; /^([^=]+)=(.*)$/ ? ($1 => $2) : (); } @{ $options->{'form-string'}};
+    };
 
     # expand the URI here if wanted
     my @uris = ($uri);
@@ -389,7 +427,7 @@ sub _build_request( $self, $uri, $options, %build_options ) {
             my $req = HTTP::Request::Common::POST(
                 'https://example.com',
                 Content_Type => 'form-data',
-                Content => [ map { /^([^=]+)=(.*)$/ ? ($1 => $2) : () } @form_args ],
+                Content => \@form_args,
             );
             $body = $req->content;
             $request_default_headers{ 'Content-Type' } = join "; ", $req->headers->content_type;

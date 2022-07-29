@@ -13,7 +13,7 @@ my @tests = (
       },
     { name => 'Form parameters with file inclusion/upload',
       ignore_headers => [ 'Content-Length', 'Content-Type' ],
-      cmd => [ '--verbose', '-g', '-s', '$url', '--get', '-F', 'text=@$tempfile', '-F','upload=<$tempfile' ],
+      cmd => [ '--verbose', '-g', '-s', '$url', '--get', '-F', 'text=<$tempfile', '-F','upload=@$tempfile' ],
       #version => '007061000', # earlier versions send an Expect: 100-continue header
       },
     { name => 'Append GET data',
