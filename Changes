@@ -1,3 +1,12 @@
+0.38 2022-07-29
+    * Parse the authentication types --basic, --digest, --ntlm, --negotiate
+      but they get ignored when generating code
+    * Parse the --unix-socket command line parameter
+      This currently also gets ignored but there are plans to write a support
+      module to allow LWP to use unix domain sockets instead of TCP sockets
+    * Properly support the "@" and "<" specifier in the --form option
+    * Support the --form-string option
+
 0.37 2021-12-24
     * Eliminate (test) prerequisite URL::Encode
       The functionality is already present in the (runtime) prerequisite
