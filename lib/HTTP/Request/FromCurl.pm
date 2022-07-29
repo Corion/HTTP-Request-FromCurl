@@ -330,7 +330,7 @@ sub _maybe_read_upload_file( $self, $read_files, $data ) {
             $res = $data
         }
     } else {
-        if( $data =~ /^\@(.*)/ ) {
+        if( $data =~ /^[<@](.*)/ ) {
             $res = [ undef,  basename($1), Content_Type => 'application/octet-stream', Content => "... contents of $1 ..." ],
         } else {
             $res = $data
