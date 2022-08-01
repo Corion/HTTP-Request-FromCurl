@@ -1,3 +1,9 @@
+0.40 2022-08-01
+    * Fix test suite by skipping a test on curl versions before 7.60
+      For some reason Curl sends an Expect: 100-continue header on these
+      versions and coding around that seems much effort for little gain.
+    * Fix replacing fake content when reading local files is disabled.
+
 0.39 2022-07-29
     * Fix crash when reading files is prohibited
 
