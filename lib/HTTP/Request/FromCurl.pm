@@ -430,7 +430,7 @@ sub _build_request( $self, $uri, $options, %build_options ) {
         };
 
         if( @form_args) {
-            $method = 'POST';
+            $method //= 'POST';
 
             my $req = HTTP::Request::Common::POST(
                 'https://example.com',
@@ -458,7 +458,7 @@ sub _build_request( $self, $uri, $options, %build_options ) {
             $method = 'HEAD';
 
         } elsif( defined $data ) {
-            $method = 'POST';
+            $method //= 'POST';
             $body = $data;
             $request_default_headers{ 'Content-Type' } = 'application/x-www-form-urlencoded';
 
