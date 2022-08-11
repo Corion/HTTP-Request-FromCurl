@@ -182,11 +182,6 @@ sub new( $class, %options ) {
         shift @$cmd;
     };
 
-    for (@$cmd) {
-        $_ = '--next'
-            if $_ eq '-:'; # GetOptions does not like "next|:" as specification
-    };
-
     my $p = Getopt::Long::Parser->new(
         config => [ 'bundling', 'no_auto_abbrev', 'no_ignore_case_always' ],
     );
