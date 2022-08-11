@@ -285,7 +285,7 @@ sub _build_request( $self, $uri, $options, %build_options ) {
     my $body;
 
     my @headers = @{ $options->{header} || []};
-    my $method = $options->{request};
+    my $method = $options->{method};
 
     # Ideally, we shouldn't sort the data but process it in-order
     my @post_raw_data;
