@@ -293,10 +293,18 @@ sub _build_request( $self, $uri, $options, %build_options ) {
         @post_raw_data = $options->{'post-data'};
         $method = 'POST';
     };
+    if( exists $options->{ 'body-data' }) {
+        @post_raw_data = $options->{'body-data'};
+        $method ||= 'POST';
+    };
                     ;
     if( my $file = $options->{'post-file'} ) {
         @post_raw_data = $self->_maybe_read_data_file( $build_options{ read_files }, $file );
         $method = 'POST';
+    };
+    if( my $file = $options->{'body-file'} ) {
+        @post_raw_data = $self->_maybe_read_data_file( $build_options{ read_files }, $file );
+        $method ||= 'POST';
     };
                     ;
     my @form_args = @{ $options->{form} || []};
@@ -325,7 +333,7 @@ sub _build_request( $self, $uri, $options, %build_options ) {
         };
 
         if( @form_args) {
-            $method = 'POST';
+            $method ||= 'POST';
 
             my $req = HTTP::Request::Common::POST(
                 'https://example.com',
@@ -336,7 +344,7 @@ sub _build_request( $self, $uri, $options, %build_options ) {
             $request_default_headers{ 'Content-Type' } = join "; ", $req->headers->content_type;
 
         } elsif( defined $data ) {
-            $method = 'POST';
+            $method ||= 'POST';
             $body = $data;
             $request_default_headers{ 'Content-Type' } = 'application/x-www-form-urlencoded';
 
