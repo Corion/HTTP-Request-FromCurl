@@ -169,6 +169,8 @@ our @option_spec = (
     'anyauth',           # ignored
     'basic',
     'buffer!',
+    'capath=s',
+    'cert|E=s',
     'compressed',
     'cookie|b=s',
     'cookie-jar|c=s',
@@ -555,6 +557,8 @@ sub _build_request( $self, $uri, $options, %build_options ) {
             headers => \%headers,
             body   => $body,
             maybe auth => $auth,
+            maybe cert => $options->{cert},
+            maybe capath => $options->{capath},
             maybe credentials => $options->{ user },
             maybe output => $options->{ output },
             maybe timeout => $options->{ 'max-time' },
