@@ -496,9 +496,9 @@ sub as_lwp_snippet( $self, %options ) {
 
     if( $self->insecure ) {
         push @preamble, 'use IO::Socket::SSL;';
-        $ssl_options{ SSL_verify_mode } = 'IO::Socket::SSL::SSL_VERIFY_NONE';
-        $ssl_options{ SSL_hostname    } = '""';
-        $ssl_options{ verify_hostname } = '""';
+        $ssl_options{ SSL_verify_mode } = \'IO::Socket::SSL::SSL_VERIFY_NONE';
+        $ssl_options{ SSL_hostname    } = '';
+        $ssl_options{ verify_hostname } = '';
     };
 
     if( $self->cert ) {
