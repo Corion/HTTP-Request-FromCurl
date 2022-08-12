@@ -293,53 +293,6 @@ sub _build_quoted_body( $self ) {
     }
 };
 
-#    if( @form_args) {
-#        $method = 'POST';
-#
-#        my $req = HTTP::Request::Common::POST(
-#            'https://example.com',
-#            Content_Type => 'form-data',
-#            Content => [ map { /^([^=]+)=(.*)$/ ? ($1 => $2) : () } @form_args ],
-#        );
-#        $body = $req->content;
-#        unshift @headers, 'Content-Type: ' . join "; ", $req->headers->content_type;
-#
-#    } elsif( $options->{ get }) {
-#        $method = 'GET';
-#        # Also, append the POST data to the URL
-#        if( @post_data ) {
-#            my $q = $uri->query;
-#            if( defined $q and length $q ) {
-#                $q .= "&";
-#            } else {
-#                $q = "";
-#            };
-#            $q .= join "", @post_data;
-#            $uri->query( $q );
-#        };
-#
-#    } elsif( $options->{ head }) {
-#        $method = 'HEAD';
-#
-#    } elsif( @post_data ) {
-#        $method = 'POST';
-#        $body = join "", @post_data;
-#        unshift @headers, 'Content-Type: application/x-www-form-urlencoded';
-#
-#    } else {
-#        $method ||= 'GET';
-#    };
-
-#    if( defined $body ) {
-#        unshift @headers, sprintf 'Content-Length: %d', length $body;
-#    };
-
-#    my %headers = (
-#        %default_headers,
-#        'Host' => $uri->host_port,
-#        (map { /^\s*([^:\s]+)\s*:\s*(.*)$/ ? ($1 => $2) : () } @headers),
-#    );
-
 =head2 C<< ->as_request >>
 
     $ua->request( $r->as_request );
