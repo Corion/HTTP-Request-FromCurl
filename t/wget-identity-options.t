@@ -28,6 +28,8 @@ my @tests = (
         todo => 'Versions of Wget beyond 1.19.3 must be built with zlib to support --compression',
     },
     { cmd => [ '-O', '-', '--debug', '--method', 'PUT', '$url', '--body-data', '{}' ],
+    },
+    { cmd => [ '-O', '-', '--debug', '--timeout', '99', '$url' ],
     }
 );
 

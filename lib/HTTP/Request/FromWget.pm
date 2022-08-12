@@ -157,7 +157,6 @@ our @option_spec = (
     'form|F=s@',
     'header|H=s@',
     'method=s',
-    'max-time|m=s',
     'http-keep-alive!',
     'cache!',
     'http-user=s',
@@ -165,6 +164,7 @@ our @option_spec = (
     'check-certificate!',
     'output-document|O=s',   # ignored
     'debug',                 # ignored
+    'timeout|T=i',
 );
 
 sub new( $class, %options ) {
