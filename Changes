@@ -1,3 +1,7 @@
+0.43 2022-08-12
+    * support CA certificate file/directories
+    * the wget option is named --timeout, not --max-time
+
 0.42 2022-08-11
     * Add support for --method
     * Properly support --method in conjunction with --body-file and --body-data
