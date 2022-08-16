@@ -204,6 +204,20 @@ has unix_socket => (
 
 =item *
 
+C<local_address>
+
+    local_address => '192.0.2.116'
+
+The local network address to bind to when making the request
+
+=cut
+
+has local_address => (
+    is => 'ro',
+);
+
+=item *
+
 C<form_args>
 
 The HTML form parameters. These get converted into
@@ -511,10 +525,11 @@ sub as_lwp_snippet( $self, %options ) {
     };
     my $constructor_args = join ",",
                            $self->_pairlist([
-                                        send_te => 0,
-                               maybe timeout    => $self->timeout,
-                               maybe cookie_jar => $init_cookie_jar->{code},
-                               maybe SSL_options => keys %ssl_options ? \%ssl_options : undef,
+                                     send_te => 0,
+                               maybe local_address => $self->local_address,
+                               maybe timeout       => $self->timeout,
+                               maybe cookie_jar    => $init_cookie_jar->{code},
+                               maybe SSL_options   => keys %ssl_options ? \%ssl_options : undef,
                            ], '')
                            ;
     if( defined( my $credentials = $self->credentials )) {
@@ -597,9 +612,10 @@ sub as_http_tiny_snippet( $self, %options ) {
     my $constructor_args = join ",",
                            $self->_pairlist([
                                      @ssl,
-                               maybe timeout => $self->timeout,
-                               maybe cookie_jar => $init_cookie_jar->{code},
-                               maybe SSL_options => keys %ssl_options ? \%ssl_options : undef,
+                               maybe timeout       => $self->timeout,
+                               maybe local_address => $self->local_address,
+                               maybe cookie_jar    => $init_cookie_jar->{code},
+                               maybe SSL_options   => keys %ssl_options ? \%ssl_options : undef,
                            ], '')
                            ;
     if( defined( my $credentials = $self->credentials )) {

@@ -31,7 +31,9 @@ my @tests = (
         version => 1015000,
     },
     { cmd => [ '-O', '-', '--debug', '--timeout', '99', '$url' ],
-    }
+    },
+    { cmd => [ '-O', '-', '--debug', '--bind-address', 'localhost', '$url' ],
+    },
 );
 
 run_wget_tests( @tests );
