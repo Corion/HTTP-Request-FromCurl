@@ -1,3 +1,7 @@
+0.45 2022-08-15
+    * Support the --range option for curl
+    * Support the --bind-address option for wget
+
 0.44 2022-08-15
     * Only test --method with wget versions 1.15 and upwards
 
