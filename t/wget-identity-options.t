@@ -32,7 +32,7 @@ my @tests = (
     },
     { cmd => [ '-O', '-', '--debug', '--timeout', '99', '$url' ],
     },
-    { cmd => [ '-O', '-', '--debug', '--bind-address', 'localhost', '$url' ],
+    { cmd => [ '-O', '-', '--debug', '--bind-address', '$host', '$url' ],
     },
 );
 
