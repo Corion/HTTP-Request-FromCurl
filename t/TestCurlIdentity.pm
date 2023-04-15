@@ -586,7 +586,9 @@ sub request_identical_ok( $test ) {
                     boundary       => $boundary,
                 ) or diag $code;
             } else {
-                skip "Mojolicious not installed", 2;
+                SKIP: {
+                    skip "Mojolicious not installed", 2;
+                }
             }
 
 
