@@ -573,6 +573,7 @@ sub _build_request( $self, $uri, $options, %build_options ) {
             maybe show_error => $options->{'show-error'},
             maybe fail => $options->{'fail'},
             maybe unix_socket => $options->{'unix-socket'},
+            #maybe form_args => scalar @form_args ? \@form_args : undef,
         });
     }
 
