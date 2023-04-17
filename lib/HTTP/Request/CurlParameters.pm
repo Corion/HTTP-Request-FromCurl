@@ -456,9 +456,11 @@ sub _build_lwp_headers( $self, $prefix = "    ", %options ) {
 }
 
 sub _build_tiny_headers( $self, $prefix = "    ", %options ) {
-    delete $self->{headers}->{Host};
-    my @result = (%{ $self->headers});
-    $self->_pairlist( \@result, $prefix );
+    my @h = $self->_explode_headers;
+    my $h = HTTP::Headers->new( @h );
+    $h->remove_header( @{$options{implicit_headers}} );
+
+    $self->_pairlist( [ $h->flatten ], $prefix );
 }
 
 sub _build_mojolicious_headers( $self, $prefix = "    ", %options ) {
