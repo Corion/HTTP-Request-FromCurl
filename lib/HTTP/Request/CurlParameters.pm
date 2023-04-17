@@ -460,7 +460,28 @@ sub _build_tiny_headers( $self, $prefix = "    ", %options ) {
     my $h = HTTP::Headers->new( @h );
     $h->remove_header( @{$options{implicit_headers}} );
 
-    $self->_pairlist( [ $h->flatten ], $prefix );
+    # HTTP::Tiny does not like overriding the Host: header :-/
+    $h->remove_header('Host');
+
+    @h = $h->flatten;
+    my %h;
+    my @order;
+    while( @h ) {
+        my ($k,$v) = splice(@h,0,2);
+        if( ! exists $h{ $k }) {
+            # Fresh value
+            $h{ $k } = $v;
+            push @order, $k;
+        } elsif( ! ref $h{$k}) {
+            # Second value
+            $h{ $k } = [$h{$k}, $v];
+        } else {
+            # Multiple values
+            push @{$h{ $k }}, $v;
+        }
+    };
+
+    $self->_pairlist([ map { $_ => $h{ $_ } } @order ], $prefix);
 }
 
 sub _build_mojolicious_headers( $self, $prefix = "    ", %options ) {
