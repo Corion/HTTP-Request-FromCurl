@@ -154,7 +154,6 @@ our @option_spec = (
     'cookie|b=s@',
     'cookies!',              # ignored
     'debug',                 # ignored
-    'form|F=s@',
     'header|H=s@',
     'http-keep-alive!',
     'http-password=s',
