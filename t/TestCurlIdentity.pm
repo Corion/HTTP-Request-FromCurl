@@ -34,7 +34,7 @@ our $server = Test::HTTP::LocalServer->spawn(
 #debug => 1,
 );
 END { undef $server }
-my $curl = 'curl';
+my $curl = $ENV{TEST_CURL_BIN} // 'curl';
 
 my @erase;
 
