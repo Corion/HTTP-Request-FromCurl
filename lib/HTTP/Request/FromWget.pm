@@ -511,7 +511,7 @@ of C<< ->as_curl >> than this module.
 =head1 REPOSITORY
 
 The public repository of this module is
-L<http://github.com/Corion/HTTP-Request-FromWget>.
+L<http://github.com/Corion/HTTP-Request-FromCurl>.
 
 =head1 SUPPORT
 
@@ -521,7 +521,7 @@ L<https://perlmonks.org/>.
 =head1 BUG TRACKER
 
 Please report bugs in this module via the Github bug queue at
-L<https://github.com/Corion/HTTP-Request-FromWget/issues>
+L<https://github.com/Corion/HTTP-Request-FromCurl/issues>
 
 =head1 AUTHOR
 
