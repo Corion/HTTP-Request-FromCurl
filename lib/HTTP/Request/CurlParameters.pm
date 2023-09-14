@@ -803,9 +803,8 @@ sub as_mojolicious_snippet( $self, %options ) {
     my $constructor_args = join ",",
                            $self->_pairlist([
                                      @ssl,
-                                     keys %$socket_options ? $socket_options : (),
+                                     keys %$socket_options ? ( socket_options => $socket_options ) : (),
                                maybe request_timeout    => $self->timeout,
-                               maybe local_address => $self->local_address,
                                maybe cookie_jar    => $init_cookie_jar->{code},
                                maybe SSL_options   => keys %ssl_options ? \%ssl_options : undef,
                            ], '')
