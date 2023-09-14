@@ -189,6 +189,7 @@ our @option_spec = (
     'head|I',
     'header|H=s@',
     'include|i',         # ignored
+    'interface=s',
     'insecure|k',
     'location|L',        # ignored, we always follow redirects
     'max-time|m=s',
@@ -573,6 +574,7 @@ sub _build_request( $self, $uri, $options, %build_options ) {
             maybe show_error => $options->{'show-error'},
             maybe fail => $options->{'fail'},
             maybe unix_socket => $options->{'unix-socket'},
+            maybe local_address => $options->{'interface'},
             maybe form_args => scalar @form_args ? \@form_args : undef,
         });
     }
