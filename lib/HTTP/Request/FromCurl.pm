@@ -668,6 +668,8 @@ of C<< ->as_curl >> than this module.
 L<https://github.com/NickCarneiro/curlconverter> - a converter for multiple
 target languages
 
+L<The cURL manpage|https://curl.se/docs/manpage.html>
+
 =head1 REPOSITORY
 
 The public repository of this module is
