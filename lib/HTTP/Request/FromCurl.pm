@@ -194,6 +194,7 @@ our @option_spec = (
     'include|i',         # ignored
     'interface=s',
     'insecure|k',
+    'json=s@',
     'location|L',        # ignored, we always follow redirects
     'max-filesize=s',
     'max-time|m=s',
@@ -363,6 +364,7 @@ sub _build_request( $self, $uri, $options, %build_options ) {
                     ;
     my @post_urlencode_data = @{ $options->{'data-urlencode'} || [] };
     my @post_binary_data = @{ $options->{'data-binary'} || [] };
+    my @post_json_data = @{ $options->{'json'} || [] };
 
     my @form_args;
     if( $options->{form}) {
@@ -409,6 +411,10 @@ sub _build_request( $self, $uri, $options, %build_options ) {
             $self->_maybe_read_data_file( $build_options{ read_files }, $_ );
         } @post_binary_data;
 
+        @post_json_data = map {
+            $self->_maybe_read_data_file( $build_options{ read_files }, $_ );
+        } @post_json_data;
+
         @post_read_data = map {
             my $v = $self->_maybe_read_data_file( $build_options{ read_files }, $_ );
             $v =~ s![\r\n]!!g;
@@ -445,7 +451,9 @@ sub _build_request( $self, $uri, $options, %build_options ) {
                 @post_raw_data,
                 @post_urlencode_data
                 ;
-        };
+        } elsif( @post_json_data ) {
+            $data = join '', @post_json_data;
+        }
 
         if( @form_args) {
             $method //= 'POST';
@@ -478,7 +486,14 @@ sub _build_request( $self, $uri, $options, %build_options ) {
         } elsif( defined $data ) {
             $method //= 'POST';
             $body = $data;
-            $request_default_headers{ 'Content-Type' } = 'application/x-www-form-urlencoded';
+
+            if( @post_json_data ) {
+                $request_default_headers{ 'Content-Type' } = "application/json";
+                $request_default_headers{ 'Accept' } = "application/json";
+
+             } else {
+                $request_default_headers{ 'Content-Type' } = 'application/x-www-form-urlencoded';
+            };
 
         } else {
             $method ||= 'GET';
