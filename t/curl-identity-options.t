@@ -26,6 +26,9 @@ my @tests = (
     { cmd => [ '--verbose', '--interface', '$host', '-s', '$url', '-S' ],
       version => '007057000',
     },
+    { cmd => [ '--verbose', '--disable', '-s', '$url', '-S' ],
+      version => '007050000',
+    },
 );
 
 run_curl_tests( @tests );

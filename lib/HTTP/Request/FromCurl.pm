@@ -123,6 +123,8 @@ The following C<curl> options are recognized but largely ignored:
 
 =over 4
 
+=item C< --disable >
+
 =item C< --dump-header >
 
 =item C< --include >
@@ -180,6 +182,7 @@ our @option_spec = (
     'data-raw=s@',
     'data-urlencode=s@',
     'digest',
+    'disable|q',         # ignored
     'dump-header|D=s',   # ignored
     'referrer|e=s',
     'form|F=s@',
