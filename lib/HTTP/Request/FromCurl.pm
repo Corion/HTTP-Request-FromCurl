@@ -182,7 +182,7 @@ our @option_spec = (
     'data-raw=s@',
     'data-urlencode=s@',
     'digest',
-    'disable|q',         # ignored
+    'disable|q!',        # ignored
     'dump-header|D=s',   # ignored
     'referrer|e=s',
     'form|F=s@',
@@ -352,7 +352,6 @@ sub _maybe_read_upload_file( $self, $read_files, $data ) {
 
 sub _build_request( $self, $uri, $options, %build_options ) {
     my $body;
-
     my @headers = @{ $options->{header} || []};
     my $method = $options->{request};
     # Ideally, we shouldn't sort the data but process it in-order
