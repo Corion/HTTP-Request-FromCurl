@@ -195,6 +195,7 @@ our @option_spec = (
     'interface=s',
     'insecure|k',
     'location|L',        # ignored, we always follow redirects
+    'max-filesize=s',
     'max-time|m=s',
     'ntlm',
     'keepalive!',
@@ -380,6 +381,16 @@ sub _build_request( $self, $uri, $options, %build_options ) {
     my @uris = ($uri);
     if( ! $options->{ globoff }) {
         @uris = map { $_->{url} } generate_requests( pattern => shift @uris, limit => $build_options{ limit } );
+    }
+
+    if( $options->{'max-filesize'}
+        and $options->{'max-filesize'} =~ m/^(\d+)([kmg])$/i ) {
+        my $mult = {
+            'k' => 1024,
+            'g' => 1024*1024*1024,
+            'm' => 1024*1024,
+        }->{ $2 };
+        $options->{'max-filesize'} = $1 * $mult;
     }
 
     my @res;
@@ -574,6 +585,7 @@ sub _build_request( $self, $uri, $options, %build_options ) {
             maybe cookie_jar => $options->{'cookie-jar'},
             maybe cookie_jar_options => $options->{'cookie-jar-options'},
             maybe insecure => $options->{'insecure'},
+            maybe max_filesize => $options->{'max-filesize'},
             maybe show_error => $options->{'show-error'},
             maybe fail => $options->{'fail'},
             maybe unix_socket => $options->{'unix-socket'},

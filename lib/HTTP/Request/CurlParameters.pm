@@ -286,6 +286,18 @@ has output => (
 
 =item *
 
+C<max_filesize>
+
+Maximum size (in bytes) of a file to download
+
+=cut
+
+has max_filesize => (
+    is => 'ro',
+);
+
+=item *
+
 C<show_error>
 
     show_error => 0
@@ -605,6 +617,7 @@ sub as_lwp_snippet( $self, %options ) {
                            $self->_pairlist([
                                      send_te => 0,
                                maybe local_address => $self->local_address,
+                               maybe max_size      => $self->max_filesize,
                                maybe timeout       => $self->timeout,
                                maybe cookie_jar    => $init_cookie_jar->{code},
                                maybe SSL_options   => keys %ssl_options ? \%ssl_options : undef,
@@ -712,6 +725,7 @@ sub as_http_tiny_snippet( $self, %options ) {
                                      @ssl,
                                maybe timeout       => $self->timeout,
                                maybe local_address => $self->local_address,
+                               maybe max_size      => $self->max_filesize,
                                maybe cookie_jar    => $init_cookie_jar->{code},
                                maybe SSL_options   => keys %ssl_options ? \%ssl_options : undef,
                            ], '')
@@ -805,6 +819,7 @@ sub as_mojolicious_snippet( $self, %options ) {
                                      @ssl,
                                      keys %$socket_options ? ( socket_options => $socket_options ) : (),
                                maybe request_timeout    => $self->timeout,
+                               maybe max_response_size  => $self->max_filesize,
                                maybe cookie_jar    => $init_cookie_jar->{code},
                                maybe SSL_options   => keys %ssl_options ? \%ssl_options : undef,
                            ], '')
@@ -908,7 +923,6 @@ sub as_curl($self,%options) {
             };
             for my $val (@$v) {
                 if( !defined $default or $val ne $default ) {
-
                     # also skip the Host: header if it derives from $uri
                     if( $h eq 'Host' and ($val eq $self->uri->host_port
                                           or $val eq $self->uri->host   )) {
