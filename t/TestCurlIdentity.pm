@@ -315,8 +315,7 @@ sub request_logs_identical_ok( $test, $name, $r, $res ) {
             $res->{headers}->{ 'User-Agent' } =~ s!^(curl/7\.19\.7)\b.+!$1!;
         };
 
-        is \%got, $res->{headers}, $name
-            or diag Dumper [\%got, $res->{headers}];
+        is \%got, $res->{headers}, "$name (headers)";
 
         # Now, also check that our HTTP::Request looks similar
         my $http_request = $r->as_request;
@@ -432,6 +431,7 @@ sub request_identical_ok( $test ) {
     # Well, no!
     # is_deeply \@reconstructed, $cmd, "Reconstructed command";
     # Check that the reconstructed command behaves identically
+    note "Running reconstructed curl command";
     my @reconstructed = curl_request( @reconstructed_commandline );
 
     # Can we maybe even loop over all requests?!
