@@ -208,7 +208,7 @@ sub identical_headers_ok( $code, $expected_request, $name,
     return $res
 }
 
-my $version = wget_version( $wget );
+my $version = wget_version( $wget ) // '';
 #$version = '1.2.3';
 my $cmp_version = sprintf "%03d%03d%03d", split /\./, $version;
 if( ! $version) {
