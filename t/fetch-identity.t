@@ -1,13 +1,12 @@
 #!perl
-use strict;
-use Filter::signatures;
+use 5.020;
 use feature 'signatures';
 no warnings 'experimental::signatures';
 use File::Temp 'tempfile';
 use Capture::Tiny 'capture';
 use HTTP::Request::FromFetch;
 
-use Test::More;
+use Test2::V0;
 
 my @tests = (
     { js => <<'JS', name => 'empty fetch'},

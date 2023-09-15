@@ -40,7 +40,7 @@ my %module = (
         x_static_install => 1, # we are pure Perl and don't do anything fancy
     },
 
-    MIN_PERL_VERSION => '5.010', # I use // in some places
+    MIN_PERL_VERSION => '5.020', # I use signatures
 
     'LICENSE'=> 'perl',
 
@@ -53,7 +53,6 @@ my %module = (
     PREREQ_PM => {
         'Carp'                     => 0,
         'Getopt::Long'             => '2.39', # for ->getoptionsfromarray
-        'Filter::signatures'       => '0.16',
         'Moo'                      => '2',
         'HTTP::Request'            => '6.07',
         'HTTP::Request::Common'    => '6.07',

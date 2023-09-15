@@ -1,7 +1,5 @@
 package HTTP::Request::FromFetch 0.52;
-use strict;
-use warnings;
-use Filter::signatures;
+use 5.020;
 use feature 'signatures';
 no warnings 'experimental::signatures';
 use Carp 'croak';

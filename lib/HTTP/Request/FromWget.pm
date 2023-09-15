@@ -1,6 +1,5 @@
 package HTTP::Request::FromWget 0.52;
-use strict;
-use warnings;
+use 5.020;
 use HTTP::Request;
 use HTTP::Request::Common;
 use URI;
@@ -11,7 +10,6 @@ use HTTP::Request::Generator 'generate_requests';
 use PerlX::Maybe;
 use MIME::Base64 'encode_base64';
 
-use Filter::signatures;
 use feature 'signatures';
 no warnings 'experimental::signatures';
 

@@ -1,12 +1,11 @@
 #!perl
-use strict;
+use 5.020;
 use Getopt::Long;
 
 use HTTP::Request::FromCurl;
 use HTTP::Request::FromFetch;
 use HTTP::Request::FromWget;
 
-use Filter::signatures;
 use feature 'signatures';
 no warnings 'experimental::signatures';
 

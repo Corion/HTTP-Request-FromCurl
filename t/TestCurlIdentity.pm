@@ -1,6 +1,6 @@
 package # hide from CPAN
     TestCurlIdentity;
-use strict;
+use 5.020;
 use HTTP::Request::FromCurl;
 use Test2::V0;
 use Data::Dumper;
@@ -18,7 +18,6 @@ BEGIN {
     }
 }
 
-use Filter::signatures;
 use feature 'signatures';
 no warnings 'experimental::signatures';
 

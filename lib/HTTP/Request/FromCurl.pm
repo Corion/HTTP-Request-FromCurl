@@ -1,6 +1,5 @@
 package HTTP::Request::FromCurl 0.52;
-use strict;
-use warnings;
+use 5.020;
 use File::Basename 'basename';
 use HTTP::Request;
 use HTTP::Request::Common;
@@ -14,7 +13,6 @@ use PerlX::Maybe;
 use MIME::Base64 'encode_base64';
 use File::Basename 'basename';
 
-use Filter::signatures;
 use feature 'signatures';
 no warnings 'experimental::signatures';
 
