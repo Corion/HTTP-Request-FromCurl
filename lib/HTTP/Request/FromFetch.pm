@@ -1,4 +1,4 @@
-package HTTP::Request::FromFetch;
+package HTTP::Request::FromFetch 0.52;
 use strict;
 use warnings;
 use Filter::signatures;
@@ -8,8 +8,6 @@ use Carp 'croak';
 use JSON;
 use PerlX::Maybe;
 use HTTP::Request::CurlParameters;
-
-our $VERSION = '0.52';
 
 =head1 NAME
 

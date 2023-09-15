@@ -1,4 +1,4 @@
-package HTTP::Request::FromCurl;
+package HTTP::Request::FromCurl 0.52;
 use strict;
 use warnings;
 use File::Basename 'basename';
@@ -17,8 +17,6 @@ use File::Basename 'basename';
 use Filter::signatures;
 use feature 'signatures';
 no warnings 'experimental::signatures';
-
-our $VERSION = '0.52';
 
 =head1 NAME
 

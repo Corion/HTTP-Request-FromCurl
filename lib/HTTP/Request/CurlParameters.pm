@@ -1,4 +1,4 @@
-package HTTP::Request::CurlParameters;
+package HTTP::Request::CurlParameters 0.52;
 use strict;
 use warnings;
 use HTTP::Request;
@@ -13,8 +13,6 @@ use Moo 2;
 use Filter::signatures;
 use feature 'signatures';
 no warnings 'experimental::signatures';
-
-our $VERSION = '0.52';
 
 =head1 NAME
 

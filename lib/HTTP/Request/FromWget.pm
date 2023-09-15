@@ -1,4 +1,4 @@
-package HTTP::Request::FromWget;
+package HTTP::Request::FromWget 0.52;
 use strict;
 use warnings;
 use HTTP::Request;
@@ -14,8 +14,6 @@ use MIME::Base64 'encode_base64';
 use Filter::signatures;
 use feature 'signatures';
 no warnings 'experimental::signatures';
-
-our $VERSION = '0.52';
 
 =head1 NAME
 
