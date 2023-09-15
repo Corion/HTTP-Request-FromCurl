@@ -144,13 +144,13 @@ sub compiles_ok( $code, $name ) {
     if( $exit ) {
         diag $stderr;
         diag "Exit code: ", $exit;
-        fail($name);
+        return fail($name);
     } elsif( $stderr !~ /(^|\n)\Q$tempname\E syntax OK\s*$/) {
         diag $stderr;
         diag $code;
-        fail($name);
+        return fail($name);
     } else {
-        pass($name);
+        return pass($name);
     };
 };
 
