@@ -927,6 +927,15 @@ sub as_curl($self,%options) {
                     if( $h eq 'Host' and ($val eq $self->uri->host_port
                                           or $val eq $self->uri->host   )) {
                         # trivial host header
+
+                    # also skip the Content-Length header if it derives from the body
+                    } elsif( $h eq 'Content-Length' and
+                                (
+                                       ($self->post_data and $val == length $self->post_data)
+                                    or ($self->body  and $val == length $self->body)
+                                )) {
+                        # trivial content-length header
+
                     } elsif( $h eq 'User-Agent' ) {
                         push @request_commands,
                             $options{ long_options } ? '--user-agent' : '-A',
