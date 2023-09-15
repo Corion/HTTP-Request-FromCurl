@@ -180,6 +180,8 @@ our @option_spec = (
     'digest',
     'disable|q!',        # ignored
     'dump-header|D=s',   # ignored
+    'etag-compare=s',    # If-None-Match: "16de4176-155807-6055b460756fb"
+    'etag-save=s',
     'referrer|e=s',
     'form|F=s@',
     'form-string=s@',
@@ -594,6 +596,8 @@ sub _build_request( $self, $uri, $options, %build_options ) {
             maybe timeout => $options->{ 'max-time' },
             maybe cookie_jar => $options->{'cookie-jar'},
             maybe cookie_jar_options => $options->{'cookie-jar-options'},
+            maybe etag_save => $options->{'etag-save'},
+            maybe etag_compare => $options->{'etag-compare'},
             maybe insecure => $options->{'insecure'},
             maybe max_filesize => $options->{'max-filesize'},
             maybe show_error => $options->{'show-error'},

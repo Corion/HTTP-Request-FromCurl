@@ -116,6 +116,33 @@ has cookie_jar_options => (
 
 =item *
 
+C<etag_compare>
+
+The name of a file storing the value of the ETag caching header. If that file
+exists, a C<If-None-Match> header is generated with the first line of
+that file.
+
+=cut
+
+has etag_compare => (
+    is => 'ro',
+);
+
+=item *
+
+C<etag_save>
+
+The name of a file storing the value of the ETag caching header. If no ETag
+is sent by the server, an empty file is created.
+
+=cut
+
+has etag_save => (
+    is => 'ro',
+);
+
+=item *
+
 C<credentials>
 
     credentials => 'hunter2:secret'
@@ -356,8 +383,8 @@ sub _explode_headers( $self ) {
     my @res =
     map { my $h = $_;
           my $v = $self->headers->{$h};
-          ref $v ? (map { $h => $_ } @$v)
-                 : ($h => $v)
+          ref $v eq 'ARRAY' ? (map { $h => $_ } @$v)
+                            : ($h => $v)
          } keys %{ $self->headers };
 }
 
@@ -627,6 +654,18 @@ sub as_lwp_snippet( $self, %options ) {
             quotemeta $pass;
         push @setup_ua, $setup_credentials;
     };
+
+    if( my $filename = $self->etag_compare ) {
+        push @setup_ua, sprintf q{my $etag;};
+        push @setup_ua, sprintf q{my $etag_filename = '%s';}, $filename;
+        push @setup_ua, sprintf q{if( -f $etag_filename ) \{};
+        push @setup_ua, sprintf q{    open my $fh, '<', $etag_filename or die "$etag_filename: $!";};
+        push @setup_ua, sprintf q{    $etag = <$fh>;};
+        push @setup_ua, sprintf q{    $etag =~ s/\s+\z//;};
+        push @setup_ua, sprintf q{\};};
+        $self->{headers}->{'If-None-Match'} = '$etag';
+    }
+
     if( $self->show_error ) {
         push @postamble,
             '    die $res->message if $res->is_error;',
@@ -952,6 +991,14 @@ sub as_curl($self,%options) {
             $options{ long_options } ? '--data-raw' : '--data-raw',
             $body;
     };
+
+    if( my $fn = $self->etag_compare ) {
+        push @request_commands, '--etag-compare' => $fn;
+    }
+
+    if( my $fn = $self->etag_save ) {
+        push @request_commands, '--etag-save' => $fn;
+    }
 
     push @request_commands, $self->uri;
 

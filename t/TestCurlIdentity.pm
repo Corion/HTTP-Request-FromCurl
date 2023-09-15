@@ -547,6 +547,7 @@ sub request_identical_ok( $test ) {
             );
             compiles_ok( $code, "$name as LWP snippet compiles OK")
                 or diag $code;
+            diag $code;
 
             my @lwp_ignore;
             if( LWP::UserAgent->VERSION < 6.33 ) {
