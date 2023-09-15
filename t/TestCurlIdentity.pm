@@ -159,8 +159,10 @@ sub identical_headers_ok( $code, $expected_request, $name,
     %options
 ) {
     my $res;
-    $res = eval $code
-        or do { diag $@; };
+    $res = eval $code;
+    if( $@ ) {
+        diag $@;
+    };
     if( ref $res eq 'HASH' and $res->{status} >= 300 ) {
         diag Dumper $res;
     };
