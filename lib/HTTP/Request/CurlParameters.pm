@@ -642,6 +642,7 @@ sub as_lwp_snippet( $self, %options ) {
 
     if( $self->method ne 'GET' and @{ $self->form_args }) {
         push @preamble, 'use HTTP::Request::Common;';
+        push $options{ implicit_headers }->@*, 'Content-Type';
         $request_constructor = <<SNIPPET;
     my \$r = HTTP::Request::Common::@{[$self->method]}(
         '@{[$self->uri]}',
