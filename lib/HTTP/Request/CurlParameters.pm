@@ -949,7 +949,7 @@ sub as_curl($self,%options) {
 
     if( my $body = $self->body ) {
         push @request_commands,
-            $options{ long_options } ? '--data-raw' : '--data-raw',
+            '--data-raw',
             $body;
     };
 
