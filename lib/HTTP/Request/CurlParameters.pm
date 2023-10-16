@@ -948,7 +948,15 @@ sub as_curl($self,%options) {
         };
     };
 
-    if( my $body = $self->body ) {
+    if( my $form_args = $self->form_args ) {
+        for (0..($form_args->@*/2-1)) {
+            my( $name, $val) = ($form_args->[$_*2], $form_args->[$_*2+1]);
+            push @request_commands,
+                '--form-string',
+                "$name=$val";
+        }
+
+    } elsif( my $body = $self->body ) {
         push @request_commands,
             '--data-raw',
             $body;
