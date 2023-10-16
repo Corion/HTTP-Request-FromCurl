@@ -182,6 +182,7 @@ our @option_spec = (
     'dump-header|D=s',   # ignored
     'referrer|e=s',
     'form|F=s@',
+    'form-escape!',
     'form-string=s@',
     'get|G',
     'globoff|g',

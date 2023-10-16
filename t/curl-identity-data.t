@@ -17,6 +17,33 @@ my @tests = (
       version => 7043000 },
     { cmd => [ '--verbose', '-g', '-s', '--data-urlencode', '@$tempfile', '$url' ],
       version => 7018000 },
+
+    { cmd => [ '--verbose', '-g', '-s', '--form-string', 'foo=bar', '$url' ],
+      },
+
+    { cmd => [ '--verbose', '-g', '-s', '--form-escape',
+                   #'-H', 'Content-Type: multipart/form-data',
+                   '--form-string', "field1 name=bar\"",
+                   '--form-string', "field2\\name=baz\"",
+                   '--form-string', "field3%20name=bat+",
+               '$url' ],
+      version => 7081000 },
+
+    { cmd => [ '--verbose', '-g', '-s', '--form-escape',
+                   '-H', 'Content-Type: multipart/form-data',
+                   '--form-string', "field1 name=bar\"",
+                   '--form-string', "field2\\name=baz\"",
+                   '--form-string', "field3%20name=bat+",
+               '$url' ],
+      version => 7081000 },
+
+    { cmd => [ '--verbose', '-g', '-s', '--no-form-escape',
+                   '--form-string', "field1 name=bar\"",
+                   '--form-string', "field2\\name=baz\"",
+                   '--form-string', "field3%20name=bat+",
+               '$url' ],
+      version => 7081000 },
+
 );
 
 run_curl_tests( @tests );
