@@ -948,7 +948,8 @@ sub as_curl($self,%options) {
         };
     };
 
-    if( my $form_args = $self->form_args ) {
+    if( $self->form_args->@* ) {
+        my $form_args = $self->form_args;
         for (0..($form_args->@*/2-1)) {
             my( $name, $val) = ($form_args->[$_*2], $form_args->[$_*2+1]);
             push @request_commands,
@@ -956,7 +957,9 @@ sub as_curl($self,%options) {
                 "$name=$val";
         }
 
-    } elsif( my $body = $self->body ) {
+    } elsif( defined( my $body = $self->body )) {
+        # Can we collapse stuff into --json or other nicer representations
+        # here ?!
         push @request_commands,
             '--data-raw',
             $body;
