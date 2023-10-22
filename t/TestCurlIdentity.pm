@@ -142,11 +142,11 @@ sub compiles_ok( $code, $name ) {
     });
 
     if( $exit ) {
-        diag $stderr;
+        diag "ERROR: $stderr";
         diag "Exit code: ", $exit;
         return fail($name);
     } elsif( $stderr !~ /(^|\n)\Q$tempname\E syntax OK\s*$/) {
-        diag $stderr;
+        diag "WARN: $stderr";
         diag $code;
         return fail($name);
     } else {
@@ -161,7 +161,7 @@ sub identical_headers_ok( $code, $expected_request, $name,
     my $res;
     $res = eval $code;
     if( $@ ) {
-        diag $@;
+        diag "EVAL: $@";
     };
     if( ref $res eq 'HASH' and $res->{status} >= 300 ) {
         diag Dumper $res;
@@ -175,7 +175,7 @@ sub identical_headers_ok( $code, $expected_request, $name,
         (my $old_boundary) = ($log =~ m!Content-Type: multipart/form-data; boundary=(.*?)$!ms);
         if( ! $old_boundary ) {
             diag "Old request didn't have a boundary?!";
-            diag $log;
+            diag "LOG: $log";
             return;
         };
 
@@ -258,13 +258,13 @@ sub request_logs_identical_ok( $test, $name, $r, $res ) {
 
     } elsif( $r->method ne $res->{method} ) {
         is $r->method, $res->{method}, $name;
-        diag join " ", @{ $test->{cmd} };
+        diag "CMD: " . join " ", @{ $test->{cmd} };
         SKIP: {
             skip "We can't check the request body", 1;
         };
     } elsif( uri_unescape($r->uri->path_query) ne $res->{path} ) {
         is uri_unescape($r->uri->path_query), $res->{path}, $name ;
-        diag join " ", @{ $test->{cmd} };
+        diag "CMD: " . join " ", @{ $test->{cmd} };
         SKIP: {
             skip "We can't check the request body", 1;
         };
@@ -377,7 +377,7 @@ sub request_identical_ok( $test ) {
 
         } else {
             fail $name;
-            diag join " ", @$cmd;
+            diag "CMD: " . join " ", @$cmd;
             diag $res[0]->{error_output};
         };
         SKIP: {
