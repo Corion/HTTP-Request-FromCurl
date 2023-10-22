@@ -582,10 +582,10 @@ sub _build_request( $self, $uri, $options, %build_options ) {
         };
 
         push @res, HTTP::Request::CurlParameters->new({
-            method => $method,
-            uri    => $uri,
-            headers => \%headers,
-            body   => $body,
+                  method => $method,
+                  uri    => $uri,
+                  headers => \%headers,
+                  body   => $body,
             maybe auth => $auth,
             maybe cert => $options->{cert},
             maybe capath => $options->{capath},
