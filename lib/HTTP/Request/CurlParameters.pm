@@ -1,4 +1,4 @@
-package HTTP::Request::CurlParameters 0.52;
+package HTTP::Request::CurlParameters 0.53;
 use strict;
 use warnings;
 use HTTP::Request;

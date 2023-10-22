@@ -1,4 +1,4 @@
-package HTTP::Request::FromCurl 0.52;
+package HTTP::Request::FromCurl 0.53;
 use 5.020;
 use File::Basename 'basename';
 use HTTP::Request;
