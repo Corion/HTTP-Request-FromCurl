@@ -1,6 +1,5 @@
 package HTTP::Request::CurlParameters 0.53;
-use strict;
-use warnings;
+use 5.020;
 use HTTP::Request;
 use HTTP::Request::Common;
 use URI;
@@ -642,7 +641,7 @@ sub as_lwp_snippet( $self, %options ) {
 
     if( $self->method ne 'GET' and @{ $self->form_args }) {
         push @preamble, 'use HTTP::Request::Common;';
-        push $options{ implicit_headers }->@*, 'Content-Type';
+        push @{$options{ implicit_headers }}, 'Content-Type';
         $request_constructor = <<SNIPPET;
     my \$r = HTTP::Request::Common::@{[$self->method]}(
         '@{[$self->uri]}',
@@ -948,9 +947,9 @@ sub as_curl($self,%options) {
         };
     };
 
-    if( $self->form_args->@* ) {
+    if( @{$self->form_args} ) {
         my $form_args = $self->form_args;
-        for (0..($form_args->@*/2-1)) {
+        for (0..(@{$form_args}/2-1)) {
             my( $name, $val) = ($form_args->[$_*2], $form_args->[$_*2+1]);
             push @request_commands,
                 '--form-string',
