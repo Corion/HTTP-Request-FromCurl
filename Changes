@@ -1,3 +1,6 @@
+0.54 2023-10-23
+    * Restore compatibility with 5.020
+
 0.53 2023-10-22
     * Properly output form arguments when regenerating a curl command line
     * Fix code generation for form submission with LWP::UserAgent
