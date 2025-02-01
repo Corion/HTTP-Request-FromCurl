@@ -168,7 +168,8 @@ our @option_spec = (
     'basic',
     'buffer!',
     'capath=s',
-    'cert|E=s',
+    # 'cacert=s', # to be added
+    'cert|E=s', # this is the client certificate
     'compressed',
     'cookie|b=s',
     'cookie-jar|c=s',
