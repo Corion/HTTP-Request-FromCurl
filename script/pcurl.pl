@@ -7,7 +7,7 @@ use LWP::UserAgent;
 use Getopt::Long ':config','pass_through';
 use Pod::Usage;
 
-our $VERSION = '0.54';
+our $VERSION = '0.55';
 
 # parse output options from @ARGV
 GetOptions(
